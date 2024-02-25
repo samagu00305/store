@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "magusaa-5",
+  "private_key_id": "e44ad6d92d3fa13531facf450f73024c648a2103",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/xvDAQBQybHRb\nO5RKNtqfo/qs85EEfuqZy0sca0QsvnsIo8E7X0ZrV5SdCHELHlYqqn/CO8NKCHNJ\nhIQ0ZZFMHjolT9aU7DKSPMUNg4LbJ1gZKBQ2IjC14gMqG07zY7xZowZcMc6L5np8\nGk80rv3hxyofAr/oaQ7RIqIUGs+qKZdW7k5p8X1OrI0X4rwZdEkup1ULmE5nmhVt\nzMJ3dIHr7F9ITm7l4dVvhXxnAwp0+L0Z/YcdSgmXIZwXMRzmaIX2LGYe53BmvkvU\na+Her50BSIo75B39c3yc7QiGpyQoQ71gdP59yitekOLnP+HF/1MzG9/hytazAgjP\n3Gt38TlbAgMBAAECggEAHPYFG3NR2X+JXtGzhjWcdGlGDOJHbx9ffFQ4BpWoWP13\nBQn9v2KW9tTmC4Tf1WcCajUPUBzIVCDMkDij4mnING+IJmRVKm41AOKOe4j1tPTP\nGBV2X+pv4re79JrlJFpWck7tQfT/lR78Nkue1HzsuDDkioRWyNk8tJZ/VXvrCm4z\n5PpCE3jx3gqvaZJAV+S7VWtBJ+fFdsgmALRpk/OdAkDAN7EVzEaf5LrMKnfmnZlk\ns08yWg2LpB3qnBICjaKBE4lHIXtpwDQQlyNcPMcZXs7maaQVGMBix7g5S2exBOCo\nT/QKybrA5R0jXqTFqxSx7dVLrb+WzQb6PRUGL5F1CQKBgQD/UwQlC97uZs+on0xf\nVtkDKzR3rqSMRdl4fdUgAvfV4kuRiQCGnB52Pro9iWp4qRjdL501ucCXVpoNyQJA\nBCC+oggKkL7jzBKjjCdluERosgBlVK8go8ivnE9iSEF5ElwP7NRFA+RiZm2t0ZNM\ncqYlGREGItoGRY0PtobhEhfyzQKBgQDASN7h58+Hj1wKQVhqGn+rCzgiD2gR8Pp0\nuAiLPlFYxuzC3zc1uQ4y8ymICOumegHNvTdUEo1BrwQ2l7ssC1rS49IjCxriv9HK\nMBwLyGK3YJRXRuZjbGhp7mffawr+2ilzcX9jruJG4/X69+yRmsgy0lW4ewIupJwg\nwCpwsnlsxwKBgQD29bdGlgrVkYA+W4almP1jAUFImhXy0AUfdKbWxcguiyoI5Pkr\nOoqEWPwPVYE0oGq6Vrm7I6ZTO6Lavph8jwGVImigv4zEDbnhk0jwLKGOms2jNZwG\n+CS/J3PpXnZlwwplJO/UqYUYYHap79KH2UU3EN3Uj5VPB6r/jc88mCGt6QKBgF0Q\n6A+fCyspj/rGtexk9vXqcDjMDCri39YuXLRIbUbywRVwxGAUOXMfjjJxXt0soELc\nGjNu5z+rXfauacFfnY4FBmg/r7uf7AJYVrq9OkpXTHURs+DbT441/cB9Js1C+l0N\nygKNWqfFHgFijfXLXKp8c1De+KdqtMaFPAVf3LVxAoGANgEGPimBHzYZTj+0abWf\nJUcC+xh1l+aDSVGkhx3W5Zpj0rdSnJdfP+7CYhz3NOkVk/3csLfeb+ajHm3xsUBH\nk2f5Np5kaz05xDF4IWeHtLzswa4t12/uvUy0lo+CHeh4B3Mbv8iLJj5N4KQwvxxg\n4HLgw1/x7Uv1LbzU4MgBP9s=\n-----END PRIVATE KEY-----\n",
+  "client_email": "maguass-5@magusaa-5.iam.gserviceaccount.com",
+  "client_id": "104864907741831138717",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/maguass-5%40magusaa-5.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
