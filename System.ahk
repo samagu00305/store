@@ -102,7 +102,7 @@ xl_U(row)
 
 SaveWorksheet(xlWorkbook)
 {
-	xlWorkbook.SaveCopyAs(g_DefaultPath() . "\엑셀\마구싸5 구매루트_복제.xlsx")
+	xlWorkbook.SaveCopyAs(g_DefaultPath() . "\엑셀\마구싸5_구매루트_복제.xlsx")
 	xlWorkbook.Save()
 }
 
@@ -143,7 +143,7 @@ ExcelSystemKill()
 UpdateStoreWithColorInformation()
 {
 	TelegramSend("등록 된 상품 최신화 -- 시작")
-	xlFile := g_DefaultPath() . "\엑셀\마구싸5 구매루트.xlsx"
+	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
 	;// 엑셀 파일 열기
 	xl := ComObjCreate("Excel.Application")
 	;// Excel을 보이게 설정 할지 여부
@@ -234,7 +234,7 @@ UpdateStoreWithColorInformation()
 
 UpdateStoreWithColorInformationMoney_Mytheresa()
 {
-	xlFile := g_DefaultPath() . "\엑셀\마구싸5 구매루트.xlsx"
+	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
 	;// 엑셀 파일 열기
 	xl := ComObjCreate("Excel.Application")
 	;// Excel을 보이게 설정 할지 여부
@@ -654,7 +654,7 @@ ArrayRemove(ByRef arr, value) {
 SetXlsxUGGNewProductURLs()
 {
 	TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 시작")
-	xlFile := g_DefaultPath() . "\엑셀\마구싸5 구매루트.xlsx"
+	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
 	;// 엑셀 파일 열기
 	xl := ComObjCreate("Excel.Application")
 	;// Excel을 보이게 설정 할지 여부
@@ -1040,7 +1040,7 @@ AddDataFromExcel_Ugg()
 	xlWorkbookAddBefore := xlAddBefore.Workbooks.Open(xlFileAddBefore, 0, false, , "")
 	xlWorksheetAddBefore := xlWorkbookAddBefore.Sheets(1)
 
-	xlFileAdd := g_DefaultPath() . "\엑셀\마구싸5 구매루트.xlsx"
+	xlFileAdd := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
 	;// 엑셀 파일 열기
 	xlAdd := ComObjCreate("Excel.Application")
 	;// Excel을 보이게 설정 할지 여부
