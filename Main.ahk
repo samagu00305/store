@@ -1,5 +1,6 @@
 ﻿#Include EnvData.ahk
 #Include GlobalData.ahk
+#Include GitUtil.ahk
 #Include Util.ahk
 #Include ProductRegistration.ahk
 #Include Test\Test_Ing.ahk
@@ -19,27 +20,35 @@ return
 
 Button시작:
     {	
-        
-        ; ExcelSystemKill()
+        ;// 상품 신규 등록 및 최신화
+        while (true)
+        {
+            ExcelSystemKill()
 
-        ; ;// 신규 등록 할 UGG 목록을 엑셀에 정리
-        ; SetXlsxUGGNewProductURLs()
+            ;// 신규 등록 할 UGG 목록을 엑셀에 정리
+            SetXlsxUGGNewProductURLs()
 
-        ExcelSystemKill()
-        
-        ;// 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
-        AddDataFromExcel_Ugg()
-        
-        ExcelSystemKill()
+            ExcelSystemKill()
             
-        ;// 등록 된 상품 최신화
-        UpdateStoreWithColorInformation()
+            ;// 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
+            AddDataFromExcel_Ugg()
+            
+            ExcelSystemKill()
 
-        ;// 가격 갱신 및 사이즈 갱신(엑셀로)
-        ; UpdateStoreWithColorInformationMoney_Mytheresa()
+            ;// git에 엑셀 파일 최신으로 올림
+            GitSyncPushExcelFile()
+                
+            ;// 등록 된 상품 최신화
+            UpdateStoreWithColorInformation(true)
 
-        ExcelSystemKill()
-        
+            ;// 가격 갱신 및 사이즈 갱신(엑셀로)
+            ; UpdateStoreWithColorInformationMoney_Mytheresa()
+
+            ExcelSystemKill()
+
+            ;// git에 엑셀 파일 최신으로 올림
+            GitSyncPushExcelFile()
+        }
         
         GuiControl,,B,시작
         SleepTime(1)

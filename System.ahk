@@ -140,7 +140,7 @@ ExcelSystemKill()
 }
 
 ;// 등록 된 상품 최신화
-UpdateStoreWithColorInformation()
+UpdateStoreWithColorInformation(isFirst)
 {
 	TelegramSend("등록 된 상품 최신화 -- 시작")
 	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
@@ -155,6 +155,11 @@ UpdateStoreWithColorInformation()
 	; UsedRange을 통해 데이터가 있는 범위 가져오기
 	xlUsedRange := xlWorksheet.UsedRange
 	lastRow := xlUsedRange.Rows.Count
+
+	if(isFirst)
+	{
+		xlWorksheet.Range(xl_P("1")).value = 1
+	}
 
 	row := Round(xlWorksheet.Range(xl_P("1")).value)
 

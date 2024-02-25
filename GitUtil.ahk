@@ -15,4 +15,5 @@ GitSyncPushExcelFile()
 	RunWait git add %filePath%
     RunWait git commit -m "구매루트 최신화"
     RunWait git push origin main
+	TelegramSend("Git 에 마구싸5_구매루트.xlsx 최신화")
 }
