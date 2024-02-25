@@ -957,6 +957,7 @@ GetKorMony(mony, exchangeRate)
 GetUggKorSize(usSize)
 {
 	Switch usSize {
+	Case 4: 	return 210
 	Case 5: 	return 220
 	Case 5.5: 	return 225
 	Case 6: 	return 230
