@@ -101,7 +101,7 @@ xl_U(row)
 }
 
 SaveWorksheet(xlWorkbook)
-{
+{11
 	xlWorkbook.SaveCopyAs(g_DefaultPath() . "\엑셀\마구싸5 구매루트_복제.xlsx")
 	xlWorkbook.Save()
 }
@@ -399,7 +399,7 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			if(before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray && xlWorksheet.Range(xl_U(row)).value != useMoney)
 			{
 				xlWorksheet.Range(xl_U(row)).value := useMoney
-					
+
 				;// 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
 				if(true)
 				{
@@ -428,7 +428,7 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			{
 				;// 가격 변동이 있으면 변경
 				if(xlWorksheet.Range(xl_U(row)).value != useMoney)
-				{		
+				{
 					xlWorksheet.Range(xl_U(row)).value := useMoney
 
 					xl_J_(xlWorkbook, xlWorksheet, row, "변경 완료(가격만 변동)")
@@ -476,7 +476,7 @@ UpdateProductInfoMoney_Mytheresa(xlWorkbook, xlWorksheet, url, row, krwEur)
 	{
 		return false
 	}
-	
+
 	if(data.isSoldOut)
 	{
 		;// 품절
@@ -1280,7 +1280,7 @@ GetMytheresaData(url, exchangeRate)
 		{
 			useMoney := match1
 		}
-		
+
 		korMony := GetKorMony(useMoney, exchangeRate)
 
 		;// 상품 이름
@@ -1353,7 +1353,7 @@ ManageAndModifyProducts(xlWorksheet, row)
 	SleepTime(2)
 	Send, {Esc}
 	SleepTime(1)
-	
+
 	; if(WhileFoundImage("스마트 스토어\상품 조회-수정 선택된 상태", 2))
 	; {
 	; 	ClickAtWhileFoundImage("스마트 스토어\상품 등록", 10, 10)
@@ -1368,7 +1368,7 @@ ManageAndModifyProducts(xlWorksheet, row)
 	; 	ClickAtWhileFoundImage("스마트 스토어\상품 조회-수정", 10, 10)
 	; 	SleepTime(2)
 	; }
-	
+
 	;// 상품 조회해서 상품 수정 화면으로 이동
 	if(true)
 	{
