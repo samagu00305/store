@@ -288,22 +288,6 @@ GetKoreanColorName_before(colorHax)
 	}
 }
 
-이미지_다운로드()
-{
-	
-	url := "https://dms.deckers.com/ugg/image/upload/f_auto,q_auto,dpr_auto/b_rgb:eeeeee/w_966/v1694529585/catalog/images/transparent/1145990-CHE_1.png"
-	savePath := g_DefaultPath() . "\custom_name.png" ; 저장할 파일의 경로 및 사용자가 원하는 파일 이름
-
-	; 이미지 다운로드
-	UrlDownloadToFile, %url%, %savePath%
-
-	if (ErrorLevel == 0) {
-		MsgBox, 이미지가 성공적으로 다운로드되었습니다.
-	} else {
-		MsgBox, 이미지 다운로드 중 오류가 발생했습니다. (ErrorLevel: %ErrorLevel%)
-	}
-}
-
 ;// 신규 등록 할 상품 url 배열로 추출
 GetUGGNewProductURLs_Test()
 {
