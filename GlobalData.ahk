@@ -65,18 +65,3 @@ g_OneSecond()
 {
 	return 1000
 }
-
-g_SheetId_magussa5_Root()
-{
-	return "1eoVRmnRYw-y0Rayp32zcWDPBPRcwolEveWXItTheCSk"
-}
-
-g_SheetApiKey()
-{
-	return "AIzaSyCcvHkvCZH-mqRmYkn5YKLhkKsHFEnyFOM"
-}
-
-g_DefaultPath()
-{
-	return "C:\Users\a\Desktop\auto_system_1 (2024.02.03)_2\auto_system_1"
-}

@@ -1,4 +1,5 @@
-﻿#Include GlobalData.ahk
+﻿#Include EnvData.ahk
+#Include GlobalData.ahk
 #Include Util.ahk
 #Include ProductRegistration.ahk
 #Include Test\Test_Ing.ahk

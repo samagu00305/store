@@ -1,4 +1,5 @@
-﻿#Include GlobalData.ahk
+﻿#Include EnvData.ahk
+#Include GlobalData.ahk
 
 ;// 현재 미국 환율 정보 출력
 KRWUSD()
@@ -916,8 +917,8 @@ FolderToDelete(folderPath)
 
 TelegramSend(Message) { 
 	Debug(Message)
-    ChatID := "1800220259"
-    Token := "6790144291:AAFJupO_oSYmR1OGpMEHftBciVbnpPgSLLw"
+    ChatID := TelegramSend_ChatID()
+    Token := TelegramSend_Token()
     Param := "chat_id=" ChatID "&text=" Message
     URL := "https://api.telegram.org/bot" Token "/sendmessage?" 
     a := ComObjCreate("WinHttp.WinHttpRequest.5.1")

@@ -1,4 +1,5 @@
-﻿#Include Util.ahk
+﻿#Include EnvData.ahk
+#Include Util.ahk
 
 PhoneControlUtil_SendMessage(phoneNumber, message)
 {

@@ -1,4 +1,5 @@
-﻿#Include GlobalData.ahk
+﻿#Include EnvData.ahk
+#Include GlobalData.ahk
 #Include Util.ahk
 
 ;// 상품 등록시 기본 세팅 들

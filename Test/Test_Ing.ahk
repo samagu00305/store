@@ -1,4 +1,5 @@
-﻿#Include GlobalData.ahk
+﻿#Include EnvData.ahk
+#Include GlobalData.ahk
 #Include Util.ahk
 #Include ProductRegistration.ahk
 
@@ -99,7 +100,7 @@ SendNateOnMessage(phonenNmber, message)
 	
 	wh.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
 	; 로그인 요청을 위한 데이터 준비 (POST 요청)
-	postData := "txtid=" . "samagu0030" . "&txtpwd=" . "skcjf158!"
+	postData := "txtid=" . ID() . "&txtpwd=" . Password()
 	wh.Send(postData)
 	; wh.Send()
 	wh.WaitForResponse()
