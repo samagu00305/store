@@ -101,7 +101,7 @@ xl_U(row)
 }
 
 SaveWorksheet(xlWorkbook)
-{11
+{
 	xlWorkbook.SaveCopyAs(g_DefaultPath() . "\엑셀\마구싸5 구매루트_복제.xlsx")
 	xlWorkbook.Save()
 }
