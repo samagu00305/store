@@ -140,7 +140,7 @@ ExcelSystemKill()
 }
 
 ;// 등록 된 상품 최신화
-UpdateStoreWithColorInformation(isFirst)
+UpdateStoreWithColorInformation(inputRow := -1)
 {
 	TelegramSend("등록 된 상품 최신화 -- 시작")
 	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
@@ -156,12 +156,14 @@ UpdateStoreWithColorInformation(isFirst)
 	xlUsedRange := xlWorksheet.UsedRange
 	lastRow := xlUsedRange.Rows.Count
 
-	if(isFirst)
+	if(inputRow != -1)
 	{
-		xlWorksheet.Range(xl_P("1")).value = 1
+		row := inputRow
 	}
-
-	row := Round(xlWorksheet.Range(xl_P("1")).value)
+	else
+	{
+		row := Round(xlWorksheet.Range(xl_P("1")).value)
+	}
 
 	krwUsd := KRWUSD()
 	krwEur := KRWEUR()
@@ -193,7 +195,7 @@ UpdateStoreWithColorInformation(isFirst)
 
 		if(InStr(url, "www.ugg.com"))
 		{
-			TelegramSend("row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
+			TelegramSend("www.ugg.com  row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
 
 			isUpdateProduct := UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			if(isUpdateProduct)
@@ -212,7 +214,7 @@ UpdateStoreWithColorInformation(isFirst)
 
 		if(InStr(url, "www.mytheresa.com"))
 		{
-			TelegramSend("row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
+			TelegramSend("www.mytheresa.com  row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
 
 			isUpdateProduct := UpdateProductInfoMoney_Mytheresa(xlWorkbook, xlWorksheet, url, row, krwEur)
 			if(isUpdateProduct)
@@ -571,7 +573,7 @@ GetNewProductURLs_UGG(name, url, filterUrls)
 	TelegramSend("GetNewProductURLs_UGG()  " . name . " -- 시작")
 	Run, chrome.exe %url%
 	; "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-	WinWait, ugg
+	; WinWait, ugg
 	SleepTime(10)
 
 	;// 웹 제일 끝까지 스코롤 한다.
@@ -688,12 +690,12 @@ SetXlsxUGGNewProductURLs()
 	xlWorkbook.Close()
 	xl.Quit()
 
+	;// 메뉴 창이 한번은 열려야지 세부 메뉴 창이 정상으로 열림
 	Run, chrome.exe "https://www.ugg.com/women-footwear"
 	; "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-	WinWait, ugg
+	; WinWait, ugg
 	SleepTime(10)
 
-	Debug("11111111111")
 	;// UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
 	uggProductUrls := []
 	uggProductUrls.Push(GetNewProductURLs_UGG("패션잡화 여성신발 부츠 미들부츠", "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=boots%7Cclassic-boots%7Ccold-weather-boots", filterUrls)) ;// 부츠(미들부츠)
@@ -704,7 +706,6 @@ SetXlsxUGGNewProductURLs()
 	Send ^w
 	SleepTime(1)
 
-	Debug("22222222222222")
 	xlFile := g_DefaultPath() . "\엑셀\추가 할 것들.xlsx"
 	;// 엑셀 파일 열기
 	xl := ComObjCreate("Excel.Application")
@@ -725,8 +726,8 @@ SetXlsxUGGNewProductURLs()
 		for index2, item2 in item[2] {
 			allCount++
 			xlWorksheet.Range("A" . allCount).value := "UGG"
-			xlWorksheet.Range("B" . allCount).value := item[1]
-			xlWorksheet.Range("C" . allCount).value := item2
+			xlWorksheet.Range("B" . allCount).value := item[1] ;// 메뉴
+			xlWorksheet.Range("C" . allCount).value := item2 ;// url
 		}
 	}
 
@@ -869,7 +870,10 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		;// 등록해야 될 것에서 삭제
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
-		return true
+
+		values.addCount := false
+		values.addOneProductSuccess := true
+		return values
 	}
 
 	if(arraySizesAndImgUrls.Length() >= 1){
@@ -1017,7 +1021,9 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
 
-		return true
+		values.addCount := true
+		values.addOneProductSuccess := true
+		return values
 	}
 	else
 	{
@@ -1028,7 +1034,9 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		ClickAtWhileFoundImage("스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
 		SleepTime(1)
 
-		return false
+		values.addCount := false
+		values.addOneProductSuccess := false
+		return values
 	}
 }
 
@@ -1059,16 +1067,21 @@ AddDataFromExcel_Ugg()
 	krwUsd := KRWUSD()
 
 	;// 모두 반복
+	addCount := 0
 	count := 1
 	Loop % rowCountAddBefore {
 		addOneProductSuccess := true
 		while(true)
 		{
-			Debug(count . "/" . rowCountAddBefore)
 			TelegramSend(count . "/" . rowCountAddBefore)
-			addOneProductSuccess := AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwUsd)
+			data := AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwUsd)
+			addOneProductSuccess := data.addOneProductSuccess
 			if(addOneProductSuccess)
 			{
+				if(data.addCount)
+				{
+					++addCount
+				}
 				++count
 				break
 			}
@@ -1078,6 +1091,8 @@ AddDataFromExcel_Ugg()
 	xlAdd.Quit()
 	xlAddBefore.Quit()
 	TelegramSend("추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 끝")
+
+	return addCount
 }
 
 ;// url에 필요 정보 가져오기
@@ -1108,7 +1123,7 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 
 		Run, chrome.exe %url%
 		; "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-		WinWait, ugg
+		; WinWait, ugg
 		SleepTime(10)
 		htmlElementsData := GetElementsData()
 		;// Ctrl + W를 눌러 현재 Chrome 탭 닫기
@@ -1156,7 +1171,7 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 
 						Run, chrome.exe %colorUrl%
 						; "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-						WinWait, ugg
+						; WinWait, ugg
 						SleepTime(10)
 						colorUrlHtmlElementsData := GetElementsData()
 						;// Ctrl + W를 눌러 현재 Chrome 탭 닫기
@@ -1174,7 +1189,7 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 								if(splitArray.Length() > 0)
 								{
 									;// 제일 끝에 것으로 하는 이유는 이미지 제일 큰 Url 이기 때문에
-									if(RegExMatch(splitArray[splitArray.Length()], "https:(.+)\.png", match))
+									if(RegExMatch(splitArray[splitArray.Length()], "https:(.+)\.(png|jpg)", match))
 									{
 										imgBigUrls.Push(match)
 									}
@@ -1199,6 +1214,13 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 									if (RegExMatch(sizeLines[A_Index], "data-attr-value=""([^""]+)""", match))
 									{
 										extractedValue := match1
+										defaultExtractedValue := match1
+										extractedValueSplitArray := StrSplit(extractedValue, "/")
+										if(extractedValueSplitArray.Length() == 2)
+										{
+											extractedValue := extractedValueSplitArray[extractedValueSplitArray.Length()]
+										}
+										
 										; 숫자로 판단되면 앞의 0 제거
 										if (extractedValue ~= "^[0-9]+(\.[0-9]+)?$")
 										{
@@ -1223,7 +1245,7 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 										}
 										else
 										{
-											sizes.Push(extractedValue)
+											sizes.Push(defaultExtractedValue)
 										}
 									}
 								}

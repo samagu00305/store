@@ -31,23 +31,25 @@ Button시작:
             ExcelSystemKill()
             
             ;// 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
-            AddDataFromExcel_Ugg()
+            addCount := AddDataFromExcel_Ugg()
             
             ExcelSystemKill()
 
             ;// git에 엑셀 파일 최신으로 올림
             GitSyncPushExcelFile()
-                
+
             ;// 등록 된 상품 최신화
-            UpdateStoreWithColorInformation(true)
+            UpdateStoreWithColorInformation(addCount + 1)
 
             ;// 가격 갱신 및 사이즈 갱신(엑셀로)
-            ; UpdateStoreWithColorInformationMoney_Mytheresa()
+            UpdateStoreWithColorInformationMoney_Mytheresa()
 
             ExcelSystemKill()
 
             ;// git에 엑셀 파일 최신으로 올림
             GitSyncPushExcelFile()
+
+            TelegramSend("끝 --  다시 시작-----------------------")
         }
         
         GuiControl,,B,시작
