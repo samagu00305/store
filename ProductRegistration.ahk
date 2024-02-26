@@ -143,6 +143,12 @@ IamgeRegistration_v2()
 	Send, {Esc}
 	SleepTime(1)
 
+	if(MoveAtWhileFoundImage("스마트 스토어\내 사진", 0, 0, 2))
+	{
+		;// 이미지 넣을 수 없는 것임(너무 큼)
+		return false
+	}
+
 	;// 추가 이미지 등록
 	ClickAtWhileFoundImage("스마트 스토어\상품 수정\추가이미지", 0, 0)
 	SleepTime(1)
@@ -165,9 +171,8 @@ IamgeRegistration_v2()
 	Send, ^a
 	SleepTime(0.5)
 	Send, {Enter}
-	SleepTime(2)
-	Send, {Esc}
-	SleepTime(1)
+
+	return true
 }
 
 ;// 발 사이즈 어떤 것이 있는지와 한국 사이즈로 변환

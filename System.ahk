@@ -4,6 +4,7 @@
 #Include ProductRegistration.ahk
 #Include Test\Test_Ing.ahk
 #Include PhoneControlUtil.ahk
+#include Gdip_All.ahk
 
 ;// 상품 번호 칸
 xl_A(row)
@@ -871,6 +872,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
 
+		values := {}
 		values.addCount := false
 		values.addOneProductSuccess := true
 		return values
@@ -956,7 +958,18 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 	}
 
 	;// 이미지 등록(대표, 추가)
-	IamgeRegistration_v2()
+	if(IamgeRegistration_v2() = false)
+	{
+		TelegramSend("대표 이미지 등록 못함(이미지 너무 큼)   url : " . url)
+		;// 등록해야 될 것에서 삭제
+		xlWorksheetAddBefore.Rows(1).Delete()
+		xlWorkbookAddBefore.Save()
+
+		values := {}
+		values.addCount := false
+		values.addOneProductSuccess := true
+		return values
+	}
 
 	;// HTML 으로 등록
 	SetHTML(arraySizesAndImgUrls, true)
@@ -1021,6 +1034,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
 
+		values := {}
 		values.addCount := true
 		values.addOneProductSuccess := true
 		return values
@@ -1034,6 +1048,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 		ClickAtWhileFoundImage("스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
 		SleepTime(1)
 
+		values := {}
 		values.addCount := false
 		values.addOneProductSuccess := false
 		return values
