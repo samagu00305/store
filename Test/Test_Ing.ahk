@@ -418,3 +418,61 @@ GetKoreanColorName(colorHax)
 		return Clipboard
 	}
 }
+
+bbbbbbbbbbbbbb()
+{
+	ExcelSystemKill()
+
+            xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
+            ;// 엑셀 파일 열기
+            xl := ComObjCreate("Excel.Application")
+            ;// Excel을 보이게 설정 할지 여부
+            xl.Visible := false
+            xl.DisplayAlerts := false
+            xlWorkbook := xl.Workbooks.Open(xlFile, 0, false, , "")
+            xlWorksheet := xlWorkbook.Sheets(1)
+        
+            ; UsedRange을 통해 데이터가 있는 범위 가져오기
+            xlUsedRange := xlWorksheet.UsedRange
+
+            xlFileDelete := g_DefaultPath() . "\엑셀\중복 이름 상품 모음.xlsx"
+            ;// 엑셀 파일 열기
+            xlDelete := ComObjCreate("Excel.Application")
+            ;// Excel을 보이게 설정 할지 여부
+            xlDelete.Visible := false
+            xlDelete.DisplayAlerts := false
+            xlWorkbookDelete := xlDelete.Workbooks.Open(xlFileDelete, 0, false, , "")
+            xlWorksheetDelete := xlWorkbookDelete.Sheets(1)
+        
+            ; UsedRange을 통해 데이터가 있는 범위 가져오기
+            xlUsedRangeDelete := xlWorksheetDelete.UsedRange
+
+            Loop % xlUsedRangeDelete.Rows.Count {   
+                outerIndex := A_Index  ; 외부 루프의 인덱스 저장
+
+                if(outerIndex = 1)
+                {
+                    continue
+                }
+                
+                if(xlWorksheetDelete.Range(xl_A(outerIndex)).value != "")
+                {
+                    Debug("xlUsedRange.Rows.Count : " + xlWorksheet.UsedRange.Rows.Count)
+                    ; 중복 여부를 체크합니다.
+                    Loop % xlWorksheet.UsedRange.Rows.Count {       
+                        If (xlWorksheet.Range(xl_A(A_Index)).value = xlWorksheetDelete.Range(xl_A(outerIndex)).value) {
+                            Debug("outerIndex : " + outerIndex)
+                            Debug(xlWorksheet.Range(xl_A(A_Index)).value . "=" . xlWorksheetDelete.Range(xl_A(outerIndex)).value)
+                            xlWorksheet.Rows(A_Index).Delete()
+                            xlWorkbook.Save()
+                            Debug(A_Index)
+                            Break
+                        }
+                    }
+                }
+            }
+
+            ExcelSystemKill()
+
+            Debug("End")
+}

@@ -4,7 +4,7 @@
 #Include ProductRegistration.ahk
 #Include Test\Test_Ing.ahk
 #Include PhoneControlUtil.ahk
-#include Gdip_All.ahk
+; #include Gdip_All.ahk
 
 ;// 상품 번호 칸
 xl_A(row)
@@ -1494,4 +1494,65 @@ UpdateAndReturnSalePrice(korMony)
 	SleepTime(0.5)
 	Send, ^v
 	SleepTime(0.5)
+}
+
+중복_체크()
+{
+	xlFile := g_DefaultPath() . "\엑셀\마구싸5_구매루트.xlsx"
+	;// 엑셀 파일 열기
+	xl := ComObjCreate("Excel.Application")
+	;// Excel을 보이게 설정 할지 여부
+	xl.Visible := false
+	xl.DisplayAlerts := false
+	xlWorkbook := xl.Workbooks.Open(xlFile, 0, false, , "")
+	xlWorksheet := xlWorkbook.Sheets(1)
+
+	; UsedRange을 통해 데이터가 있는 범위 가져오기
+	xlUsedRange := xlWorksheet.UsedRange
+	lastRow := xlUsedRange.Rows.Count
+
+	; 체크할 열을 지정합니다.
+	xlRange := xlWorksheet.Columns(xl_T(""))
+
+	; 중복 여부를 체크합니다.
+	isDuplicate := false
+	Loop % lastRow {
+		cellValue := xlRange[A_Index].Value
+		If (cellValue = userInput) {
+			isDuplicate := true
+			Break
+		}
+	}	
+}
+
+;// 품절 완료 된 것 엑셀에서 제거
+aaaaa(xlWorkbook)
+{
+	xlWorksheet := xlWorkbook.Sheets(1)
+
+	startCount := 2
+	while(true)
+	{
+		Debug("xlWorksheet.UsedRange.Rows.Count : " + xlWorksheet.UsedRange.Rows.Count)
+		; 중복 여부를 체크합니다.
+		isFind := false
+		Loop % xlWorksheet.UsedRange.Rows.Count {       
+			if(A_Index >= startCount)
+			{         
+				If (InStr(xlWorksheet.Range(xl_J(A_Index)).value, "품절 상태로 변경 완료")) {
+					xlWorksheet.Rows(A_Index).Delete()
+					xlWorkbook.Save()
+					isFind := true
+					startCount := A_Index
+					Debug(A_Index)
+					Break
+				}
+			}
+		}
+
+		if(isFind = false)
+		{
+			Break
+		}
+	}
 }
