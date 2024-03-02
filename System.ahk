@@ -346,9 +346,16 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 	if(str_saveColorNameDoubleArray = "" || useMoney = 0)
 	{ ;// 색이 없은 경우 자체가 연결 되지 않거나 물건 자체가 없어졌을 경우
 		;// 스마트 스토어 수정 화면까지 이동
-		if(ManageAndModifyProducts(xlWorksheet, row) == false)
+		managedata := ManageAndModifyProducts(xlWorksheet, row)
+		if(managedata.isNoNetwork = true)
 		{
 			return false
+		}
+	
+		if(managedata.isNoProduct = true)
+		{
+			xl_J_(xlWorkbook, xlWorksheet, row, "스토어에 상품이 없습니다.")
+			return true
 		}
 
 		;// 품절
@@ -365,9 +372,16 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			xl_J_(xlWorkbook, xlWorksheet, row, "이전과 동일하지 않아서 변경 하려고 합니다.")
 
 			;// 스마트 스토어 수정 화면까지 이동
-			if(ManageAndModifyProducts(xlWorksheet, row) == false)
+			managedata := ManageAndModifyProducts(xlWorksheet, row)
+			if(managedata.isNoNetwork = true)
 			{
 				return false
+			}
+		
+			if(managedata.isNoProduct = true)
+			{
+				xl_J_(xlWorkbook, xlWorksheet, row, "스토어에 상품이 없습니다.")
+				return true
 			}
 
 			;// 가격 변동이 있으면 변경
@@ -480,9 +494,16 @@ UpdateProductInfoMoney_Mytheresa(xlWorkbook, xlWorksheet, url, row, krwEur)
 	data := GetMytheresaData(url, krwEur)
 
 	;// 스마트 스토어 수정 화면까지 이동
-	if(ManageAndModifyProducts(xlWorksheet, row) == false)
+	managedata := ManageAndModifyProducts(xlWorksheet, row)
+	if(managedata.isNoNetwork = true)
 	{
 		return false
+	}
+
+	if(managedata.isNoProduct = true)
+	{
+		xl_J_(xlWorkbook, xlWorksheet, row, "스토어에 상품이 없습니다.")
+		return true
 	}
 
 	if(data.isSoldOut)
@@ -1369,6 +1390,10 @@ GetMytheresaData(url, exchangeRate)
 ;// 스마트 스토어 수정 화면까지 이동
 ManageAndModifyProducts(xlWorksheet, row)
 {
+	values := {}
+	values.isNoProduct := false
+	values.isNoNetwork := false
+
 	SleepTime(1)
 	Run, chrome.exe "https://sell.smartstore.naver.com/#/products/origin-list"
 	SleepTime(0.5)
@@ -1423,7 +1448,11 @@ ManageAndModifyProducts(xlWorksheet, row)
 		SleepTime(0.5)
 		ClickAtWhileFoundImage("스마트 스토어\상품 조회\검색", 0, 0)
 		SleepTime(1)
-		ClickAtWhileFoundImage("스마트 스토어\상품 조회\수정", 0, 0)
+		if(false = ClickAtWhileFoundImage("스마트 스토어\상품 조회\수정", 0, 0, 5))
+		{
+			values.isNoProduct := true
+			Return values
+		}
 		SleepTime(2)
 	}
 
@@ -1432,7 +1461,8 @@ ManageAndModifyProducts(xlWorksheet, row)
 	;// "스마트 스토어\네트워크 불안정 느낌표"
 	if(ClickAtWhileFoundImage("스마트 스토어\네트워크 불안정", 0, 0, 1))
 	{
-		return false
+		values.isNoNetwork := true
+		return values
 	}
 
 	if(ClickAtWhileFoundImage("스마트 스토어\상품 수정\KC인증", 0, 0, 2))
@@ -1440,7 +1470,7 @@ ManageAndModifyProducts(xlWorksheet, row)
 		ClickAtWhileFoundImage("스마트 스토어\상품 수정\KC인증 닫기", 10, 10, 2)
 	}
 
-	return true
+	return values
 }
 
 ;// 품절

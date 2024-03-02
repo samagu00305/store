@@ -1,5 +1,6 @@
 ﻿#Include EnvData.ahk
 #Include GlobalData.ahk
+#include Gdip_All.ahk
 
 ;// 현재 미국 환율 정보 출력
 KRWUSD()
@@ -896,6 +897,29 @@ DownloadImageUrl(url, saveName)
 
 	if (ErrorLevel == 0)
 	{
+		; 이미지 크기 조절
+		; width := 750
+		; height := 1000
+
+		; RunWait, magick convert "%savePath%" -resize %width%x%height%^> "%outputFile%"
+
+		; ; GDI+ 객체 생성
+		; pToken := Gdip_Startup()
+		; pBitmap := Gdip_CreateBitmapFromFile(savePath)
+
+		; ; 이미지 크기 조절
+		; widthOld := Gdip_GetImageWidth(pBitmap)
+		; heightOld := Gdip_GetImageHeight(pBitmap)
+		; Gdip_CreateBitmap(width, height, pBitmap, pBitmapResized)
+		; Gdip_DisposeImage(pBitmap)
+
+		; ; 이미지 저장
+		; Gdip_SaveBitmapToFile(pBitmapResized, savePath)
+
+		; ; GDI+ 객체 해제
+		; Gdip_DisposeImage(pBitmapResized)
+		; Gdip_Shutdown(pToken)
+		
 		Debug("이미지 다운로드 url : " . url)
 	}
 	else
