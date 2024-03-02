@@ -196,7 +196,7 @@ UpdateStoreWithColorInformation(inputRow := -1)
 
 		if(InStr(url, "www.ugg.com"))
 		{
-			TelegramSend("www.ugg.com  row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
+			TelegramSend("www.ugg.com row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
 
 			isUpdateProduct := UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			if(isUpdateProduct)
@@ -215,7 +215,7 @@ UpdateStoreWithColorInformation(inputRow := -1)
 
 		if(InStr(url, "www.mytheresa.com"))
 		{
-			TelegramSend("www.mytheresa.com  row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
+			TelegramSend("www.mytheresa.com row(" . row . ") / lastRow(" . lastRow . ")" . GetFormattedCurrentDateTime())
 
 			isUpdateProduct := UpdateProductInfoMoney_Mytheresa(xlWorkbook, xlWorksheet, url, row, krwEur)
 			if(isUpdateProduct)
@@ -351,7 +351,7 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 		{
 			return false
 		}
-	
+
 		if(managedata.isNoProduct = true)
 		{
 			xl_J_(xlWorkbook, xlWorksheet, row, "스토어에 상품이 없습니다.")
@@ -377,7 +377,7 @@ UpdateProductInfo_UGG(xlWorkbook, xlWorksheet, url, row, krwUsd)
 			{
 				return false
 			}
-		
+
 			if(managedata.isNoProduct = true)
 			{
 				xl_J_(xlWorkbook, xlWorksheet, row, "스토어에 상품이 없습니다.")
@@ -592,7 +592,7 @@ xl_J_(xlWorkbook, xlWorksheet, row, value, updateTime := false)
 ;// UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
 GetNewProductURLs_UGG(name, url, filterUrls)
 {
-	TelegramSend("GetNewProductURLs_UGG()  " . name . " -- 시작")
+	TelegramSend("GetNewProductURLs_UGG() " . name . " -- 시작")
 	Run, chrome.exe %url%
 	; "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
 	; WinWait, ugg
@@ -663,7 +663,7 @@ GetNewProductURLs_UGG(name, url, filterUrls)
 		ArrayRemove(productUrls, value)
 	}
 
-	TelegramSend("GetNewProductURLs_UGG()  " . name . " -- 끝")
+	TelegramSend("GetNewProductURLs_UGG() " . name . " -- 끝")
 
 	return [name, productUrls]
 }
@@ -888,7 +888,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 
 	if(arraySizesAndImgUrls.Length() = 0)
 	{
-		TelegramSend("arraySizesAndImgUrls.Length() = 0   url : " . url)
+		TelegramSend("arraySizesAndImgUrls.Length() = 0 url : " . url)
 		;// 등록해야 될 것에서 삭제
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
@@ -981,7 +981,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 	;// 이미지 등록(대표, 추가)
 	if(IamgeRegistration_v2() = false)
 	{
-		TelegramSend("대표 이미지 등록 못함(이미지 너무 큼)   url : " . url)
+		TelegramSend("대표 이미지 등록 못함(이미지 너무 큼) url : " . url)
 		;// 등록해야 될 것에서 삭제
 		xlWorksheetAddBefore.Rows(1).Delete()
 		xlWorkbookAddBefore.Save()
@@ -1062,7 +1062,7 @@ AddOneProduct_Ugg(xlWorkbookAddBefore, xlWorkbookAdd, addOneProductSuccess, krwU
 	}
 	else
 	{
-		TelegramSend("++++++++++++++  이름이 입력 안됬음  왜지??")
+		TelegramSend("++++++++++++++ 이름이 입력 안됬음 왜지??")
 		;// 이름이 입력 안됬음  왜지??
 		ClickAtWhileFoundImage("스마트 스토어\상품 수정\취소", 5, 5)
 		SleepTime(1)
@@ -1256,7 +1256,7 @@ GetUggData(url, exchangeRate, onlyUseMoney := false)
 										{
 											extractedValue := extractedValueSplitArray[extractedValueSplitArray.Length()]
 										}
-										
+
 										; 숫자로 판단되면 앞의 0 제거
 										if (extractedValue ~= "^[0-9]+(\.[0-9]+)?$")
 										{
@@ -1506,7 +1506,7 @@ SoldOut(xlWorkbook, xlWorksheet, row)
 
 	xl_J_(xlWorkbook, xlWorksheet, row, "품절 상태로 변경 완료", true)
 
-	TelegramSend("품절 상태로 변경 완료   row(" . row . ") ")
+	TelegramSend("품절 상태로 변경 완료 row(" . row . ") ")
 }
 
 UpdateAndReturnSalePrice(korMony)
@@ -1552,7 +1552,7 @@ UpdateAndReturnSalePrice(korMony)
 			isDuplicate := true
 			Break
 		}
-	}	
+	}
 }
 
 ;// 품절 완료 된 것 엑셀에서 제거
@@ -1566,9 +1566,9 @@ aaaaa(xlWorkbook)
 		Debug("xlWorksheet.UsedRange.Rows.Count : " + xlWorksheet.UsedRange.Rows.Count)
 		; 중복 여부를 체크합니다.
 		isFind := false
-		Loop % xlWorksheet.UsedRange.Rows.Count {       
+		Loop % xlWorksheet.UsedRange.Rows.Count {
 			if(A_Index >= startCount)
-			{         
+			{
 				If (InStr(xlWorksheet.Range(xl_J(A_Index)).value, "품절 상태로 변경 완료")) {
 					xlWorksheet.Rows(A_Index).Delete()
 					xlWorkbook.Save()
