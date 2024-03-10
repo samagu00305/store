@@ -4,6 +4,8 @@ import Util, EnvData, GlobalData
 import urllib.request
 import numpy as np
 import webbrowser, requests, subprocess, pyautogui, time, pyperclip, re, os, cv2
+from enum import Enum
+from typing import NamedTuple
 
 
 # 현재 미국 환율 정보 출력
@@ -51,6 +53,10 @@ def KRWEUR():
         return 0
 
 
+def MouseMove(x, y):
+    pyautogui.moveTo(x, y)
+
+
 # 현재 위치에서 마우스 클릭
 def NowMouseClick():
     pyautogui.click()
@@ -61,9 +67,33 @@ def NowMouseClickRight():
     pyautogui.click(button="right")
 
 
+def KeyboardKeyPress(key):
+    pyautogui.press(key)
+
+
+def KeyboardKeyHotkey(key1, key2):
+    pyautogui.hotkey(key1, key2)
+
+
+def MouseWheelScroll(wheelMove):
+    pyautogui.scroll(wheelMove)
+
+
+class Size(NamedTuple):
+    width: int
+    height: int
+
+
+def ScreenSize():
+    screenSize = pyautogui.size()
+    return Size(screenSize.width, screenSize.height)
+
+
 def FoundImage(imageName):
-    isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName)
-    return isFindImage
+    return (
+        Util.FindImage_Byref(imageName).resultType
+        == Enum_FIND_IMAGE_RESULT_TYPE.Success
+    )
 
 
 # 이미지 찾을 때 까지 대기
@@ -72,10 +102,10 @@ def WhileFoundImage(
 ):
     findCount = 0
     while True:
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(
-            imageName, searchStart_x, searchStart_y
-        )
-        if isFindImage:
+        if (
+            Util.FindImage_Byref(imageName, searchStart_x, searchStart_y).resultType
+            == Enum_FIND_IMAGE_RESULT_TYPE.Success
+        ):
             Util.SleepTime(0.5)
             return True
         Util.SleepTime(delayTime)
@@ -99,13 +129,9 @@ def MoveAtWhileFoundImage(
 ):
     findCount = 0
     while True:  # 무한 루프
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(
-            imageName, searchStart_x, searchStart_y
-        )
-        if isFindImage:
-            imagePosX += addX
-            imagePosY += addY
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult = Util.FindImage_Byref(imageName, searchStart_x, searchStart_y)
+        if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            Util.MouseMove(findImageResult.x + addX, findImageResult.y + addY)
             Util.SleepTime(0.5)
             return True
         Util.SleepTime(delayTime)
@@ -131,15 +157,13 @@ def ClickAtWhileFoundImage(
 ):
     findCount = 0
     while True:  # 무한 루프
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(
+        findImageResult = Util.FindImage_Byref(
             imageName, searchStart_x, searchStart_y, searchEnd_x, searchEnd_y
         )
-        if isFindImage:
-            imagePosX += addX
-            imagePosY += addY
-            pyautogui.moveTo(imagePosX, imagePosY)
+        if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            Util.MouseMove(findImageResult.x + addX, findImageResult.y + addY)
             Util.SleepTime(0.5)
-            pyautogui.click(x=imagePosX, y=imagePosY, button="left", clicks=1)
+            Util.NowMouseClick()
             return True
         Util.SleepTime(delayTime)
         findCount += 1
@@ -153,11 +177,11 @@ def ClickAtWhileFoundImage(
 # 이미지 찾아서 더블클릭
 def DoubleClickAtWhileFoundImage(imageName, addX=0, addY=0):
     while True:
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName)
-        if isFindImage:
-            imagePosX += addX
-            imagePosY += addY
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult = Util.FindImage_Byref(imageName)
+        if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX = findImageResult.x + addX
+            imagePosY = findImageResult.y + addY
+            Util.MouseMove(imagePosX + addX, imagePosY)
             Util.SleepTime(0.5)
             pyautogui.click(x=imagePosX, y=imagePosY, button="left", clicks=2)
             return
@@ -167,22 +191,22 @@ def DoubleClickAtWhileFoundImage(imageName, addX=0, addY=0):
 # 이미지 찾아서 Drag
 def DragAtFoundImage(imageName1, addX1, addY1, imageName2, addX2, addY2):
     while True:  # 무한 루프
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName1)
-        if isFindImage:
-            imagePosX += addX1
-            imagePosY += addY1
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult1 = Util.FindImage_Byref(imageName1)
+        if findImageResult1.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX = findImageResult1.x + addX1
+            imagePosY = findImageResult1.y + addY1
+            Util.MouseMove(imagePosX, imagePosY)
             Util.SleepTime(0.5)
             pyautogui.mouseDown(button="left")
             break
         Util.SleepTime(1)
 
     while True:  # 무한 루프
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName2)
-        if isFindImage:
-            imagePosX += addX2
-            imagePosY += addY2
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult2 = Util.FindImage_Byref(imageName2)
+        if findImageResult2.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX = findImageResult2.x + addX2
+            imagePosY = findImageResult2.y + addY2
+            Util.MouseMove(imagePosX, imagePosY)
             Util.SleepTime(0.5)
             pyautogui.mouseUp()
             break
@@ -195,17 +219,17 @@ def WheelAndClickAtWhileFoundImage(
 ):
     count = 0
     while True:
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName)
-        if isFindImage:
-            imagePosX += addX
-            imagePosY += addY
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult = Util.FindImage_Byref(imageName)
+        if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX = findImageResult.x + addX
+            imagePosY = findImageResult.y + addY
+            Util.MouseMove(imagePosX, imagePosY)
             Util.SleepTime(0.5)
             pyautogui.click(x=imagePosX, y=imagePosY, button="left", clicks=1)
             return
 
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        pyautogui.scroll(wheelMove)
+        Util.MouseWheelScroll(wheelMove)
 
         Util.SleepTime(1)
 
@@ -226,26 +250,26 @@ def WheelAndClickAtWhileFoundImage_v2(
 ):
     count = 0
     while True:
-        isFindImage_1, imagePosX_1, imagePosY_1 = Util.FindImage_Byref(imageName_1)
-        if isFindImage_1:
-            imagePosX_1 += addX
-            imagePosY_1 += addY
-            pyautogui.moveTo(imagePosX_1, imagePosY_1)
+        findImageResult1 = Util.FindImage_Byref(imageName_1)
+        if findImageResult1.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX_1 = findImageResult1.x + addX
+            imagePosY_1 = findImageResult1.y + addY
+            Util.MouseMove(imagePosX_1, imagePosY_1)
             Util.SleepTime(0.5)
-            pyautogui.click(x=imagePosX_1, y=imagePosY_1, button="left", clicks=1)
+            Util.NowMouseClick()
             return 1
 
-        isFindImage_2, imagePosX_2, imagePosY_2 = Util.FindImage_Byref(imageName_2)
-        if isFindImage_2:
-            imagePosX_2 += addX
-            imagePosY_2 += addY
-            pyautogui.moveTo(imagePosX_2, imagePosY_2)
+        findImageResult2 = Util.FindImage_Byref(imageName_2)
+        if findImageResult2.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX_2 = findImageResult2.x + addX
+            imagePosY_2 = findImageResult2.y + addY
+            Util.MouseMove(imagePosX_2, imagePosY_2)
             Util.SleepTime(0.5)
-            pyautogui.click(x=imagePosX_2, y=imagePosY_2, button="left", clicks=1)
+            Util.NowMouseClick()
             return 2
 
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        pyautogui.scroll(wheelMove)
+        Util.MouseWheelScroll(wheelMove)
 
         Util.SleepTime(1)
 
@@ -262,16 +286,16 @@ def WheelAndClickAtWhileFoundImage_v2(
 def WheelAndMoveAtWhileFoundImage(imageName, addX=0, addY=0, wheelMove=-1000):
     count = 0
     while True:
-        isFindImage, imagePosX, imagePosY = Util.FindImage_Byref(imageName)
-        if isFindImage:
-            imagePosX += addX
-            imagePosY += addY
-            pyautogui.moveTo(imagePosX, imagePosY)
+        findImageResult = Util.FindImage_Byref(imageName)
+        if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX = findImageResult.x + addX
+            imagePosY = findImageResult.y + addY
+            Util.MouseMove(imagePosX, imagePosY)
             Util.SleepTime(0.5)
             return
 
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        pyautogui.scroll(wheelMove)
+        Util.MouseWheelScroll(wheelMove)
 
         Util.SleepTime(1)
 
@@ -288,24 +312,24 @@ def WheelAndMoveAtWhileFoundImage_v2(
 ):
     count = 0
     while True:
-        isFindImage_1, imagePosX_1, imagePosY_1 = Util.FindImage_Byref(imageName_1)
-        if isFindImage_1:
-            imagePosX_1 += addX
-            imagePosY_1 += addY
-            pyautogui.moveTo(imagePosX_1, imagePosY_1)
+        findImageResult1 = Util.FindImage_Byref(imageName_1)
+        if findImageResult1.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX_1 = findImageResult1.x + addX
+            imagePosY_1 = findImageResult1.y + addY
+            Util.MouseMove(imagePosX_1, imagePosY_1)
             Util.SleepTime(0.5)
             return 1
 
-        isFindImage_2, imagePosX_2, imagePosY_2 = Util.FindImage_Byref(imageName_2)
-        if isFindImage_2:
-            imagePosX_2 += addX
-            imagePosY_2 += addY
-            pyautogui.moveTo(imagePosX_2, imagePosY_2)
+        findImageResult2 = Util.FindImage_Byref(imageName_2)
+        if findImageResult2.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            imagePosX_2 = findImageResult2.x + addX
+            imagePosY_2 = findImageResult2.y + addY
+            Util.MouseMove(imagePosX_2, imagePosY_2)
             Util.SleepTime(0.5)
             return 2
 
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        pyautogui.scroll(wheelMove)
+        Util.MouseWheelScroll(wheelMove)
 
         Util.SleepTime(1)
 
@@ -371,21 +395,17 @@ def FindImage_Byref(
     Util.Debug(f"이미지 찾기 시작({imageName})")
 
     if searchEnd_x == -1:
-        searchEnd_x = pyautogui.size()[0]  # 화면 너비
+        searchEnd_x = Util.ScreenSize().width  # 화면 너비
     if searchEnd_y == -1:
-        searchEnd_y = pyautogui.size()[1]  # 화면 높이
+        searchEnd_y = Util.ScreenSize().height  # 화면 높이
 
     Util.Debug(
         f"{imageName} searchStart_x:{searchStart_x} searchStart_y:{searchStart_y} searchEnd_x:{searchEnd_x} searchEnd_y:{searchEnd_y}"
     )
     image_path = f"{EnvData.g_DefaultPath()}/Image/{imageName}.png"
 
-    # 이미지 파일 존재 확인
-    if not os.path.exists(image_path):
-        Util.Debug(f"이미지 파일이 존재하지 않습니다.  image_path :{image_path}")
-
     # 이미지 검색
-    image_location = Util.find_image(
+    findImageResult = Util.FindImage(
         image_path,
         region=(
             searchStart_x,
@@ -396,51 +416,47 @@ def FindImage_Byref(
     )
 
     Util.Debug(
-        f"{imageName} ErrorLevel:{'Error' if not image_location else 'Success'} FoundX:{image_location[0] if image_location else None} FoundY:{image_location[1] if image_location else None}"
+        f"{imageName} resultTyp:{findImageResult.resultType.name}"
+        + (
+            f" FoundX:{findImageResult.x} FoundY:{findImageResult.y}"
+            if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success
+            else ""
+        )
     )
 
-    if image_location:
-        return (
-            True,
-            image_location[0] + searchStart_x,
-            image_location[1] + searchStart_y,
-        )  # 성공 시 에러 레벨은 0, 위치 정보 반환
-    else:
-        return (False, 0, 0)  # 실패 시 에러 레벨은 1, 위치 정보는 0으로 반환
+    return findImageResult
 
 
 # 이미지 서치해서 있는지 알려주는 함수
 def IsImageSearch(imageName, searchStart_x=0, searchStart_y=0):
     Util.Debug(f"IsImageSearch의 이미지 검색 시작 imageName : {imageName}")
-    result = Util.find_image(
+    findImageResult = Util.FindImage(
         imageName,
         region=(
             searchStart_x,
             searchStart_y,
-            pyautogui.size().width,
-            pyautogui.size().height,
+            Util.ScreenSize().width,
+            Util.ScreenSize().height,
         ),
-        confidence=0.9,
     )
-    Util.Debug(f"{imageName} ErrorLevel: {result is not None}")
-    return result is not None
+    Util.Debug(f"{imageName} result: {findImageResult.resultType}")
+    return findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success
 
 
 # 이미지 서치해서 있는지 알려주는 함수
 # imageSearchStartPoint = [0, 0]
 def IsImageSearchV2(imageName, searchStart_x=0, searchStart_y=0):
-    result = Util.find_image(
+    findImageResult = Util.FindImage(
         imageName,
         region=(
             searchStart_x,
             searchStart_y,
-            pyautogui.size().width,
-            pyautogui.size().height,
+            Util.ScreenSize().width,
+            Util.ScreenSize().height,
         ),
-        confidence=0.9,
     )
-    Util.Debug(f"{imageName} ErrorLevel: {result is not None}")
-    return result is not None
+    Util.Debug(f"{imageName} result: {findImageResult.resultType}")
+    return findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success
 
 
 # # 클립보드에서_중복되는_것중에_최대_값_추출
@@ -542,7 +558,7 @@ def HidePopup():
 
 # 크롬 현재 탭 닫기
 def NowChromeTabExit():
-    pyautogui.hotkey("ctrl", "w")  # Ctrl + W로 현재 탭 닫기
+    Util.KeyboardKeyHotkey("ctrl", "w")  # Ctrl + W로 현재 탭 닫기
 
 
 # Clipboard에 복사 됨
@@ -554,7 +570,7 @@ def ChromeTranslateGoogle(textToTranslate):
     # Google Chrome이 실행되고 그 창이 활성화될 때까지 대기
     Util.SleepTime(1)
     WhileFoundImage("구글 번역\구글 번역 화면 로딩 끝")
-    pyautogui.hotkey("ctrl", "v")  # 번역한 텍스트 붙여넣기
+    Util.KeyboardKeyHotkey("ctrl", "v")  # 번역한 텍스트 붙여넣기
     ClickAtWhileFoundImage("구글 번역\번역 된 것 복사 버튼", 10, 10)
     NowChromeTabExit()
     Util.SleepTime(0.5)
@@ -564,15 +580,15 @@ def ChromeTranslateGoogle(textToTranslate):
 # 크롬에서 특정 탭으로 이동하는 기능(제목 포함 하면 멈춤)
 def WhileFindChromeTab(tabTitle):
     while True:
-        pyautogui.hotkey("ctrl", "tab")  # Ctrl + Tab을 눌러 다음 탭으로 이동
-        pyautogui.sleep(1)  # 1초 대기하여 페이지 로딩을 기다립니다.
+        Util.KeyboardKeyHotkey("ctrl", "tab")  # Ctrl + Tab을 눌러 다음 탭으로 이동
+        Util.SleepTime(1)  # 1초 대기하여 페이지 로딩을 기다립니다.
         # 현재 탭의 제목 가져오기
-        title_pos = Util.find_image("title.png")
-        if title_pos:
-            pyautogui.moveTo(
-                title_pos
+        findImageResult = Util.FindImage("title.png")
+        if findImageResult.resultTyp == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            Util.MouseMove(
+                findImageResult.x, findImageResult.y
             )  # 제목이 화면에 보이면 마우스를 해당 위치로 이동
-            pyautogui.sleep(0.5)  # 마우스 이동 후에는 잠시 대기하여 안정화
+            Util.SleepTime(0.5)  # 마우스 이동 후에는 잠시 대기하여 안정화
             break  # 원하는 탭이 활성화되었으므로 루프를 종료합니다.
 
 
@@ -584,7 +600,7 @@ def IsCheckPcc(name, ecm, phoneNumber):
     WhileFindChromeTab("통관고유부호 검증")  # https://gsiexpress.com/pcc_chk.php
     ClickAtWhileFoundImage("통관고유부호\통관 고유부호 검증", 0, 150)
     pyperclip.copy(name + "/" + ecm + "/" + phoneNumber)
-    pyautogui.hotkey("ctrl", "v")  # 번역한 텍스트 붙여넣기
+    Util.KeyboardKeyHotkey("ctrl", "v")  # 번역한 텍스트 붙여넣기
     ClickAtWhileFoundImage("통관고유부호\통관부호 검증 확인")
     Util.SleepTime(1)
     return IsImageSearchV2("통관고유부호\검증 결과 정상")
@@ -592,7 +608,7 @@ def IsCheckPcc(name, ecm, phoneNumber):
 
 # 크롬 창에서 주소창으로 이동
 def GoToTheAddressWindow():
-    pyautogui.hotkey("alt", "d")
+    Util.KeyboardKeyHotkey("alt", "d")
 
 
 # def GetYesshipAddress():
@@ -981,14 +997,29 @@ def GetMytheresaKorSize(size):
     return ""
 
 
-def find_image(image_path, region={}, threshold=0.7):
+class Enum_FIND_IMAGE_RESULT_TYPE(Enum):
+    Success = ("",)
+    Fail_NoRead = ("",)
+    Fail_NoFind = ("",)
+    Fail_NoFile = ("",)
+
+
+class Module_FindImageResult(NamedTuple):
+    resultType: Enum_FIND_IMAGE_RESULT_TYPE
+    x: int
+    y: int
+
+
+def FindImage(image_path, region={}, threshold=0.7):
+    # 이미지 파일 존재 확인
+    if not os.path.exists(image_path):
+        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFile, 0, 0)
+
     # 이미지 경로를 문자열로 변환하여 읽기(한글주소가 되게 하기 위함)
     img_array = np.fromfile(image_path, np.uint8)
     template = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
     if template is None:
-        Util.Debug("이미지를 읽을 수 없습니다. image_path : {image_path}")
-        return None
-        return f"이미지를 읽을 수 없습니다. image_path : {image_path}"
+        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoRead, 0, 0)
 
     # 화면 캡처
     screenshot = pyautogui.screenshot(region=region)
@@ -1001,7 +1032,8 @@ def find_image(image_path, region={}, threshold=0.7):
 
     if loc[0].size > 0:
         # 일치하는 이미지가 발견되면 좌표를 반환
-        return loc[1][0], loc[0][0]
+        return Module_FindImageResult(
+            Enum_FIND_IMAGE_RESULT_TYPE.Success, loc[1][0], loc[0][0]
+        )
     else:
-        return None
-        return f"이미지를 찾지 못했습니다. image_path : {image_path}"
+        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFind, 0, 0)

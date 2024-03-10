@@ -11,7 +11,7 @@ import win32api
 import webbrowser
 from enum import Enum
 
-class Column(Enum):
+class Enum_COLUMN(Enum):
     A = ("",) # 상품 번호 칸
     B = ("",) # 상품 url 칸
     C = ("",) # 상품 구매 url 칸
@@ -45,17 +45,17 @@ def SaveWorksheet(wb):
 
 
 def GetElementsData():
-    pyautogui.press("f12")
+    Util.KeyboardKeyPress("f12")
     Util.SleepTime(2)
     if Util.WhileFoundImage(r"크롬\Elements에 html"):
         Util.MoveAtWhileFoundImage(r"크롬\Elements에 html", 5, 5)
         Util.SleepTime(0.5)
         Util.NowMouseClickRight()
         Util.SleepTime(3)
-        currentX, currentY = pyautogui.position()
-        Util.MoveAtWhileFoundImage(r"크롬\Elements에 html의 copy", 5, 5, 10, 1, currentX, currentY)
+        currentPos = pyautogui.position()
+        Util.MoveAtWhileFoundImage(r"크롬\Elements에 html의 copy", 5, 5, 10, 1, currentPos.x, currentPos.y)
         Util.SleepTime(1)
-        Util.MoveAtWhileFoundImage(r"크롬\Elements에 html의 copy에 copy element", 5, 5, 10, 1,currentX,currentY,)
+        Util.MoveAtWhileFoundImage(r"크롬\Elements에 html의 copy에 copy element", 5, 5, 10, 1,currentPos.x,currentPos.y)
         Util.SleepTime(1)
         Util.NowMouseClick()
         Util.SleepTime(3)
@@ -76,7 +76,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
     if inputRow != -1:
         row = inputRow
     else:
-        row = round(ws[f"{Column.A.name}{1}"].value)
+        row = round(ws[f"{Enum_COLUMN.A.name}{1}"].value)
 
     krwUsd = Util.KRWUSD()
     krwEur = Util.KRWEUR()
@@ -91,20 +91,20 @@ def UpdateStoreWithColorInformation(inputRow=-1):
         if row % 10 == 0:
             Util.TelegramSend(f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             
-        if "품절 상태로 변경 완료" in ws[f"{Column.J.name}{row}"].value:
-            ws[f"{Column.P.name}{"1"}"].value = row
-            ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+        if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{row}"].value:
+            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
-        url = ws[f"{Column.C.name}{row}"].value
+        url = ws[f"{Enum_COLUMN.C.name}{row}"].value
 
         if "www.ugg.com" in url:
             Util.TelegramSend(f"www.ugg.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             isUpdateProduct = UpdateProductInfo_UGG(wb, ws, url, row, krwUsd)
             if isUpdateProduct:
-                ws[f"{Column.P.name}{"1"}"].value = row
-                ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+                ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+                ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
                 SaveWorksheet(wb)
             else:
                 row -= 1
@@ -115,8 +115,8 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
             if isUpdateProduct:
-                ws[f"{Column.P.name}{"1"}"].value = row
-                ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+                ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+                ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
                 SaveWorksheet(wb)
             else:
                 row -= 1
@@ -136,7 +136,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
     ws = wb.active
     lastRow = ws.max_row
 
-    row = round(ws[f"{Column.P.name}{"1"}"].value)
+    row = round(ws[f"{Enum_COLUMN.P.name}{"1"}"].value)
 
     krwEur = Util.KRWEUR()
 
@@ -151,16 +151,16 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
             Util.TelegramSend(f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             
         # 웹 브라우저 열기 및 상품 url로 이동
-        url = ws[f"{Column.C.name}{row}"].value
+        url = ws[f"{Enum_COLUMN.C.name}{row}"].value
         if "www.mytheresa.com" not in url:
-            ws[f"{Column.P.name}{"1"}"].value = row
-            ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
-        if "품절 상태로 변경 완료" in ws[f"{Column.J.name}{row}"].value:
-            ws[f"{Column.P.name}{"1"}"].value = row
-            ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+        if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{row}"].value:
+            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
@@ -168,8 +168,8 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         
         isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
         if isUpdateProduct:
-            ws[f"{Column.P.name}{"1"}"].value = row
-            ws[f"{Column.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
+            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
         else:
             row -= 1
@@ -189,11 +189,11 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
     # 기존 것과 같은지 비교(같으면 스마트 스토어에 하지 않기 위함)
-    before_SaveColorList = ws[f"{Column.F.name}{row}"].value
+    before_SaveColorList = ws[f"{Enum_COLUMN.F.name}{row}"].value
     Util.Debug("before_SaveColorList : " + before_SaveColorList)
 
     # 기존 색 이름 과 사아즈를 변수로 저장
-    before_SaveColorNameDoubleArray = ws[f"{Column.G.name}{row}"].value
+    before_SaveColorNameDoubleArray = ws[f"{Enum_COLUMN.G.name}{row}"].value
     Util.Debug("before_SaveColorNameDoubleArray : " + before_SaveColorNameDoubleArray)
 
     # 색이름 리스트 값
@@ -221,7 +221,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
         # 품절
         SoldOut(wb, ws, row)
     else:
-        if (before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray and ws[f"{Column.U.name}{row}"].value == useMoney):
+        if (before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray and ws[f"{Enum_COLUMN.U.name}{row}"].value == useMoney):
             # 이전과 정보가 변함이 없을 경우(이전과 동일하다고 적고 다음으로 넘어감)
             xl_J_(wb, ws, row, "이전과 동일합니다.")
         else:
@@ -238,7 +238,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                 return True
 
             # 가격 변동이 있으면 변경
-            if ws[f"{Column.U.name}{row}"].value != useMoney:
+            if ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney:
                 # 판매가 입력
                 UpdateAndReturnSalePrice(data.korMony)
 
@@ -265,34 +265,34 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
             # Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", 5, 5)
             # Util.SleepTime(1)
 
-            if (before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray and ws[f"{Column.U.name}{row}"].value != useMoney):
-                ws[f"{Column.U.name}{row}"].value = useMoney
+            if (before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray and ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney):
+                ws[f"{Enum_COLUMN.U.name}{row}"].value = useMoney
 
                 # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                 if True:
                     # 색 이름 리스트 표시
-                    ws[f"{Column.F.name}{row}"].value = str_saveColorList
+                    ws[f"{Enum_COLUMN.F.name}{row}"].value = str_saveColorList
                     Util.Debug("str_saveColorList : " + str_saveColorList)
                     
                     # 색 이름과 사아즈 리스트 표시
-                    ws[f"{Column.G.name}{row}"].value = str_saveColorNameDoubleArray
+                    ws[f"{Enum_COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
                     Util.Debug("str_saveColorNameDoubleArray : " + str_saveColorNameDoubleArray)
                     
                     xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                     
                     # 이전 색 이름 리스트 표시
-                    ws[f"{Column.K.name}{row}"].value = before_SaveColorList
+                    ws[f"{Enum_COLUMN.K.name}{row}"].value = before_SaveColorList
                     Util.Debug("before_SaveColorList : " + before_SaveColorList)
 
                     # 이전 색 이름과 사아즈 리스트 표시
-                    ws[f"{Column.L.name}{row}"].value = before_SaveColorNameDoubleArray
+                    ws[f"{Enum_COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                     Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
                     
                     xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)")
             else:
                 # 가격 변동이 있으면 변경
-                if ws[f"{Column.U.name}{row}"].value != useMoney:
-                    ws[f"{Column.U.name}{row}"].value = useMoney
+                if ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney:
+                    ws[f"{Enum_COLUMN.U.name}{row}"].value = useMoney
 
                     xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
 
@@ -300,21 +300,21 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                     # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                     if True:
                         # 색 이름 리스트 표시
-                        ws[f"{Column.F.name}{row}"].value = str_saveColorList
+                        ws[f"{Enum_COLUMN.F.name}{row}"].value = str_saveColorList
                         Util.Debug(f"str_saveColorList : {str_saveColorList}")
                         
                         # 색 이름과 사아즈 리스트 표시
-                        ws[f"{Column.G.name}{row}"].value = str_saveColorNameDoubleArray
+                        ws[f"{Enum_COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
                         Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
                         
                         xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                         
                         # 이전 색 이름 리스트 표시
-                        ws[f"{Column.K.name}{row}"].value = before_SaveColorList
+                        ws[f"{Enum_COLUMN.K.name}{row}"].value = before_SaveColorList
                         Util.Debug("before_SaveColorList : " + before_SaveColorList)
 
                         # 이전 색 이름과 사아즈 리스트 표시
-                        ws[f"{Column.L.name}{row}"].value = before_SaveColorNameDoubleArray
+                        ws[f"{Enum_COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                         Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
 
                         xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)")
@@ -389,11 +389,11 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
 def xl_J_(wb, ws, row, value, updateTime=False):
     if updateTime:
         # 갱신 시간 표시
-        ws[f"{Column.H.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+        ws[f"{Enum_COLUMN.H.name}{row}"].value = Util.GetFormattedCurrentDateTime()
     # 체크 시간 표시
-    ws[f"{Column.I.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+    ws[f"{Enum_COLUMN.I.name}{row}"].value = Util.GetFormattedCurrentDateTime()
     # 체크 상태 표시
-    ws[f"{Column.J.name}{row}"].value = value
+    ws[f"{Enum_COLUMN.J.name}{row}"].value = value
 
     SaveWorksheet(wb)
 
@@ -410,12 +410,12 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
     while True:
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
         # -10000 틱 스크롤 다운
-        pyautogui.scroll(-10000)
+        Util.MouseWheelScroll(-10000)
         Util.SleepTime(1.5)
-        pyautogui.press("up")
+        Util.KeyboardKeyPress("up")
         Util.SleepTime(1)
-        pyautogui.press("down")
-        pyautogui.press("down")
+        Util.KeyboardKeyPress("down")
+        Util.KeyboardKeyPress("down")
         Util.SleepTime(1)
         # 화면 가로 및 세로 해상도 얻기
         screen_width = win32api.GetSystemMetrics(0)
@@ -431,7 +431,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
 
     htmlElementsData = GetElementsData()
     # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-    pyautogui.hotkey("ctrl", "w")
+    Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
 
     productUrls = []
@@ -500,7 +500,7 @@ def SetXlsxUGGNewProductURLs():
     uggProductUrls.append(GetNewProductURLs_UGG("패션잡화 여성신발 슬리퍼","https://www.ugg.com/women-footwear/?prefn1=type&prefv1=clogs%7Cslippers",filterUrls))  # 슬리퍼
     uggProductUrls.append(GetNewProductURLs_UGG("패션잡화 여성신발 운동화 러닝화","https://www.ugg.com/women-footwear/?prefn1=type&prefv1=sneakers",filterUrls,))  # 운동화 
 
-    pyautogui.hotkey("ctrl", "w")
+    Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
 
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.xlsx"
@@ -540,7 +540,7 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
                 findIndex = 2
                 break
             else:
-                pyautogui.scroll(-500)
+                Util.MouseWheelScroll(-500)
                 Util.SleepTime(1)
 
     if Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\HTML 작성", 0, 0, 1):
@@ -554,9 +554,9 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
     elif findIndex == 2:
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\녹색 상세설명_v2", 100, -150, 1)
     Util.SleepTime(1)
-    pyautogui.hotkey("ctrl", "a")
+    Util.KeyboardKeyHotkey("ctrl", "a")
     Util.SleepTime(1)
-    pyautogui.press("delete")
+    Util.KeyboardKeyPress("delete")
     Util.SleepTime(1)
     # html 내용 작성
     if True:
@@ -582,7 +582,7 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
         htmlData += "`r`n"
     pyperclip.copy(htmlData)
     Util.SleepTime(1)
-    pyautogui.hotkey("ctrl", "v")
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(1)
 
 
@@ -609,7 +609,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     wsAddBefore = wbAddBefore.Sheets(1)
     wsAdd = wbAdd.Sheets(1)
 
-    url = wsAddBefore[f"{Column.C.name}{1}"].value
+    url = wsAddBefore[f"{Enum_COLUMN.C.name}{1}"].value
 
     data = GetUggData(url, krwUsd)
 
@@ -643,9 +643,9 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "tab")
+    Util.KeyboardKeyHotkey("ctrl", "tab")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "w")
+    Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(2)
 
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인하기", 5, 5, 1):
@@ -654,13 +654,13 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         Util.SleepTime(1)
         webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
         Util.SleepTime(0.5)
-        pyautogui.hotkey("ctrl", "tab")
+        Util.KeyboardKeyHotkey("ctrl", "tab")
         Util.SleepTime(0.5)
-        pyautogui.hotkey("ctrl", "w")
+        Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(2)
 
     Util.SleepTime(2)
-    pyautogui.press("esc")
+    Util.KeyboardKeyPress("esc")
     Util.SleepTime(1)
 
     # if not addOneProductSuccess:
@@ -673,11 +673,11 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
     Util.SleepTime(0.5)
     Util.NowMouseClick()
-    pyperclip.copy(wsAddBefore[f"{Column.B.name}{1}"].value)
+    pyperclip.copy(wsAddBefore[f"{Enum_COLUMN.B.name}{1}"].value)
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "v")
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
-    pyautogui.press("enter")
+    Util.KeyboardKeyPress("enter")
     Util.SleepTime(2)
 
     # 상품명 입력
@@ -687,7 +687,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     Util.SleepTime(0.5)
     pyperclip.copy(title)
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "v")
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
 
     # 판매가 입력
@@ -733,23 +733,23 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         Util.SleepTime(0.5)
         addurl = Util.CopyToClipboardAndGet()
         Util.Debug("addurl : " + addurl)
-        wsAdd[f"{Column.B.name}{2}"].value = addurl
+        wsAdd[f"{Enum_COLUMN.B.name}{2}"].value = addurl
         # 크롬 탭 닫기
-        pyautogui.hotkey("ctrl", "w")
+        Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(0.5)
         # 상품 번호
         addUrlSplitArray = addurl.split("/")
         if len(addUrlSplitArray) > 0:
-            wsAdd[f"{Column.A.name}{2}"].value = addUrlSplitArray[len(addUrlSplitArray)]
+            wsAdd[f"{Enum_COLUMN.A.name}{2}"].value = addUrlSplitArray[len(addUrlSplitArray)]
 
-        wsAdd[f"{Column.C.name}{2}"].value = url
+        wsAdd[f"{Enum_COLUMN.C.name}{2}"].value = url
         # 상품명 기재
-        wsAdd[f"{Column.T.name}{2}"].value = title
+        wsAdd[f"{Enum_COLUMN.T.name}{2}"].value = title
         # 가격
-        wsAdd[f"{Column.U.name}{2}"].value = useMoney
+        wsAdd[f"{Enum_COLUMN.U.name}{2}"].value = useMoney
         # 브랜드
-        brand = wsAddBefore(f"{Column.A.name}{2}").value
-        wsAdd[f"{Column.E.name}{2}"].value = brand
+        brand = wsAddBefore(f"{Enum_COLUMN.A.name}{2}").value
+        wsAdd[f"{Enum_COLUMN.E.name}{2}"].value = brand
 
         # 색이름 리스트 값
         colorNames = []
@@ -758,13 +758,13 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         str_saveColorList = Util.JoinArrayToString(colorNames)
         Util.Debug("str_saveColorList : " + str_saveColorList)
 
-        wsAdd[f"{Column.F.name}{2}"].value = str_saveColorList
+        wsAdd[f"{Enum_COLUMN.F.name}{2}"].value = str_saveColorList
 
         # 색 이름 과 사아즈 리스트 값(이중 배열)
         str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
         Util.Debug("str_saveColorNameDoubleArray : " + str_saveColorNameDoubleArray)
 
-        wsAdd[f"{Column.G.name}{2}"].value = str_saveColorNameDoubleArray
+        wsAdd[f"{Enum_COLUMN.G.name}{2}"].value = str_saveColorNameDoubleArray
 
         xl_J_(wbAdd, wsAdd, 2, "신규 등록", True)
 
@@ -858,7 +858,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
         Util.SleepTime(10)
         htmlElementsData = GetElementsData()
         # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-        pyautogui.hotkey("ctrl", "w")
+        Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(1)
 
         # 상품 이름
@@ -909,7 +909,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
                         Util.SleepTime(10)
                         colorUrlHtmlElementsData = GetElementsData()
                         # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-                        pyautogui.hotkey("ctrl", "w")
+                        Util.KeyboardKeyHotkey("ctrl", "w")
                         Util.SleepTime(1)
 
                         # 이미지 url 알아오는 것
@@ -1005,7 +1005,7 @@ def GetMytheresaData(url, exchangeRate):
         Util.SleepTime(10)
         htmlElementsData = GetElementsData()
         # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-        pyautogui.hotkey("ctrl", "w")
+        Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(1)
 
         # 정규 표현식과 매치되는지 확인
@@ -1061,9 +1061,9 @@ def ManageAndModifyProducts(ws, row):
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/origin-list")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "tab")
+    Util.KeyboardKeyHotkey("ctrl", "tab")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "w")
+    Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(2)
 
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인하기", 5, 5, 1):
@@ -1072,23 +1072,23 @@ def ManageAndModifyProducts(ws, row):
         Util.SleepTime(1)
         webbrowser.open("https://sell.smartstore.naver.com/#/products/origin-list")
         Util.SleepTime(0.5)
-        pyautogui.hotkey("ctrl", "tab")
+        Util.KeyboardKeyHotkey("ctrl", "tab")
         Util.SleepTime(0.5)
-        pyautogui.hotkey("ctrl", "w")
+        Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(2)
 
     Util.SleepTime(2)
-    pyautogui.press("esc")
+    Util.KeyboardKeyPress("esc")
     Util.SleepTime(1)
 
     # 상품 조회해서 상품 수정 화면으로 이동
     if True:
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 조회\상품번호", 150, 10)
         Util.SleepTime(0.5)
-        pyperclip.copy(round(ws(f"{Column.A.name}{row}").value))
+        pyperclip.copy(round(ws(f"{Enum_COLUMN.A.name}{row}").value))
         Util.SleepTime(0.5)
         # 상품번호 붙여넣기
-        pyautogui.hotkey("ctrl", "v")
+        Util.KeyboardKeyHotkey("ctrl", "v")
         Util.SleepTime(0.5)
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 조회\검색", 0, 0)
         Util.SleepTime(1)
@@ -1115,20 +1115,20 @@ def SoldOut(wb, ws, row):
     Util.SleepTime(1)
     Util.WheelAndMoveAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션에서 선택형", 0, 0, -500)
     Util.SleepTime(1)
-    optionEndX, optionEndY = pyautogui.position()
+    optionEnd = pyautogui.position()
     Util.SleepTime(0.5)
-    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션", 0, 0, 2, 1, optionEndX - 50, optionEndY - 150)
+    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션", 0, 0, 2, 1, optionEnd.x - 50, optionEnd.y - 150)
     Util.SleepTime(1)
-    optionStartX, optionStartY = pyautogui.position()
+    optionStart = pyautogui.position()
     Util.SleepTime(0.5)
-    pyautogui.moveTo(optionEndX + 1000, optionEndY + 100)
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션에서 선택형에서 설정함 상태",0,0,2,1,optionStartX,optionStartY,optionEndX + 1000,optionEndY + 100)
+    Util.MouseMove(optionEnd.x + 1000, optionEnd.y + 100)
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션에서 선택형에서 설정함 상태",0,0,2,1,optionStart.x,optionStart.y,optionEnd.x + 1000,optionEnd.y + 100)
     Util.WheelAndMoveAtWhileFoundImage(r"스마트 스토어\상품 수정\재고수량에 개", 0, 0, 500)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\재고수량에 개", -80, 0)
     Util.SleepTime(1)
-    pyautogui.hotkey("ctrl", "a")
+    Util.KeyboardKeyHotkey("ctrl", "a")
     Util.SleepTime(0.5)
-    pyautogui.press("0")
+    Util.KeyboardKeyPress("0")
     Util.SleepTime(1.5)
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -1147,13 +1147,13 @@ def UpdateAndReturnSalePrice(korMony):
     Util.SleepTime(0.5)
     Util.NowMouseClick()
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "a")
+    Util.KeyboardKeyHotkey("ctrl", "a")
     Util.SleepTime(0.5)
-    pyautogui.press("delete")
+    Util.KeyboardKeyPress("delete")
     Util.SleepTime(0.5)
     pyperclip.copy(korMony)
     Util.SleepTime(0.5)
-    pyautogui.hotkey("ctrl", "v")
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
 
 
@@ -1168,7 +1168,7 @@ def RemoveCompletedSoldOutItems(wb):
         isFind = False
         for i in range(ws.UsedRange.Rows.Coun):
             if i >= startCount:
-                if "품절 상태로 변경 완료" in ws[f"{Column.J.name}{i}"].value:
+                if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{i}"].value:
                     ws.Rows(i).Delete()
                     wb.Save()
                     isFind = True

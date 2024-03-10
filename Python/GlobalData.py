@@ -16,18 +16,6 @@ def g_StartKoreaDeliveryMessage():
     return "국내배송이 시작 되었습니다.`n`n구매해주신 곳에서 송장번호로 배송 상황을 보실 수 있습니다.`n`n이용해 주셔서 감사합니다."
 
 
-def g_ErrorType_Success():
-    return 0
-
-
-def g_ErrorType_Fail_No_Image():
-    return 1
-
-
-def g_ErrorType_Fail_No_Find():
-    return 2
-
-
 # 택배 가격
 def g_CourierPrice():
     return 25000
@@ -36,23 +24,3 @@ def g_CourierPrice():
 # 마진율
 def g_MarginRate():
     return 0.1  # 10%
-
-
-def g_FindPosionType_upR():
-    return "upR"
-
-
-def g_FindPosionType_downR():
-    return "downR"
-
-
-def g_FindPosionType_upL():
-    return "upL"
-
-
-def g_FindPosionType_downL():
-    return "downL"
-
-
-def g_OneSecond():
-    return 1000
