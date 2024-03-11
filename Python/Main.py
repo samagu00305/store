@@ -14,7 +14,7 @@ import System
 
 
 def show_start_popup():
-    System.GetElementsData()
+    System.UpdateStoreWithColorInformation(-1)
 
     Util.SleepTime(5)
     Util.TelegramSend("Test")

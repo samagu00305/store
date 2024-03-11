@@ -131,6 +131,7 @@ def MoveAtWhileFoundImage(
     while True:  # 무한 루프
         findImageResult = Util.FindImage_Byref(imageName, searchStart_x, searchStart_y)
         if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
+            Util.Debug(f"x:{findImageResult.x + addX}  y{findImageResult.y + addY}")
             Util.MouseMove(findImageResult.x + addX, findImageResult.y + addY)
             Util.SleepTime(0.5)
             return True
@@ -407,6 +408,8 @@ def FindImage_Byref(
     # 이미지 검색
     findImageResult = Util.FindImage(
         image_path,
+        searchStart_x,
+        searchStart_y,
         region=(
             searchStart_x,
             searchStart_y,
@@ -432,6 +435,8 @@ def IsImageSearch(imageName, searchStart_x=0, searchStart_y=0):
     Util.Debug(f"IsImageSearch의 이미지 검색 시작 imageName : {imageName}")
     findImageResult = Util.FindImage(
         imageName,
+        searchStart_x,
+        searchStart_y,
         region=(
             searchStart_x,
             searchStart_y,
@@ -448,6 +453,8 @@ def IsImageSearch(imageName, searchStart_x=0, searchStart_y=0):
 def IsImageSearchV2(imageName, searchStart_x=0, searchStart_y=0):
     findImageResult = Util.FindImage(
         imageName,
+        searchStart_x,
+        searchStart_y,
         region=(
             searchStart_x,
             searchStart_y,
@@ -1010,7 +1017,7 @@ class Module_FindImageResult(NamedTuple):
     y: int
 
 
-def FindImage(image_path, region={}, threshold=0.7):
+def FindImage(image_path, searchStart_x=0, searchStart_y=0, region={}, threshold=0.7):
     # 이미지 파일 존재 확인
     if not os.path.exists(image_path):
         return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFile, 0, 0)
@@ -1033,7 +1040,9 @@ def FindImage(image_path, region={}, threshold=0.7):
     if loc[0].size > 0:
         # 일치하는 이미지가 발견되면 좌표를 반환
         return Module_FindImageResult(
-            Enum_FIND_IMAGE_RESULT_TYPE.Success, loc[1][0], loc[0][0]
+            Enum_FIND_IMAGE_RESULT_TYPE.Success,
+            searchStart_x + loc[1][0],
+            searchStart_y + loc[0][0],
         )
     else:
         return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFind, 0, 0)

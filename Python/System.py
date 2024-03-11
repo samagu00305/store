@@ -11,23 +11,23 @@ import win32api
 import webbrowser
 from enum import Enum
 
-class Enum_COLUMN(Enum):
-    A = ("",) # 상품 번호 칸
-    B = ("",) # 상품 url 칸
-    C = ("",) # 상품 구매 url 칸
-    E = ("",) # 브랜드 칸
-    F = ("",) # 색 RGB(16진수) 리스트 칸
-    G = ("",) # 색명(사이즈 리스트) 칸
-    H = ("",) # 업데이트 시간 칸
-    I = ("",) # 체크 시간 칸
-    J = ("",) # 체크 상태 칸
-    K = ("",) # 이전 색RGB(16진수) 리스트 칸
-    L = ("",) # 이전 색명(사아즈 리스트) 칸
-    O = ("",) 
-    P = ("",) # 마지막 실행 시켰던 라인
-    Q = ("",) # 마지막 실행 시켰던 라인의 시간 입력
-    T = ("",) # 상품 이름
-    U = ("",) # 상품 원본 가격
+class COLUMN(Enum):
+    A = "A" # 상품 번호 칸
+    B = "B" # 상품 url 칸
+    C = "C" # 상품 구매 url 칸
+    E = "E" # 브랜드 칸
+    F = "F" # 색 RGB(16진수) 리스트 칸
+    G = "G" # 색명(사이즈 리스트) 칸
+    H = "H" # 업데이트 시간 칸
+    I = "I" # 체크 시간 칸
+    J = "J" # 체크 상태 칸
+    K = "K" # 이전 색RGB(16진수) 리스트 칸
+    L = "L" # 이전 색명(사아즈 리스트) 칸
+    O = "O" 
+    P = "P" # 마지막 실행 시켰던 라인
+    Q = "Q" # 마지막 실행 시켰던 라인의 시간 입력
+    T = "T" # 상품 이름
+    U = "U" # 상품 원본 가격
     
 def SaveWorksheet(wb):
     # 원본 시트 선택
@@ -76,7 +76,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
     if inputRow != -1:
         row = inputRow
     else:
-        row = round(ws[f"{Enum_COLUMN.A.name}{1}"].value)
+        row = round(ws[f"{COLUMN.P.name}{1}"].value)
 
     krwUsd = Util.KRWUSD()
     krwEur = Util.KRWEUR()
@@ -87,24 +87,24 @@ def UpdateStoreWithColorInformation(inputRow=-1):
         if row > lastRow:
             break
 
-        Util.Debug("row(" + row + ") / lastRow(" + lastRow + ")")
+        Util.Debug(f"row({row}) / lastRow({lastRow})")
         if row % 10 == 0:
             Util.TelegramSend(f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             
-        if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{row}"].value:
-            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+        if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
+            ws[f"{COLUMN.P.name}{"1"}"].value = row
+            ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
-        url = ws[f"{Enum_COLUMN.C.name}{row}"].value
+        url = ws[f"{COLUMN.C.name}{row}"].value
 
         if "www.ugg.com" in url:
             Util.TelegramSend(f"www.ugg.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             isUpdateProduct = UpdateProductInfo_UGG(wb, ws, url, row, krwUsd)
             if isUpdateProduct:
-                ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-                ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+                ws[f"{COLUMN.P.name}{"1"}"].value = row
+                ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
                 SaveWorksheet(wb)
             else:
                 row -= 1
@@ -115,8 +115,8 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
             if isUpdateProduct:
-                ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-                ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+                ws[f"{COLUMN.P.name}{"1"}"].value = row
+                ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
                 SaveWorksheet(wb)
             else:
                 row -= 1
@@ -136,7 +136,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
     ws = wb.active
     lastRow = ws.max_row
 
-    row = round(ws[f"{Enum_COLUMN.P.name}{"1"}"].value)
+    row = round(ws[f"{COLUMN.P.name}{1}"].value)
 
     krwEur = Util.KRWEUR()
 
@@ -146,21 +146,21 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         if row > lastRow:
             break
 
-        Util.Debug("row(" + row + ") / lastRow(" + lastRow + ")")
+        Util.Debug(f"row({row}) / lastRow({lastRow})")
         if row % 10 == 0:
             Util.TelegramSend(f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             
         # 웹 브라우저 열기 및 상품 url로 이동
-        url = ws[f"{Enum_COLUMN.C.name}{row}"].value
+        url = ws[f"{COLUMN.C.name}{row}"].value
         if "www.mytheresa.com" not in url:
-            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+            ws[f"{COLUMN.P.name}{1}"].value = row
+            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
-        if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{row}"].value:
-            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+        if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
+            ws[f"{COLUMN.P.name}{1}"].value = row
+            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
             continue
 
@@ -168,8 +168,8 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         
         isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
         if isUpdateProduct:
-            ws[f"{Enum_COLUMN.P.name}{"1"}"].value = row
-            ws[f"{Enum_COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
+            ws[f"{COLUMN.P.name}{1}"].value = row
+            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
             SaveWorksheet(wb)
         else:
             row -= 1
@@ -189,23 +189,23 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
     # 기존 것과 같은지 비교(같으면 스마트 스토어에 하지 않기 위함)
-    before_SaveColorList = ws[f"{Enum_COLUMN.F.name}{row}"].value
-    Util.Debug("before_SaveColorList : " + before_SaveColorList)
+    before_SaveColorList = ws[f"{COLUMN.F.name}{row}"].value
+    Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
     # 기존 색 이름 과 사아즈를 변수로 저장
-    before_SaveColorNameDoubleArray = ws[f"{Enum_COLUMN.G.name}{row}"].value
-    Util.Debug("before_SaveColorNameDoubleArray : " + before_SaveColorNameDoubleArray)
+    before_SaveColorNameDoubleArray = ws[f"{COLUMN.G.name}{row}"].value
+    Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
 
     # 색이름 리스트 값
     colorNames = []
     for item in arraySizesAndImgUrls:
         colorNames.append(item[1])
     str_saveColorList = Util.JoinArrayToString(colorNames)
-    Util.Debug("str_saveColorList : " + str_saveColorList)
+    Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
     # 색 이름 과 사아즈 리스트 값(이중 배열)
     str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
-    Util.Debug("str_saveColorNameDoubleArray : " + str_saveColorNameDoubleArray)
+    Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
 
     # 색이 없은 경우 자체가 연결 되지 않거나 물건 자체가 없어졌을 경우
     if str_saveColorNameDoubleArray == "" or useMoney == 0:
@@ -221,7 +221,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
         # 품절
         SoldOut(wb, ws, row)
     else:
-        if (before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray and ws[f"{Enum_COLUMN.U.name}{row}"].value == useMoney):
+        if (before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray and ws[f"{COLUMN.U.name}{row}"].value == useMoney):
             # 이전과 정보가 변함이 없을 경우(이전과 동일하다고 적고 다음으로 넘어감)
             xl_J_(wb, ws, row, "이전과 동일합니다.")
         else:
@@ -238,7 +238,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                 return True
 
             # 가격 변동이 있으면 변경
-            if ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney:
+            if ws[f"{COLUMN.U.name}{row}"].value != useMoney:
                 # 판매가 입력
                 UpdateAndReturnSalePrice(data.korMony)
 
@@ -265,34 +265,34 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
             # Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", 5, 5)
             # Util.SleepTime(1)
 
-            if (before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray and ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney):
-                ws[f"{Enum_COLUMN.U.name}{row}"].value = useMoney
+            if (before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray and ws[f"{COLUMN.U.name}{row}"].value != useMoney):
+                ws[f"{COLUMN.U.name}{row}"].value = useMoney
 
                 # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                 if True:
                     # 색 이름 리스트 표시
-                    ws[f"{Enum_COLUMN.F.name}{row}"].value = str_saveColorList
-                    Util.Debug("str_saveColorList : " + str_saveColorList)
+                    ws[f"{COLUMN.F.name}{row}"].value = str_saveColorList
+                    Util.Debug(f"str_saveColorList : {str_saveColorList}")
                     
                     # 색 이름과 사아즈 리스트 표시
-                    ws[f"{Enum_COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
-                    Util.Debug("str_saveColorNameDoubleArray : " + str_saveColorNameDoubleArray)
+                    ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
+                    Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
                     
                     xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                     
                     # 이전 색 이름 리스트 표시
-                    ws[f"{Enum_COLUMN.K.name}{row}"].value = before_SaveColorList
-                    Util.Debug("before_SaveColorList : " + before_SaveColorList)
+                    ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
+                    Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
                     # 이전 색 이름과 사아즈 리스트 표시
-                    ws[f"{Enum_COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
+                    ws[f"{COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                     Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
                     
                     xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)")
             else:
                 # 가격 변동이 있으면 변경
-                if ws[f"{Enum_COLUMN.U.name}{row}"].value != useMoney:
-                    ws[f"{Enum_COLUMN.U.name}{row}"].value = useMoney
+                if ws[f"{COLUMN.U.name}{row}"].value != useMoney:
+                    ws[f"{COLUMN.U.name}{row}"].value = useMoney
 
                     xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
 
@@ -300,21 +300,21 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                     # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                     if True:
                         # 색 이름 리스트 표시
-                        ws[f"{Enum_COLUMN.F.name}{row}"].value = str_saveColorList
+                        ws[f"{COLUMN.F.name}{row}"].value = str_saveColorList
                         Util.Debug(f"str_saveColorList : {str_saveColorList}")
                         
                         # 색 이름과 사아즈 리스트 표시
-                        ws[f"{Enum_COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
+                        ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
                         Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
                         
                         xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                         
                         # 이전 색 이름 리스트 표시
-                        ws[f"{Enum_COLUMN.K.name}{row}"].value = before_SaveColorList
-                        Util.Debug("before_SaveColorList : " + before_SaveColorList)
+                        ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
+                        Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
                         # 이전 색 이름과 사아즈 리스트 표시
-                        ws[f"{Enum_COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
+                        ws[f"{COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                         Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
 
                         xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)")
@@ -389,18 +389,18 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
 def xl_J_(wb, ws, row, value, updateTime=False):
     if updateTime:
         # 갱신 시간 표시
-        ws[f"{Enum_COLUMN.H.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+        ws[f"{COLUMN.H.name}{row}"].value = Util.GetFormattedCurrentDateTime()
     # 체크 시간 표시
-    ws[f"{Enum_COLUMN.I.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+    ws[f"{COLUMN.I.name}{row}"].value = Util.GetFormattedCurrentDateTime()
     # 체크 상태 표시
-    ws[f"{Enum_COLUMN.J.name}{row}"].value = value
+    ws[f"{COLUMN.J.name}{row}"].value = value
 
     SaveWorksheet(wb)
 
 
 # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
 def GetNewProductURLs_UGG(name, url, filterUrls):
-    Util.TelegramSend("GetNewProductURLs_UGG() " + name + " -- 시작")
+    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 시작")
     webbrowser.open(url)
     # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
     # WinWait, ugg
@@ -442,7 +442,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
     for productUrlLine in productUrlLines:
         splitList = productUrlLine.split(".html")
         if len(splitList) > 0:
-            productUrls.append("https://www.ugg.com" + splitList[1] + ".html")
+            productUrls.append(f"https://www.ugg.com{splitList[1]}.html")
         else:
             productUrls.append(productUrlLine)
     uniqueArr = []
@@ -455,7 +455,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
     for uniqueValue in uniqueArr:
         ArrayRemove(productUrls, uniqueValue)
 
-    Util.TelegramSend("GetNewProductURLs_UGG() " + name + " -- 끝")
+    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
 
     return [name, productUrls]
 
@@ -482,7 +482,7 @@ def SetXlsxUGGNewProductURLs():
         url = ws.cell(row=row_index, column=3).value
         if url is not None and "www.ugg.com" in url:
             filterUrls.append(url)
-    Util.TelegramSend("end xlsx ugg url Length : " + str(len(filterUrls)))
+    Util.TelegramSend(f"end xlsx ugg url Length : {str(len(filterUrls))}")
 
     wb.save(xlFile)  # 저장
     wb.close()  # 파일 닫기
@@ -516,9 +516,9 @@ def SetXlsxUGGNewProductURLs():
     for item in uggProductUrls:
         for item2 in item[2]:
             allCount += 1
-            ws("A" + allCount).value = "UGG"
-            ws("B" + allCount).value = item[1]  # 메뉴
-            ws("C" + allCount).value = item2  # url
+            ws(f"A{allCount}").value = "UGG"
+            ws(f"B{allCount}").value = item[1]  # 메뉴
+            ws(f"C{allCount}").value = item2  # url
 
     wb.save(xlFile)  # 저장
     wb.close()  # 파일 닫기
@@ -609,7 +609,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     wsAddBefore = wbAddBefore.Sheets(1)
     wsAdd = wbAdd.Sheets(1)
 
-    url = wsAddBefore[f"{Enum_COLUMN.C.name}{1}"].value
+    url = wsAddBefore[f"{COLUMN.C.name}{1}"].value
 
     data = GetUggData(url, krwUsd)
 
@@ -625,7 +625,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     Util.FolderToDelete(EnvData.g_DefaultPath() + r"\DownloadImage")
 
     if len(arraySizesAndImgUrls) == 0:
-        Util.TelegramSend("len(arraySizesAndImgUrls) == 0 url : " + url)
+        Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
         # 등록해야 될 것에서 삭제
         wsAddBefore.Rows(1).Delete()
         wbAddBefore.Save()
@@ -673,7 +673,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
     Util.SleepTime(0.5)
     Util.NowMouseClick()
-    pyperclip.copy(wsAddBefore[f"{Enum_COLUMN.B.name}{1}"].value)
+    pyperclip.copy(wsAddBefore[f"{COLUMN.B.name}{1}"].value)
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
@@ -706,7 +706,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
 
     # 이미지 등록(대표, 추가)
     if ProductRegistration.IamgeRegistration_v2() == False:
-        Util.TelegramSend("대표 이미지 등록 못함(이미지 너무 큼) url : " + url)
+        Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
         wsAddBefore.Rows(1).Delete()
         wbAddBefore.Save()
@@ -732,39 +732,39 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         Util.GoToTheAddressWindow()
         Util.SleepTime(0.5)
         addurl = Util.CopyToClipboardAndGet()
-        Util.Debug("addurl : " + addurl)
-        wsAdd[f"{Enum_COLUMN.B.name}{2}"].value = addurl
+        Util.Debug(f"addurl : {addurl}")
+        wsAdd[f"{COLUMN.B.name}{2}"].value = addurl
         # 크롬 탭 닫기
         Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(0.5)
         # 상품 번호
         addUrlSplitArray = addurl.split("/")
         if len(addUrlSplitArray) > 0:
-            wsAdd[f"{Enum_COLUMN.A.name}{2}"].value = addUrlSplitArray[len(addUrlSplitArray)]
+            wsAdd[f"{COLUMN.A.name}{2}"].value = addUrlSplitArray[-1]
 
-        wsAdd[f"{Enum_COLUMN.C.name}{2}"].value = url
+        wsAdd[f"{COLUMN.C.name}{2}"].value = url
         # 상품명 기재
-        wsAdd[f"{Enum_COLUMN.T.name}{2}"].value = title
+        wsAdd[f"{COLUMN.T.name}{2}"].value = title
         # 가격
-        wsAdd[f"{Enum_COLUMN.U.name}{2}"].value = useMoney
+        wsAdd[f"{COLUMN.U.name}{2}"].value = useMoney
         # 브랜드
-        brand = wsAddBefore(f"{Enum_COLUMN.A.name}{2}").value
-        wsAdd[f"{Enum_COLUMN.E.name}{2}"].value = brand
+        brand = wsAddBefore(f"{COLUMN.A.name}{2}").value
+        wsAdd[f"{COLUMN.E.name}{2}"].value = brand
 
         # 색이름 리스트 값
         colorNames = []
         for arraySizesAndImgUrl in arraySizesAndImgUrls:
             colorNames.append(arraySizesAndImgUrl[1])
         str_saveColorList = Util.JoinArrayToString(colorNames)
-        Util.Debug("str_saveColorList : " + str_saveColorList)
+        Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
-        wsAdd[f"{Enum_COLUMN.F.name}{2}"].value = str_saveColorList
+        wsAdd[f"{COLUMN.F.name}{2}"].value = str_saveColorList
 
         # 색 이름 과 사아즈 리스트 값(이중 배열)
         str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
-        Util.Debug("str_saveColorNameDoubleArray : " + str_saveColorNameDoubleArray)
+        Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
 
-        wsAdd[f"{Enum_COLUMN.G.name}{2}"].value = str_saveColorNameDoubleArray
+        wsAdd[f"{COLUMN.G.name}{2}"].value = str_saveColorNameDoubleArray
 
         xl_J_(wbAdd, wsAdd, 2, "신규 등록", True)
 
@@ -816,7 +816,7 @@ def AddDataFromExcel_Ugg():
     for _ in range(rowCountAddBefore):
         addOneProductSuccess = True
         while True:
-            Util.TelegramSend(count + "/" + rowCountAddBefore)
+            Util.TelegramSend(f"{count}/{rowCountAddBefore}")
             data = AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd)
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
@@ -861,6 +861,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
         Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(1)
 
+        title = ""
         # 상품 이름
         match = re.search(
             r'<div\s+class\s*=\s*"sticky-toolbar__content">\s*<span>([^<]*)</span>',
@@ -868,8 +869,12 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
         )
         if match:
             title = match.group(1)
-            Util.Debug("title : " + title)
+        
+        Util.Debug(f"title : {title}")
 
+        startPos = 0
+        useMoney = 0
+        korMony = 0
         # <div class="sticky-toolbar__content"
         match = re.search(
             r'<div\s+class\s*=\s*"sticky-toolbar__content"', htmlElementsData
@@ -884,8 +889,8 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
             contentValue = htmlElementsData[startPos:endPos]
             useMoneys = Util.GetRegExMatche1List(contentValue, r"\$(.+)")
             if len(useMoneys) > 0:
-                useMoney = useMoneys[len(useMoneys)] + 0
-                Util.Debug("useMoney : " + useMoney)
+                useMoney = int(useMoneys[-1])
+                Util.Debug(f"useMoney : {useMoney}")
 
             korMony = Util.GetKorMony(useMoney, exchangeRate)
 
@@ -901,7 +906,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
 
                         Util.Debug(f"urlEndColorNames[{index}] : {urlEndColorNames[index]}")
 
-                        Util.Debug("colorNames[" + index + "] : " + colorNames[index])
+                        Util.Debug(f"colorNames[{index}] : {colorNames[index]}")
 
                         webbrowser.open(colorUrl)
                         # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
@@ -963,7 +968,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
 
                                             sizeData = f"US_{extractedValue}({Util.GetUggKorSize(extractedValue)})"
 
-                                            Util.Debug("size : " + sizeData)
+                                            Util.Debug(f"size : {sizeData}")
                                             sizes.append(sizeData)
                                         else:
                                             sizes.append(defaultExtractedValue)
@@ -1034,8 +1039,8 @@ def GetMytheresaData(url, exchangeRate):
 
         sizes = []
         for sizeLine in sizeLines:
-            sizeData = sizeLine + "(" + Util.GetMytheresaKorSize(sizeLine) + ")"
-            Util.Debug("size : " + sizeData)
+            sizeData = sizeLine + f"({Util.GetMytheresaKorSize(sizeLine)})"
+            Util.Debug(f"size : {sizeData}")
             sizes.append(sizeData)
 
         colorName = "One Color"
@@ -1085,7 +1090,7 @@ def ManageAndModifyProducts(ws, row):
     if True:
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 조회\상품번호", 150, 10)
         Util.SleepTime(0.5)
-        pyperclip.copy(round(ws(f"{Enum_COLUMN.A.name}{row}").value))
+        pyperclip.copy(round(ws(f"{COLUMN.A.name}{row}").value))
         Util.SleepTime(0.5)
         # 상품번호 붙여넣기
         Util.KeyboardKeyHotkey("ctrl", "v")
@@ -1138,7 +1143,7 @@ def SoldOut(wb, ws, row):
 
     xl_J_(wb, ws, row, "품절 상태로 변경 완료", True)
 
-    Util.TelegramSend("품절 상태로 변경 완료 row(" + row + ") ")
+    Util.TelegramSend(f"품절 상태로 변경 완료 row({row}) ")
 
 
 def UpdateAndReturnSalePrice(korMony):
@@ -1163,12 +1168,12 @@ def RemoveCompletedSoldOutItems(wb):
 
     startCount = 2
     while True:
-        Util.Debug("xlWorksheet.UsedRange.Rows.Count : " + ws.UsedRange.Rows.Count)
+        Util.Debug(f"ws.UsedRange.Rows.Count : {ws.UsedRange.Rows.Count}")
         # 중복 여부를 체크합니다.
         isFind = False
         for i in range(ws.UsedRange.Rows.Coun):
             if i >= startCount:
-                if "품절 상태로 변경 완료" in ws[f"{Enum_COLUMN.J.name}{i}"].value:
+                if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{i}"].value:
                     ws.Rows(i).Delete()
                     wb.Save()
                     isFind = True
