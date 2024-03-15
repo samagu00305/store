@@ -14,40 +14,11 @@ import System
 
 
 def show_start_popup():
-    System.UpdateStoreWithColorInformation(-1)
+
+    System.UpdateStoreWithColorInformation(1)
 
     Util.SleepTime(5)
     Util.TelegramSend("Test")
-
-    # # 현재 스크립트의 디렉토리 경로
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # # 이미지 파일의 상대 경로
-    # image_path = os.path.join(script_dir, "html.png")
-
-    # if os.path.exists(image_path) == False:
-    #     print("파일이 존재하지 않습니다.")
-    #     return
-
-    # # 이미지를 화면에서 찾기
-    # result = find_image_on_screen(image_path)
-    # if isinstance(result, tuple):
-    #     print("일치하는 이미지가 화면에서 발견되었습니다. 위치:", result)
-    # else:
-    #     print(result)
-
-
-class Point:
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.y = z
-
-
-class Size(NamedTuple):
-    x: int
-    y: int
-    z: int
 
 
 def show_exit_popup():

@@ -3,9 +3,13 @@ import win32com.client as win32
 import Util, EnvData, GlobalData
 import urllib.request
 import numpy as np
-import webbrowser, requests, subprocess, pyautogui, time, pyperclip, re, os, cv2
+import webbrowser, requests, subprocess, pyautogui, time, pyperclip, re, os, cv2, openpyxl
 from enum import Enum
 from typing import NamedTuple
+
+Array_ColroName = 0
+Array_SizeList = 1
+Array_UrlList = 2
 
 
 # 현재 미국 환율 정보 출력
@@ -155,7 +159,7 @@ def ClickAtWhileFoundImage(
     searchStart_y=0,
     searchEnd_x=-1,
     searchEnd_y=-1,
-):
+) -> bool:
     findCount = 0
     while True:  # 무한 루프
         findImageResult = Util.FindImage_Byref(
@@ -679,7 +683,7 @@ def GoToTheAddressWindow():
 
 
 # 배열을 , 구분해서 string로 반환
-def JoinArrayToString(array):
+def JoinArrayToString(array) -> str:
     outputString = ""
     for index, item in enumerate(array, start=1):
         outputString += ("," if index > 1 else "") + item
@@ -709,7 +713,7 @@ def StringToDoubleArray(input):
     return result
 
 
-def DoubleArrayToString(array):
+def DoubleArrayToString(array) -> str:
     formattedString = ""
     for index, item in enumerate(array, start=1):
         key = item[0]
@@ -725,19 +729,18 @@ def DoubleArrayToString(array):
 
 
 # 현재날짜및시간반환
-def GetFormattedCurrentDateTime():
+def GetFormattedCurrentDateTime() -> str:
     return datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
 
 
 # 옵션 엑셀 세팅
 def SetExcelOptionByString(stringDoubleArray):
-
     result = StringToDoubleArray(stringDoubleArray)
     Util.SetExcelOption(result, False)
 
 
 # 옵션 엑셀 세팅
-def SetExcelOption(doubleArray, customsDuty):
+def SetExcelOption(doubleArray, is_customsDuty):
 
     # # 과세 부가 되는 기준을 정해서 옵션에 추가 할지 여부 정하기
     # # 31만원 이상이면 무조건 과세 부가
@@ -748,44 +751,44 @@ def SetExcelOption(doubleArray, customsDuty):
     # 사이즈 신중하게 결정해주세요(사이즈로 교환 및 환불 불가 합니다.)
 
     xlFile = os.path.join(
-        GlobalData.g_DefaultPath(),
+        EnvData.g_DefaultPath(),
         "엑셀",
-        f"OptionCombinationTemplate{'_' if customsDuty != 0 else '2_'}" + ".xlsx",
+        f"OptionCombinationTemplate{'_' if is_customsDuty != False else '2_'}"
+        + ".xlsx",
     )
-    xl = win32.Dispatch("Excel.Application")  # 엑셀 파일 열기
-    xl.Visible = False  # Excel을 보이게 설정 할지 여부
-    wb = xl.Workbooks.Open(
-        xlFile, False, False, None, ""
-    )  # 비밀번호로 보호된 파일 열기
-    xl.DisplayAlerts = False
-    ws = wb.Sheets(1)
-    rowCount = ws.UsedRange.Rows.Count
+    wb = openpyxl.load_workbook(filename=xlFile)  # 엑셀 파일 열기
+    ws = wb.active
+    rowCount = ws.max_row
     allCount = 0
     for index, item in enumerate(doubleArray):
-        for index2, item2 in enumerate(item[2]):
-            allCount
-            # Debug  += 1("(" + index + "," + index2 + ")" + " : " + item[1] + " - " + item2)
-            ws.Cells((allCount + 1), 1).Value = item[1]
-            ws.Cells((allCount + 1), 2).Value = item2
-            if customsDuty != 0:
-                # 25자 이내로 적어야 됨
-                ws.Cells((allCount + 1), 3).Value = (
+        colorName = item[Array_ColroName]
+        sizes = item[Array_SizeList]
+        for index2, size in enumerate(sizes):
+            allCount += 1
+            ws.cell(row=(allCount + 1), column=1).value = colorName
+            ws.cell(row=(allCount + 1), column=2).value = size
+            if is_customsDuty != False:
+                ws.cell(row=(allCount + 1), column=3).value = (
                     "관부가세(23%) 수취인 부담(통관시 납부)"
                 )
-            ws.Cells((allCount + 1), 3 if customsDuty != 0 else 2).Value = 0
-            ws.Cells((allCount + 1), 4 if customsDuty != 0 else 3).Value = 300
-            ws.Cells((allCount + 1), 5 if customsDuty != 0 else 4).Value = (
-                index + index2
-            )
-            ws.Cells((allCount + 1), 6 if customsDuty != 0 else 5).Value = "Y"
+            ws.cell(
+                row=(allCount + 1), column=(4 if is_customsDuty != False else 3)
+            ).value = 0
+            ws.cell(
+                row=(allCount + 1), column=(5 if is_customsDuty != False else 4)
+            ).value = 300
+            ws.cell(
+                row=(allCount + 1), column=(6 if is_customsDuty != False else 5)
+            ).value = (index + index2)
+            ws.cell(
+                row=(allCount + 1), column=(7 if is_customsDuty != False else 6)
+            ).value = "Y"
 
     # 이전 것 초과 된 행 삭제
     for _ in range(rowCount - (allCount + 1)):
-        ws.Rows(allCount + 2).Delete()
+        ws.delete_rows(allCount + 2)
 
-    # True를 전달하여 저장 여부 설정
-    wb.Close(True)
-    xl.Quit()
+    wb.save(xlFile)
 
 
 def CopyToClipboardAndGet():
@@ -796,7 +799,7 @@ def CopyToClipboardAndGet():
     return pyperclip.paste()
 
 
-def IsArray(array, checkValue):
+def IsArray(array, checkValue) -> bool:
     for item in array:
         if item == checkValue:
             return True
@@ -839,9 +842,9 @@ def GetRegExMatche1List(value, regexPattern, startPos=1):
     return matche1List
 
 
-def DownloadImageUrl(url, saveName):
+def DownloadImageUrl(url, saveName) -> bool:
     # 저장할 파일의 경로 및 사용자가 원하는 파일 이름
-    savePath = GlobalData.g_DefaultPath() + "\\DownloadImage\\" + saveName + ".png"
+    savePath = EnvData.g_DefaultPath() + "\\DownloadImage\\" + saveName + ".png"
 
     # 이미지 다운로드
     try:
@@ -888,7 +891,7 @@ def TelegramSend(Message):
     response = requests.post(URL, data=Param)
 
 
-def GetKorMony(mony, exchangeRate):
+def GetKorMony(mony, exchangeRate) -> int:
     # 물건 원가
     korCostPrice = mony * exchangeRate
     if korCostPrice == 0 and mony != 0:
@@ -907,46 +910,46 @@ def GetKorMony(mony, exchangeRate):
             Util.TelegramSend(
                 f"******** Error  ---- GetKorMony() ==== {outValue}   mony : {mony}    exchangeRate : {exchangeRate} ----  Error  "
             )
-        return outValue
+        return int(outValue)
 
 
 def GetUggKorSize(usSize):
     match usSize:
-        case 4:
+        case "4":
             return 210
-        case 5:
+        case "5":
             return 220
-        case 5.5:
+        case "5.5":
             return 225
-        case 6:
+        case "6":
             return 230
-        case 6.5:
+        case "6.5":
             return 235
-        case 7:
+        case "7":
             return 240
-        case 7.5:
+        case "7.5":
             return 245
-        case 8:
+        case "8":
             return 250
-        case 8.5:
+        case "8.5":
             return 255
-        case 9:
+        case "9":
             return 260
-        case 9.5:
+        case "9.5":
             return 265
-        case 10:
+        case "10":
             return 270
-        case 10.5:
+        case "10.5":
             return 275
-        case 11:
+        case "11":
             return 280
-        case 11.5:
+        case "11.5":
             return 285
-        case 12:
+        case "12":
             return 290
-        case 13:
+        case "13":
             return 300
-        case 14:
+        case "14":
             return 310
     return 0
 
@@ -1005,28 +1008,40 @@ def GetMytheresaKorSize(size):
 
 
 class Enum_FIND_IMAGE_RESULT_TYPE(Enum):
-    Success = ("",)
-    Fail_NoRead = ("",)
-    Fail_NoFind = ("",)
-    Fail_NoFile = ("",)
+    Success = "Success"
+    Fail_NoRead = "Fail_NoRead"
+    Fail_NoFind = "Fail_NoFind"
+    Fail_NoFile = "Fail_NoFile"
 
 
-class Module_FindImageResult(NamedTuple):
-    resultType: Enum_FIND_IMAGE_RESULT_TYPE
-    x: int
-    y: int
+class Module_FindImageResult:
+    def __init__(self):
+        self.resultType = ""
+        self.x = ""
+        self.y = ""
+        self.title = ""
 
 
-def FindImage(image_path, searchStart_x=0, searchStart_y=0, region={}, threshold=0.7):
+def FindImage(
+    image_path, searchStart_x=0, searchStart_y=0, region={}, threshold=0.7
+) -> Module_FindImageResult:
     # 이미지 파일 존재 확인
     if not os.path.exists(image_path):
-        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFile, 0, 0)
+        returnValue = Module_FindImageResult()
+        returnValue.resultType = Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFile
+        returnValue.x = 0
+        returnValue.y = 0
+        return returnValue
 
     # 이미지 경로를 문자열로 변환하여 읽기(한글주소가 되게 하기 위함)
     img_array = np.fromfile(image_path, np.uint8)
     template = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
     if template is None:
-        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoRead, 0, 0)
+        returnValue = Module_FindImageResult()
+        returnValue.resultType = Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoRead
+        returnValue.x = 0
+        returnValue.y = 0
+        return returnValue
 
     # 화면 캡처
     screenshot = pyautogui.screenshot(region=region)
@@ -1037,12 +1052,32 @@ def FindImage(image_path, searchStart_x=0, searchStart_y=0, region={}, threshold
 
     loc = np.where(res >= threshold)
 
-    if loc[0].size > 0:
+    # for pt in zip(*loc[::-1]):
+    #     # 매칭된 좌표에서 잘린 부분 추출
+    #     roi = screenshot[pt[1]:pt[1] + template.shape[0], pt[0]:pt[0] + template.shape[1]]
+    #     # 템플릿 이미지와의 매칭 확인
+    #     res_match = cv2.matchTemplate(roi, template, cv2.TM_CCOEFF_NORMED)
+    #     max_match = np.max(res_match)
+    #     if max_match >= threshold:
+    #         # 추가 검증 후 성공으로 판단
+    #         return Module_FindImageResult(
+    #             Enum_FIND_IMAGE_RESULT_TYPE.Success,
+    #             searchStart_x + pt[0],
+    #             searchStart_y + pt[1],
+    #         )
+
+    # return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFind, 0, 0)
+
+    if loc[0].size > 0 and loc[1][0] != 0 and loc[1][0] != 0:
         # 일치하는 이미지가 발견되면 좌표를 반환
-        return Module_FindImageResult(
-            Enum_FIND_IMAGE_RESULT_TYPE.Success,
-            searchStart_x + loc[1][0],
-            searchStart_y + loc[0][0],
-        )
+        returnValue = Module_FindImageResult()
+        returnValue.resultType = Enum_FIND_IMAGE_RESULT_TYPE.Success
+        returnValue.x = searchStart_x + loc[1][0]
+        returnValue.y = searchStart_y + loc[0][0]
+        return returnValue
     else:
-        return Module_FindImageResult(Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFind, 0, 0)
+        returnValue = Module_FindImageResult()
+        returnValue.resultType = Enum_FIND_IMAGE_RESULT_TYPE.Fail_NoFind
+        returnValue.x = 0
+        returnValue.y = 0
+        return returnValue

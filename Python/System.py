@@ -10,6 +10,37 @@ import ProductRegistration
 import win32api
 import webbrowser
 from enum import Enum
+import System
+import shutil
+
+
+from collections import namedtuple
+
+class UggData:
+    def __init__(self):
+        self.useMoney = ''
+        self.korMony = ''
+        self.arraySizesAndImgUrls = ''
+        self.title = ''
+        
+class MytheresaData:
+    def __init__(self):
+        self.useMoney = ''
+        self.korMony = ''
+        self.arraySizesAndImgUrls = ''
+        self.title = ''
+        self.sizesLength = ''
+        self.isSoldOut = ''
+        
+class AddOneProduct_UggData:
+    def __init__(self):
+        self.addCount = ''
+        self.addOneProductSuccess = ''
+        
+class ManageAndModifyProductsData:
+    def __init__(self):
+        self.isNoProduct = ''
+        self.isNoNetwork = ''
 
 class COLUMN(Enum):
     A = "A" # 상품 번호 칸
@@ -30,21 +61,16 @@ class COLUMN(Enum):
     U = "U" # 상품 원본 가격
     
 def SaveWorksheet(wb):
-    # 원본 시트 선택
-    ws_original = wb.active
-
-    ws_copy = wb.copy_worksheet(ws_original)
-    ws_copy.title = "복제 시트"  # 복제된 시트의 이름 설정
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
+    xlFile_copy = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.xlsx"
 
     # 원본 엑셀 파일 저장
-    wb.save(EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx")
+    wb.save(xlFile)
 
-    # 복제된 엑셀 파일 저장
-    wb_copy = openpyxl.Workbook()
-    wb_copy.save(EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.xlsx")
+    shutil.copy(xlFile, xlFile_copy)
 
 
-def GetElementsData():
+def GetElementsData() -> str:
     Util.KeyboardKeyPress("f12")
     Util.SleepTime(2)
     if Util.WhileFoundImage(r"크롬\Elements에 html"):
@@ -94,7 +120,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
         if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
             ws[f"{COLUMN.P.name}{"1"}"].value = row
             ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
-            SaveWorksheet(wb)
+            System.SaveWorksheet(wb)
             continue
 
         url = ws[f"{COLUMN.C.name}{row}"].value
@@ -105,7 +131,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             if isUpdateProduct:
                 ws[f"{COLUMN.P.name}{"1"}"].value = row
                 ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
-                SaveWorksheet(wb)
+                System.SaveWorksheet(wb)
             else:
                 row -= 1
 
@@ -117,7 +143,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             if isUpdateProduct:
                 ws[f"{COLUMN.P.name}{"1"}"].value = row
                 ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
-                SaveWorksheet(wb)
+                System.SaveWorksheet(wb)
             else:
                 row -= 1
 
@@ -155,13 +181,13 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         if "www.mytheresa.com" not in url:
             ws[f"{COLUMN.P.name}{1}"].value = row
             ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-            SaveWorksheet(wb)
+            System.SaveWorksheet(wb)
             continue
 
         if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
             ws[f"{COLUMN.P.name}{1}"].value = row
             ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-            SaveWorksheet(wb)
+            System.SaveWorksheet(wb)
             continue
 
         Util.TelegramSend(f"row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
@@ -170,7 +196,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         if isUpdateProduct:
             ws[f"{COLUMN.P.name}{1}"].value = row
             ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-            SaveWorksheet(wb)
+            System.SaveWorksheet(wb)
         else:
             row -= 1
 
@@ -180,7 +206,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
 
 
 def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
-    data = GetUggData(url, krwUsd)
+    data: UggData = GetUggData(url, krwUsd)
 
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
@@ -199,7 +225,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     # 색이름 리스트 값
     colorNames = []
     for item in arraySizesAndImgUrls:
-        colorNames.append(item[1])
+        colorNames.append(item[Util.Array_ColroName])
     str_saveColorList = Util.JoinArrayToString(colorNames)
     Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
@@ -215,7 +241,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
             return False
 
         if managedata.isNoProduct == True:
-            xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+            System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
             return True
 
         # 품절
@@ -223,10 +249,10 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     else:
         if (before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray and ws[f"{COLUMN.U.name}{row}"].value == useMoney):
             # 이전과 정보가 변함이 없을 경우(이전과 동일하다고 적고 다음으로 넘어감)
-            xl_J_(wb, ws, row, "이전과 동일합니다.")
+            System.xl_J_(wb, ws, row, "이전과 동일합니다.")
         else:
             # 이전과 달라졌음
-            xl_J_(wb, ws, row, "이전과 동일하지 않아서 변경 하려고 합니다.")
+            System.xl_J_(wb, ws, row, "이전과 동일하지 않아서 변경 하려고 합니다.")
 
             # 스마트 스토어 수정 화면까지 이동
             managedata = ManageAndModifyProducts(ws, row)
@@ -234,7 +260,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                 return False
 
             if managedata.isNoProduct == True:
-                xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+                System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
                 return True
 
             # 가격 변동이 있으면 변경
@@ -244,15 +270,15 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
 
             if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                 # 관세 부가 여부 체크
-                customsDuty = useMoney >= 200
+                is_customsDuty = useMoney >= 200
 
                 # 옵션 엑셀 세팅
-                Util.SetExcelOption(arraySizesAndImgUrls, customsDuty)
+                Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
 
-                xl_J_(wb,ws,row,"이전과 동일하지 않아서 변경 하려고 합니다.(옵션 엑셀 세팅 완료)",)
+                System.xl_J_(wb,ws,row,"이전과 동일하지 않아서 변경 하려고 합니다.(옵션 엑셀 세팅 완료)",)
                 
                 # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-                UpdateOptionsFromExcel(customsDuty)
+                UpdateOptionsFromExcel(is_customsDuty)
 
                 # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
                 if before_SaveColorList != str_saveColorList:
@@ -278,7 +304,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                     ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
                     Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
                     
-                    xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
+                    System.xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                     
                     # 이전 색 이름 리스트 표시
                     ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
@@ -288,13 +314,13 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                     ws[f"{COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                     Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
                     
-                    xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)")
+                    System.xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)")
             else:
                 # 가격 변동이 있으면 변경
                 if ws[f"{COLUMN.U.name}{row}"].value != useMoney:
                     ws[f"{COLUMN.U.name}{row}"].value = useMoney
 
-                    xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
+                    System.xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
 
                 if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                     # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
@@ -307,7 +333,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                         ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
                         Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
                         
-                        xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
+                        System.xl_J_(wb,ws,row,"변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",True)
                         
                         # 이전 색 이름 리스트 표시
                         ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
@@ -317,7 +343,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                         ws[f"{COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
                         Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
 
-                        xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)")
+                        System.xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)")
 
     return True
 
@@ -331,7 +357,7 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
         return False
 
     if managedata.isNoProduct == True:
-        xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+        System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
         return True
 
     if data.isSoldOut:
@@ -349,19 +375,19 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
 
             if data.korMony != 0:
-                xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
+                System.xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
             else:
-                xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
+                System.xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
         else:
 
             useMoney = data.useMoney
             arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
             # 관세 부가 여부 체크
-            customsDuty = useMoney >= 150
+            is_customsDuty = useMoney >= 150
 
             # 옵션 엑셀 세팅
-            Util.SetExcelOption(arraySizesAndImgUrls, customsDuty)
+            Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
 
             # 1. 가격 세팅
             # 2. 엑셀로 옵셥 세팅
@@ -370,7 +396,7 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
                 UpdateAndReturnSalePrice(data.korMony)
 
                 # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-                UpdateOptionsFromExcel(customsDuty)
+                UpdateOptionsFromExcel(is_customsDuty)
 
                 Util.SleepTime(1)
                 Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -379,9 +405,9 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
                 # Util.SleepTime(1)
 
             if data.korMony != 0:
-                xl_J_(wb, ws, row, "변경 완료(가격과 사이즈 변동)")
+                System.xl_J_(wb, ws, row, "변경 완료(가격과 사이즈 변동)")
             else:
-                xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
+                System.xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
 
     return True
 
@@ -395,7 +421,8 @@ def xl_J_(wb, ws, row, value, updateTime=False):
     # 체크 상태 표시
     ws[f"{COLUMN.J.name}{row}"].value = value
 
-    SaveWorksheet(wb)
+    
+    System.SaveWorksheet(wb)
 
 
 # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
@@ -429,7 +456,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
             else:  # 상품이 더이상 없음
                 break
 
-    htmlElementsData = GetElementsData()
+    htmlElementsData: str = System.GetElementsData()
     # Ctrl + W를 눌러 현재 Chrome 탭 닫기
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
@@ -516,9 +543,9 @@ def SetXlsxUGGNewProductURLs():
     for item in uggProductUrls:
         for item2 in item[2]:
             allCount += 1
-            ws(f"A{allCount}").value = "UGG"
-            ws(f"B{allCount}").value = item[1]  # 메뉴
-            ws(f"C{allCount}").value = item2  # url
+            ws[f"A{allCount}"].value = "UGG"
+            ws[f"B{allCount}"].value = item[1]  # 메뉴
+            ws[f"C{allCount}"].value = item2  # url
 
     wb.save(xlFile)  # 저장
     wb.close()  # 파일 닫기
@@ -563,18 +590,18 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
         htmlData = '<div style="text-align: center;">'
         htmlData += '<img src="https://nacharhan.github.io/photo/2.png"/>'
         htmlData += "`r`n"
-        for index in range(arraySizesAndImgUrls.MaxIndex()):
-            colorName = arraySizesAndImgUrls[index][1]
-            imgUrls = arraySizesAndImgUrls[index][3]
+        for item in arraySizesAndImgUrls:
+            colorName = item[Util.Array_ColroName]
+            imgUrls = item[Util.Array_UrlList]
 
             htmlData += '<div style="text-align: center;">'
             htmlData += (
                 '<div><span style="font-size: 30px;">' + colorName + "</span></div>"
             )
             htmlData += "`r`n"
-            for index2 in range(imgUrls.MaxIndex()):
+            for imgUrl in imgUrls:
                 htmlData += '<div style="text-align: center;">'
-                htmlData += '<img src="' + imgUrls[index2] + '"/>'
+                htmlData += '<img src="' + imgUrl + '"/>'
                 htmlData += "`r`n"
 
         htmlData += '<div style="text-align: center;">'
@@ -587,7 +614,7 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
 
 
 # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-def UpdateOptionsFromExcel(customsDuty):
+def UpdateOptionsFromExcel(is_customsDuty):
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션", 0, 0, -500)
     Util.SleepTime(1)
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\엑셀 일괄등록", 0, 0)
@@ -598,20 +625,20 @@ def UpdateOptionsFromExcel(customsDuty):
     Util.SleepTime(4)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\열기\즐겨찾기에 엑셀 폴더", 40, 5)
     Util.SleepTime(1)
-    if customsDuty == 1:
+    if is_customsDuty == True:
         Util.DoubleClickAtWhileFoundImage(r"스마트 스토어\열기\옵션 세팅된 엑셀", 5, 5)
     else:
         Util.DoubleClickAtWhileFoundImage(r"스마트 스토어\열기\옵션 세팅된 엑셀2", 5, 5)
     Util.SleepTime(1)
 
 
-def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
+def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd) -> AddOneProduct_UggData:
     wsAddBefore = wbAddBefore.Sheets(1)
     wsAdd = wbAdd.Sheets(1)
 
     url = wsAddBefore[f"{COLUMN.C.name}{1}"].value
 
-    data = GetUggData(url, krwUsd)
+    data: UggData = GetUggData(url, krwUsd)
 
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
@@ -630,10 +657,10 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         wsAddBefore.Rows(1).Delete()
         wbAddBefore.Save()
 
-        values = {}
-        values.addCount = False
-        values.addOneProductSuccess = True
-        return values
+        returnValue = AddOneProduct_UggData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        return returnValue
 
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[1][3]
@@ -696,13 +723,13 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
     # 옵션 세팅
     if True:
         # 관세 부가 여부 체크
-        customsDuty = useMoney >= 200
+        is_customsDuty = useMoney >= 200
 
         # 옵션 엑셀 세팅
-        Util.SetExcelOption(arraySizesAndImgUrls, customsDuty)
+        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
 
         # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-        UpdateOptionsFromExcel(customsDuty)
+        UpdateOptionsFromExcel(is_customsDuty)
 
     # 이미지 등록(대표, 추가)
     if ProductRegistration.IamgeRegistration_v2() == False:
@@ -711,10 +738,10 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         wsAddBefore.Rows(1).Delete()
         wbAddBefore.Save()
 
-        values = {}
-        values.addCount = False
-        values.addOneProductSuccess = True
-        return values
+        returnValue = AddOneProduct_UggData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        return returnValue
 
     # HTML 으로 등록
     SetHTML(arraySizesAndImgUrls, True)
@@ -753,8 +780,8 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
 
         # 색이름 리스트 값
         colorNames = []
-        for arraySizesAndImgUrl in arraySizesAndImgUrls:
-            colorNames.append(arraySizesAndImgUrl[1])
+        for item in arraySizesAndImgUrls:
+            colorNames.append(item[Util.Array_ColroName])
         str_saveColorList = Util.JoinArrayToString(colorNames)
         Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
@@ -766,7 +793,7 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
 
         wsAdd[f"{COLUMN.G.name}{2}"].value = str_saveColorNameDoubleArray
 
-        xl_J_(wbAdd, wsAdd, 2, "신규 등록", True)
+        System.xl_J_(wbAdd, wsAdd, 2, "신규 등록", True)
 
         wbAdd.Save()
 
@@ -774,10 +801,10 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         wsAddBefore.Rows(1).Delete()
         wbAddBefore.Save()
 
-        values = {}
-        values.addCount = True
-        values.addOneProductSuccess = True
-        return values
+        returnValue = AddOneProduct_UggData()
+        returnValue.addCount = True
+        returnValue.addOneProductSuccess = True
+        return returnValue
     else:
         Util.TelegramSend("++++++++++++++ 이름이 입력 안됬음 왜지??")
         # 이름이 입력 안됬음  왜지??
@@ -786,10 +813,10 @@ def AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd):
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
         Util.SleepTime(1)
 
-        values = {}
-        values.addCount = False
-        values.addOneProductSuccess = False
-        return values
+        returnValue = AddOneProduct_UggData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = False
+        return returnValue
 
 
 # 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
@@ -830,10 +857,9 @@ def AddDataFromExcel_Ugg():
     Util.TelegramSend("추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 끝")
 
     return addCount
-
-
+        
 # url에 필요 정보 가져오기
-def GetUggData(url, exchangeRate, onlyUseMoney=False):
+def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     # UGG에 사이즈 정보로 정보 취합
     useMoney = 0
     korMony = 0
@@ -843,152 +869,170 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False):
 
     # 상품 이름
     title = ""
+    
+    # 1145990은 url의 끝에 .html 전에 있는 값
+    productNumber = ""
+    urlSplitArray = url.split("/")
+    if len(urlSplitArray) > 0:
+        productNumber = urlSplitArray[-1].replace(".html", "")
+    else:
+        productNumber = url
 
-    if True:
-        # 1145990은 url의 끝에 .html 전에 있는 값
-        urlSplitArray = url.split("/")
-        if len(urlSplitArray) > 0:
-            productNumber = urlSplitArray[-1].replace(".html", "")
-        else:
-            productNumber = url
+    webbrowser.open(url)
+    # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
+    # WinWait, ugg
+    Util.SleepTime(10)
+    htmlElementsData: str = System.GetElementsData()
+    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
 
-        webbrowser.open(url)
-        # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-        # WinWait, ugg
-        Util.SleepTime(10)
-        htmlElementsData = GetElementsData()
-        # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-        Util.KeyboardKeyHotkey("ctrl", "w")
-        Util.SleepTime(1)
+    title = ""
+    # 상품 이름
+    match = re.search(
+        r'<div\s+class\s*=\s*"sticky-toolbar__content">\s*<span>([^<]*)</span>',
+        htmlElementsData,
+    )
+    if match:
+        title = match.group(1)
 
-        title = ""
-        # 상품 이름
-        match = re.search(
-            r'<div\s+class\s*=\s*"sticky-toolbar__content">\s*<span>([^<]*)</span>',
-            htmlElementsData,
-        )
-        if match:
-            title = match.group(1)
-        
-        Util.Debug(f"title : {title}")
+    Util.Debug(f"title : {title}")
 
-        startPos = 0
-        useMoney = 0
-        korMony = 0
-        # <div class="sticky-toolbar__content"
-        match = re.search(
-            r'<div\s+class\s*=\s*"sticky-toolbar__content"', htmlElementsData
-        )
-        if match:
-            startPos = match.start()
-        # aria-labelledby="size" 까지에서 찾기
-        match = re.search(r'aria-labelledby\s*=\s*"size"', htmlElementsData[startPos:])
-        if match:
-            endPos = match.end() + startPos
-        if startPos and endPos:
-            contentValue = htmlElementsData[startPos:endPos]
-            useMoneys = Util.GetRegExMatche1List(contentValue, r"\$(.+)")
-            if len(useMoneys) > 0:
-                useMoney = int(useMoneys[-1])
-                Util.Debug(f"useMoney : {useMoney}")
+    startPos = 0
+    useMoney = 0
+    korMony = 0
+    # <div class="sticky-toolbar__content"
+    match = re.search(r'<div\s+class\s*=\s*"sticky-toolbar__content"', htmlElementsData)
+    if match:
+        startPos = match.start()
+    # aria-labelledby="size" 까지에서 찾기
+    match = re.search(r'aria-labelledby\s*=\s*"size"', htmlElementsData[startPos:])
+    if match:
+        endPos = match.end() + startPos
+    if startPos and endPos:
+        contentValue = htmlElementsData[startPos:endPos]
+        useMoneys = Util.GetRegExMatche1List(contentValue, r"\$(.+)")
+        if len(useMoneys) > 0:
+            useMoney = float(useMoneys[-1])
+            Util.Debug(f"useMoney : {useMoney}")
 
-            korMony = Util.GetKorMony(useMoney, exchangeRate)
+        korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
-            if onlyUseMoney == False:
-                urlEndColorNames = Util.GetRegExMatche1List(contentValue,r'<span data-attr-value="([^"]*)" class="color-value swatch swatch-circle"')
-                colorNames = Util.GetRegExMatche1List(contentValue, r'data-attr-color-swatch="[^"]*"\s*title="([^"]*)"')
+        if onlyUseMoney == False:
+            urlEndColorNames = Util.GetRegExMatche1List(
+                contentValue,
+                r'<span data-attr-value="([^"]*)" class="color-value swatch swatch-circle',
+            )
+            colorNames = Util.GetRegExMatche1List(
+                contentValue, r'data-attr-color-swatch="[^"]*"\s*title="([^"]*)"'
+            )
 
-                if len(urlEndColorNames) == len(colorNames):
-                    for index in range(len(urlEndColorNames)):
-                        # .html?dwvar_1145990_color=BCDR 제일 뒤에 색 정보 적어서 url 열 수 있음
-                        # 색 위치로 클릭하는 것보다 url 열는 것이 더 낫다고 생각됨
-                        colorUrl = f"{url}?dwvar_{productNumber}_color={urlEndColorNames[index]}"
+            if len(urlEndColorNames) == len(colorNames):
+                for index in range(len(urlEndColorNames)):
+                    # .html?dwvar_1145990_color=BCDR 제일 뒤에 색 정보 적어서 url 열 수 있음
+                    # 색 위치로 클릭하는 것보다 url 열는 것이 더 낫다고 생각됨
+                    colorUrl = (
+                        f"{url}?dwvar_{productNumber}_color={urlEndColorNames[index]}"
+                    )
 
-                        Util.Debug(f"urlEndColorNames[{index}] : {urlEndColorNames[index]}")
+                    Util.Debug(f"urlEndColorNames[{index}] : {urlEndColorNames[index]}")
 
-                        Util.Debug(f"colorNames[{index}] : {colorNames[index]}")
+                    Util.Debug(f"colorNames[{index}] : {colorNames[index]}")
 
-                        webbrowser.open(colorUrl)
-                        # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-                        # WinWait, ugg
-                        Util.SleepTime(10)
-                        colorUrlHtmlElementsData = GetElementsData()
-                        # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-                        Util.KeyboardKeyHotkey("ctrl", "w")
-                        Util.SleepTime(1)
+                    webbrowser.open(colorUrl)
+                    # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
+                    # WinWait, ugg
+                    Util.SleepTime(10)
+                    colorUrlHtmlElementsData: str = System.GetElementsData()
+                    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+                    Util.KeyboardKeyHotkey("ctrl", "w")
+                    Util.SleepTime(1)
 
-                        # 이미지 url 알아오는 것
-                        if True:
-                            imgBigUrls = []
-                            imgUrls = Util.GetRegExMatche1List(colorUrlHtmlElementsData,r'<img[^>]+data-srcset="([^"]+)"[^>]+>')
-                            for imgUrl in imgUrls:
-                                splitArray = imgUrl.split(" , ")
-                                if len(splitArray) > 0:
-                                    # 제일 끝에 것으로 하는 이유는 이미지 제일 큰 Url 이기 때문에
-                                    if re.search(r"https:(.+)\.(png|jpg)", splitArray[-1]):
-                                        imgBigUrls.append(re.search(r"https:(.+)\.(png|jpg)", splitArray[-1]))
+                    # 이미지 url 알아오는 것
+                    if True:
+                        imgBigUrls = []
+                        imgUrls = Util.GetRegExMatche1List(
+                            colorUrlHtmlElementsData,
+                            r'<img[^>]+data-srcset="([^"]+)"[^>]+>',
+                        )
+                        for imgUrl in imgUrls:
+                            splitArray = imgUrl.split(" , ")
+                            if len(splitArray) > 0:
+                                # 제일 끝에 것으로 하는 이유는 이미지 제일 큰 Url 이기 때문에
+                                imgBigUrl_match = re.search(
+                                    r"https:(.+)\.(png|jpg)", splitArray[-1]
+                                )
+                                if imgBigUrl_match:
+                                    imgBigUrls.append(imgBigUrl_match.group(0))
 
-                        # 구매 가능한 사이즈 구하기
-                        if True:
-                            sizes = []
-                            # <div class="sticky-toolbar__content"> 는 뒤에 줄에 이는 곳 부터 찾기
-                            match = re.search(r'<div\s+class\s*=\s*"sticky-toolbar__content"',colorUrlHtmlElementsData)
-                            if match:
-                                # 패턴을 찾았을 때의 시작 위치
-                                startPos = match.start()
-                            else:
-                                # 패턴을 찾지 못했을 때의 처리
-                                startPos = 0
-                            # 정규식으로 특정 줄에 options-select과 https://www과 _1145990_ 과 data-attr-value 이 포함되는 줄이 있는지 체크
-                            # sizeLines 리스트 초기화
-                            sizeLines = Util.GetRegExMatcheList(
-                                colorUrlHtmlElementsData,
-                                r'options-select\s*.*value="(https:\/\/www\.ugg\.com\/on\/demandware\.store\/Sites-UGG-US-Site\/en_US\/Product-Variation\?dwvar_'
-                                + re.escape(productNumber)
-                                + '_color=[^"]+)".*data-attr-value="([^"]+)"',
-                                startPos,
+                    # 구매 가능한 사이즈 구하기
+                    if True:
+                        sizes = []
+                        # <div class="sticky-toolbar__content"> 는 뒤에 줄에 이는 곳 부터 찾기
+                        match = re.search(
+                            r'<div\s+class\s*=\s*"sticky-toolbar__content"',
+                            colorUrlHtmlElementsData,
+                        )
+                        if match:
+                            # 패턴을 찾았을 때의 시작 위치
+                            startPos = match.start()
+                        else:
+                            # 패턴을 찾지 못했을 때의 처리
+                            startPos = 0
+                        # 정규식으로 특정 줄에 options-select과 https://www과 _1145990_ 과 data-attr-value 이 포함되는 줄이 있는지 체크
+                        # sizeLines 리스트 초기화
+                        sizeLines = Util.GetRegExMatcheList(
+                            colorUrlHtmlElementsData,
+                            r'options-select\s*.*value="(https:\/\/www\.ugg\.com\/on\/demandware\.store\/Sites-UGG-US-Site\/en_US\/Product-Variation\?dwvar_'
+                            + re.escape(productNumber)
+                            + '_color=[^"]+)".*data-attr-value="([^"]+)"',
+                            startPos,
+                        )
+                        # sizeLines 리스트에 대한 루프
+                        for line in sizeLines:
+                            # options-select와 value 사이에 값이 없는 것만 찾기
+                            match = re.search(
+                                r'options-select\s*"\s*value="([^"]*)"', line
                             )
-                            # sizeLines 리스트에 대한 루프
-                            for line in sizeLines:
-                                # options-select와 value 사이에 값이 없는 것만 찾기
-                                if re.search(r'options-select\s*""\s*value="([^"]*)"', line):
-                                    # 데이터 추출
-                                    match = re.search(r'data-attr-value="([^"]+)"', line)
-                                    if match:
-                                        extractedValue = match.group(1)
-                                        defaultExtractedValue = extractedValue
-                                        extractedValueSplitArray = extractedValue.split("/")
-                                        if len(extractedValueSplitArray) == 2:
-                                            extractedValue = extractedValueSplitArray[-1]
+                            if match:
+                                # 데이터 추출
+                                match = re.search(r'data-attr-value="([^"]+)"', line)
+                                if match:
+                                    extractedValue = match.group(1)
+                                    defaultExtractedValue = extractedValue
+                                    extractedValueSplitArray = extractedValue.split("/")
+                                    if len(extractedValueSplitArray) == 2:
+                                        extractedValue = extractedValueSplitArray[-1]
 
-                                        # 숫자로 판단되면 앞의 0 제거
-                                        if re.match(r"^[0-9]+(\.[0-9]+)?$", extractedValue):
-                                            if extractedValue.startswith("0") and (len(extractedValue) < 2 or extractedValue[1] != "."):
-                                                extractedValue = extractedValue[1:]
+                                    # 숫자로 판단되면 앞의 0 제거
+                                    if re.match(r"^[0-9]+(\.[0-9]+)?$", extractedValue):
+                                        if extractedValue.startswith("0") and (
+                                            len(extractedValue) < 2
+                                            or extractedValue[1] != "."
+                                        ):
+                                            extractedValue = extractedValue[1:]
 
-                                            sizeData = f"US_{extractedValue}({Util.GetUggKorSize(extractedValue)})"
+                                        sizeData = f"US_{extractedValue}({Util.GetUggKorSize(extractedValue)})"
 
-                                            Util.Debug(f"size : {sizeData}")
-                                            sizes.append(sizeData)
-                                        else:
-                                            sizes.append(defaultExtractedValue)
+                                        Util.Debug(f"size : {sizeData}")
+                                        sizes.append(sizeData)
+                                    else:
+                                        sizes.append(defaultExtractedValue)
 
-                        if len(sizes) > 0 and len(imgBigUrls) > 0:
-                            # 문자열의 길이가 25보다 큰지 확인
-                            if len(colorNames[index]) > 25:
-                                # 25자까지만 잘라내기
-                                colorName = colorNames[index][:25]
-                            else:
-                                colorName = colorNames[index]
-                            arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
-
-    values = {}
-    values.useMoney = useMoney
-    values.korMony = korMony
-    values.arraySizesAndImgUrls = arraySizesAndImgUrls
-    values.title = title
-    return values
-
+                    if len(sizes) > 0 and len(imgBigUrls) > 0:
+                        # 문자열의 길이가 25보다 큰지 확인
+                        if len(colorNames[index]) > 25:
+                            # 25자까지만 잘라내기
+                            colorName = colorNames[index][:25]
+                        else:
+                            colorName = colorNames[index]
+                        arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+    returnValue = UggData()
+    returnValue.useMoney = useMoney
+    returnValue.korMony = korMony
+    returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
+    returnValue.title = title
+    return returnValue
 
 def GetMytheresaData(url, exchangeRate):
     # 사이즈 정보로 정보 취합
@@ -1008,7 +1052,7 @@ def GetMytheresaData(url, exchangeRate):
         # "mytheresa"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
         # WinWait, mytheresa
         Util.SleepTime(10)
-        htmlElementsData = GetElementsData()
+        htmlElementsData: str = System.GetElementsData()
         # Ctrl + W를 눌러 현재 Chrome 탭 닫기
         Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(1)
@@ -1018,7 +1062,7 @@ def GetMytheresaData(url, exchangeRate):
         if match:
             useMoney = match.group(1)
 
-        korMony = Util.GetKorMony(useMoney, exchangeRate)
+        korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
         # 상품 이름
         match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
@@ -1046,20 +1090,19 @@ def GetMytheresaData(url, exchangeRate):
         colorName = "One Color"
         imgBigUrls = []
         arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
-
-    values = {}
-    values.useMoney = useMoney
-    values.korMony = korMony
-    values.arraySizesAndImgUrls = arraySizesAndImgUrls
-    values.title = title
-    values.sizesLength = len(sizes)
-    values.isSoldOut = isSoldOut
-    return values
-
+        
+    returnValue = MytheresaData()
+    returnValue.useMoney =useMoney
+    returnValue.korMony = korMony
+    returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
+    returnValue.title = title
+    returnValue.sizesLength = len(sizes)
+    returnValue.isSoldOut = isSoldOut
+    return returnValue
 
 # 스마트 스토어 수정 화면까지 이동
-def ManageAndModifyProducts(ws, row):
-    values = {}
+def ManageAndModifyProducts(ws, row) -> ManageAndModifyProductsData:
+    values = ManageAndModifyProductsData()
     values.isNoProduct = False
     values.isNoNetwork = False
 
@@ -1090,7 +1133,7 @@ def ManageAndModifyProducts(ws, row):
     if True:
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 조회\상품번호", 150, 10)
         Util.SleepTime(0.5)
-        pyperclip.copy(round(ws(f"{COLUMN.A.name}{row}").value))
+        pyperclip.copy(round(ws[f"{COLUMN.A.name}{row}"].value))
         Util.SleepTime(0.5)
         # 상품번호 붙여넣기
         Util.KeyboardKeyHotkey("ctrl", "v")
@@ -1141,7 +1184,7 @@ def SoldOut(wb, ws, row):
     # Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", 5, 5)
     # Util.SleepTime(1)
 
-    xl_J_(wb, ws, row, "품절 상태로 변경 완료", True)
+    System.xl_J_(wb, ws, row, "품절 상태로 변경 완료", True)
 
     Util.TelegramSend(f"품절 상태로 변경 완료 row({row}) ")
 
