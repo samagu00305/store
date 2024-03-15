@@ -12,6 +12,7 @@ import webbrowser
 from enum import Enum
 import System
 import shutil
+import psutil
 
 
 from collections import namedtuple
@@ -59,6 +60,12 @@ class COLUMN(Enum):
     Q = "Q" # 마지막 실행 시켰던 라인의 시간 입력
     T = "T" # 상품 이름
     U = "U" # 상품 원본 가격
+    
+# 현재 열려 있는 엑셀 프로세스 닫기
+def CloseExcelProcesses():
+    for process in psutil.process_iter():
+        if process.name() == "EXCEL.EXE":
+            process.kill()
     
 def SaveWorksheet(wb):
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
@@ -117,7 +124,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
         if row % 10 == 0:
             Util.TelegramSend(f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}")
             
-        if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
+        if  ws[f"{COLUMN.J.name}{row}"].value and "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
             ws[f"{COLUMN.P.name}{"1"}"].value = row
             ws[f"{COLUMN.Q.name}{"1"}"].value = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(wb)
@@ -184,7 +191,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
             System.SaveWorksheet(wb)
             continue
 
-        if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
+        if ws[f"{COLUMN.J.name}{row}"].value and "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value:
             ws[f"{COLUMN.P.name}{1}"].value = row
             ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(wb)
