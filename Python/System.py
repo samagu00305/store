@@ -13,6 +13,8 @@ from enum import Enum
 import System
 import shutil
 import psutil
+import pandas as pd
+import numpy as np
 
 
 from collections import namedtuple
@@ -74,18 +76,16 @@ def CloseExcelProcesses():
             process.kill()
 
 
-def SaveWorksheet(wb):
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
-    xlFile_copy = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.xlsx"
+def SaveWorksheet(df):
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    xlFile_copy = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.CSV"
 
     Util.Debug("save 원본 엑셀 파일 저장 시작", False)
     # 원본 엑셀 파일 저장
-    wb.save(xlFile)
+    df.to_csv(xlFile, index=False, encoding="cp949")
     Util.Debug("save 원본 엑셀 파일 저장 끝", False)
 
-    Util.Debug("save 복사 엑셀 파일 저장 시작", False)
     shutil.copy(xlFile, xlFile_copy)
-    Util.Debug("save 복사 엑셀 파일 저장 끝", False)
 
 
 def GetElementsData() -> str:
@@ -122,15 +122,15 @@ def GetElementsData() -> str:
 # 등록 된 상품 최신화
 def UpdateStoreWithColorInformation(inputRow=-1):
     Util.TelegramSend("등록 된 상품 최신화 -- 시작")
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
-    wb = openpyxl.load_workbook(xlFile)
-    ws = wb.active
-    lastRow = ws.max_row
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
+    df = df.astype(str)
+    lastRow = df.shape[0]
 
     if inputRow != -1:
         row = inputRow
     else:
-        row = round(ws[f"{COLUMN.P.name}{1}"].value)
+        row = round(float(df.at[1, COLUMN.P.name]))
 
     krwUsd = Util.KRWUSD()
     krwEur = Util.KRWEUR()
@@ -148,25 +148,25 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             )
 
         if (
-            ws[f"{COLUMN.J.name}{row}"].value
-            and "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value
+            df.at[row, COLUMN.J.name]
+            and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
         ):
-            ws[f"{COLUMN.P.name}{1}"].value = row
-            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(wb)
+            df.at[1, COLUMN.P.name] = row
+            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+            System.SaveWorksheet(df)
             continue
 
-        url = ws[f"{COLUMN.C.name}{row}"].value
+        url = df.at[row, COLUMN.C.name]
 
         if "www.ugg.com" in url:
             Util.TelegramSend(
                 f"www.ugg.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
             )
-            isUpdateProduct = UpdateProductInfo_UGG(wb, ws, url, row, krwUsd)
+            isUpdateProduct = UpdateProductInfo_UGG(df, url, row, krwUsd)
             if isUpdateProduct:
-                ws[f"{COLUMN.P.name}{1}"].value = row
-                ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-                System.SaveWorksheet(wb)
+                df.at[1, COLUMN.P.name] = row
+                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+                System.SaveWorksheet(df)
             else:
                 row -= 1
 
@@ -177,32 +177,29 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             )
             isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
             if isUpdateProduct:
-                ws[f"{COLUMN.P.name}{1}"].value = row
-                ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-                System.SaveWorksheet(wb)
+                df.at[1, COLUMN.P.name] = row
+                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+                System.SaveWorksheet(df)
             else:
                 row -= 1
 
             continue
         else:
-            ws[f"{COLUMN.P.name}{1}"].value = row
-            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(wb)
+            df.at[1, COLUMN.P.name] = row
+            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+            System.SaveWorksheet(df)
 
-    # True를 전달하여 저장 여부 설정
-    wb.save(xlFile)  # 저장
-    wb.close()  # 파일 닫기
+    df.to_csv(xlFile, index=False, encoding="cp949")
 
     Util.TelegramSend("등록 된 상품 최신화 -- 끝")
 
 
 def UpdateStoreWithColorInformationMoney_Mytheresa():
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
-    wb = openpyxl.load_workbook(xlFile)
-    ws = wb.active
-    lastRow = ws.max_row
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
+    lastRow = df.shape[0]
 
-    row = round(ws[f"{COLUMN.P.name}{1}"].value)
+    row = round(float(df.at[1, COLUMN.P.name]))
 
     krwEur = Util.KRWEUR()
 
@@ -219,19 +216,19 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
             )
 
         # 웹 브라우저 열기 및 상품 url로 이동
-        url = ws[f"{COLUMN.C.name}{row}"].value
+        url = df.at[row, COLUMN.C.name]
         if "www.mytheresa.com" not in url:
-            ws[f"{COLUMN.P.name}{1}"].value = row
-            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
+            df.at[1, COLUMN.P.name] = row
+            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(wb)
             continue
 
         if (
-            ws[f"{COLUMN.J.name}{row}"].value
-            and "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{row}"].value
+            df.at[row, COLUMN.J.name]
+            and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
         ):
-            ws[f"{COLUMN.P.name}{1}"].value = row
-            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
+            df.at[1, COLUMN.P.name] = row
+            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(wb)
             continue
 
@@ -241,18 +238,16 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
 
         isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
         if isUpdateProduct:
-            ws[f"{COLUMN.P.name}{1}"].value = row
-            ws[f"{COLUMN.Q.name}{1}"].value = Util.GetFormattedCurrentDateTime()
+            df.at[1, COLUMN.P.name] = row
+            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(wb)
         else:
             row -= 1
 
-    # True를 전달하여 저장 여부 설정
-    wb.save(xlFile)  # 저장
-    wb.close()  # 파일 닫기
+    df.to_csv(xlFile, index=False, encoding="cp949")
 
 
-def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
+def UpdateProductInfo_UGG(df, url, row, krwUsd):
     data: UggData = GetUggData(url, krwUsd)
 
     # UGG에 사이즈 정보로 정보 취합
@@ -262,11 +257,11 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
     # 기존 것과 같은지 비교(같으면 스마트 스토어에 하지 않기 위함)
-    before_SaveColorList = ws[f"{COLUMN.F.name}{row}"].value
+    before_SaveColorList = df.at[row, COLUMN.F.name]
     Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
     # 기존 색 이름 과 사아즈를 변수로 저장
-    before_SaveColorNameDoubleArray = ws[f"{COLUMN.G.name}{row}"].value
+    before_SaveColorNameDoubleArray = df.at[row, COLUMN.G.name]
     Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
 
     # 색이름 리스트 값
@@ -283,38 +278,38 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
     # 색이 없은 경우 자체가 연결 되지 않거나 물건 자체가 없어졌을 경우
     if str_saveColorNameDoubleArray == "" or useMoney == 0:
         # 스마트 스토어 수정 화면까지 이동
-        managedata = ManageAndModifyProducts(ws, row)
+        managedata = ManageAndModifyProducts(df, row)
         if managedata.isNoNetwork == True:
             return False
 
         if managedata.isNoProduct == True:
-            System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+            System.xl_J_(df, row, "스토어에 상품이 없습니다.")
             return True
 
         # 품절
-        SoldOut(wb, ws, row)
+        SoldOut(df, row)
     else:
         if (
             before_SaveColorNameDoubleArray == str_saveColorNameDoubleArray
-            and ws[f"{COLUMN.U.name}{row}"].value == useMoney
+            and df.at[row, COLUMN.U.name] == useMoney
         ):
             # 이전과 정보가 변함이 없을 경우(이전과 동일하다고 적고 다음으로 넘어감)
-            System.xl_J_(wb, ws, row, "이전과 동일합니다.")
+            System.xl_J_(df, row, "이전과 동일합니다.")
         else:
             # 이전과 달라졌음
-            System.xl_J_(wb, ws, row, "이전과 동일하지 않아서 변경 하려고 합니다.")
+            System.xl_J_(df, row, "이전과 동일하지 않아서 변경 하려고 합니다.")
 
             # 스마트 스토어 수정 화면까지 이동
-            managedata = ManageAndModifyProducts(ws, row)
+            managedata = ManageAndModifyProducts(df, row)
             if managedata.isNoNetwork == True:
                 return False
 
             if managedata.isNoProduct == True:
-                System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+                System.xl_J_(df, row, "스토어에 상품이 없습니다.")
                 return True
 
             # 가격 변동이 있으면 변경
-            if ws[f"{COLUMN.U.name}{row}"].value != useMoney:
+            if df.at[row, COLUMN.U.name] != useMoney:
                 # 판매가 입력
                 UpdateAndReturnSalePrice(data.korMony)
 
@@ -326,8 +321,7 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
                 Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
 
                 System.xl_J_(
-                    wb,
-                    ws,
+                    df,
                     row,
                     "이전과 동일하지 않아서 변경 하려고 합니다.(옵션 엑셀 세팅 완료)",
                 )
@@ -348,103 +342,99 @@ def UpdateProductInfo_UGG(wb, ws, url, row, krwUsd):
 
             if (
                 before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray
-                and ws[f"{COLUMN.U.name}{row}"].value != useMoney
+                and df.at[row, COLUMN.U.name] != useMoney
             ):
-                ws[f"{COLUMN.U.name}{row}"].value = useMoney
+                df.at[row, COLUMN.U.name] = useMoney
 
                 # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                 if True:
                     # 색 이름 리스트 표시
-                    ws[f"{COLUMN.F.name}{row}"].value = str_saveColorList
+                    df.at[row, COLUMN.F.name] = str_saveColorList
                     Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
                     # 색 이름과 사아즈 리스트 표시
-                    ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
+                    df.at[row, COLUMN.G.name] = str_saveColorNameDoubleArray
                     Util.Debug(
                         f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}"
                     )
 
                     System.xl_J_(
-                        wb,
-                        ws,
+                        df,
                         row,
                         "변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",
                         True,
                     )
 
                     # 이전 색 이름 리스트 표시
-                    ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
+                    df.at[row, COLUMN.K.name] = before_SaveColorList
                     Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
                     # 이전 색 이름과 사아즈 리스트 표시
-                    ws[f"{COLUMN.L.name}{row}"].value = before_SaveColorNameDoubleArray
+                    df.at[row, COLUMN.L.name] = before_SaveColorNameDoubleArray
                     Util.Debug(
                         f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}"
                     )
 
                     System.xl_J_(
-                        wb, ws, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)"
+                        df, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)"
                     )
             else:
                 # 가격 변동이 있으면 변경
-                if ws[f"{COLUMN.U.name}{row}"].value != useMoney:
-                    ws[f"{COLUMN.U.name}{row}"].value = useMoney
+                if df.at[row, COLUMN.U.name] != useMoney:
+                    df.at[row, COLUMN.U.name] = useMoney
 
-                    System.xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
+                    System.xl_J_(df, row, "변경 완료(가격만 변동)")
 
                 if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                     # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
                     if True:
                         # 색 이름 리스트 표시
-                        ws[f"{COLUMN.F.name}{row}"].value = str_saveColorList
+                        df.at[row, COLUMN.F.name] = str_saveColorList
                         Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
                         # 색 이름과 사아즈 리스트 표시
-                        ws[f"{COLUMN.G.name}{row}"].value = str_saveColorNameDoubleArray
+                        df.at[row, COLUMN.G.name] = str_saveColorNameDoubleArray
                         Util.Debug(
                             f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}"
                         )
 
                         System.xl_J_(
-                            wb,
-                            ws,
+                            df,
                             row,
                             "변경 완료(이전과 동일하지 않아)(이전 값 등록 전)",
                             True,
                         )
 
                         # 이전 색 이름 리스트 표시
-                        ws[f"{COLUMN.K.name}{row}"].value = before_SaveColorList
+                        df.at[row, COLUMN.K.name] = before_SaveColorList
                         Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
 
                         # 이전 색 이름과 사아즈 리스트 표시
-                        ws[f"{COLUMN.L.name}{row}"].value = (
-                            before_SaveColorNameDoubleArray
-                        )
+                        df.at[row, COLUMN.L.name] = before_SaveColorNameDoubleArray
                         Util.Debug(
                             f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}"
                         )
 
-                        System.xl_J_(wb, ws, row, "변경 완료(이전과 동일하지 않아)")
+                        System.xl_J_(df, row, "변경 완료(이전과 동일하지 않아)")
 
     return True
 
 
-def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
+def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
     data = GetMytheresaData(url, krwEur)
 
     # 스마트 스토어 수정 화면까지 이동
-    managedata = ManageAndModifyProducts(ws, row)
+    managedata = ManageAndModifyProducts(df, row)
     if managedata.isNoNetwork == True:
         return False
 
     if managedata.isNoProduct == True:
-        System.xl_J_(wb, ws, row, "스토어에 상품이 없습니다.")
+        System.xl_J_(df, row, "스토어에 상품이 없습니다.")
         return True
 
     if data.isSoldOut:
         # 품절
-        SoldOut(wb, ws, row)
+        SoldOut(df, row)
     else:
         if data.sizesLength == 0:
 
@@ -457,9 +447,9 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
 
             if data.korMony != 0:
-                System.xl_J_(wb, ws, row, "변경 완료(가격만 변동)")
+                System.xl_J_(df, row, "변경 완료(가격만 변동)")
             else:
-                System.xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
+                System.xl_J_(df, row, "가격이 0이 나왔습니다.")
         else:
 
             useMoney = data.useMoney
@@ -487,23 +477,23 @@ def UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur):
                 # Util.SleepTime(1)
 
             if data.korMony != 0:
-                System.xl_J_(wb, ws, row, "변경 완료(가격과 사이즈 변동)")
+                System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)")
             else:
-                System.xl_J_(wb, ws, row, "가격이 0이 나왔습니다.")
+                System.xl_J_(df, row, "가격이 0이 나왔습니다.")
 
     return True
 
 
-def xl_J_(wb, ws, row, value, updateTime=False):
+def xl_J_(df, row, value, updateTime=False):
     if updateTime:
         # 갱신 시간 표시
-        ws[f"{COLUMN.H.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+        df.at[row, COLUMN.H.name] = Util.GetFormattedCurrentDateTime()
     # 체크 시간 표시
-    ws[f"{COLUMN.I.name}{row}"].value = Util.GetFormattedCurrentDateTime()
+    df.at[row, COLUMN.I.name] = Util.GetFormattedCurrentDateTime()
     # 체크 상태 표시
-    ws[f"{COLUMN.J.name}{row}"].value = value
+    df.at[row, COLUMN.J.name] = value
 
-    System.SaveWorksheet(wb)
+    System.SaveWorksheet(df)
 
 
 # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
@@ -606,16 +596,15 @@ def ArrayRemove(arr, value):
 # 신규 등록 할 UGG 목록을 엑셀에 정리
 def SetXlsxUGGNewProductURLs():
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 시작")
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
-    wb = openpyxl.load_workbook(xlFile)
-    ws = wb.active
-    lastRow = ws.max_row
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
+    lastRow = df.shape[0]
 
     Util.Debug("start xlsx ugg url")
     # C 열의 데이터를 배열에 저장
     filterUrls = []
     for row_index in range(1, lastRow + 1):
-        url = ws.cell(row=row_index, column=3).value
+        url = df.at[row_index, "C"]
         if url is not None and "www.ugg.com" in url:
             filterUrls.append(url)
     Util.TelegramSend(f"end xlsx ugg url Length : {str(len(filterUrls))}")
@@ -663,25 +652,22 @@ def SetXlsxUGGNewProductURLs():
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
 
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.xlsx"
-    wb = openpyxl.load_workbook(xlFile)
-    ws = wb.active
-    rowCount = ws.max_row
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
 
     # 모든 행을 삭제합니다.
-    for _ in range(rowCount):
-        ws(1).Delete()  # 각 반복에서 첫 번째 행을 삭제합니다.
+    df.drop(df.index, inplace=True)
 
     allCount = 0
     for item in uggProductUrls:
         for item2 in item[2]:
             allCount += 1
-            ws[f"A{allCount}"].value = "UGG"
-            ws[f"B{allCount}"].value = item[1]  # 메뉴
-            ws[f"C{allCount}"].value = item2  # url
+            # 각 셀에 값을 설정합니다.
+            df.loc[allCount, "A"] = "UGG"
+            df.loc[allCount, "B"] = item[1]  # 메뉴
+            df.loc[allCount, "C"] = item2  # url
 
-    wb.save(xlFile)  # 저장
-    wb.close()  # 파일 닫기
+    df.to_excel(xlFile, index=False, encoding="cp949")
 
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 끝")
 
@@ -774,12 +760,10 @@ def UpdateOptionsFromExcel(is_customsDuty):
 
 
 def AddOneProduct_Ugg(
-    wbAddBefore, wbAdd, addOneProductSuccess, krwUsd
+    dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, krwUsd
 ) -> AddOneProduct_UggData:
-    wsAddBefore = wbAddBefore.Sheets(1)
-    wsAdd = wbAdd.Sheets(1)
 
-    url = wsAddBefore[f"{COLUMN.C.name}{1}"].value
+    url = dfAddBefore.at[1, COLUMN.C.name]
 
     data: UggData = GetUggData(url, krwUsd)
 
@@ -797,8 +781,8 @@ def AddOneProduct_Ugg(
     if len(arraySizesAndImgUrls) == 0:
         Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
         # 등록해야 될 것에서 삭제
-        wsAddBefore.Rows(1).Delete()
-        wbAddBefore.Save()
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
@@ -843,7 +827,7 @@ def AddOneProduct_Ugg(
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
     Util.SleepTime(0.5)
     Util.NowMouseClick()
-    pyperclip.copy(wsAddBefore[f"{COLUMN.B.name}{1}"].value)
+    pyperclip.copy(dfAddBefore.at[1, COLUMN.B.name])
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
@@ -878,8 +862,8 @@ def AddOneProduct_Ugg(
     if ProductRegistration.IamgeRegistration_v2() == False:
         Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
-        wsAddBefore.Rows(1).Delete()
-        wbAddBefore.Save()
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
@@ -895,31 +879,37 @@ def AddOneProduct_Ugg(
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", -80, 5):
         Util.SleepTime(3)
 
-        # 동록한 엑셀에 기록(앞에 추가)
-        wsAdd.Rows(2).Insert()
+        # 데이터프레임의 두 번째 행에 빈 행을 추가
+        dfAdd = pd.concat(
+            [
+                dfAdd.iloc[:1],
+                pd.DataFrame([np.nan], columns=dfAdd.columns),
+                dfAdd.iloc[1:],
+            ]
+        ).reset_index(drop=True)
 
         # 상품 url
         Util.GoToTheAddressWindow()
         Util.SleepTime(0.5)
         addurl = Util.CopyToClipboardAndGet()
         Util.Debug(f"addurl : {addurl}")
-        wsAdd[f"{COLUMN.B.name}{2}"].value = addurl
+        dfAdd.at[2, COLUMN.B.name] = addurl
         # 크롬 탭 닫기
         Util.KeyboardKeyHotkey("ctrl", "w")
         Util.SleepTime(0.5)
         # 상품 번호
         addUrlSplitArray = addurl.split("/")
         if len(addUrlSplitArray) > 0:
-            wsAdd[f"{COLUMN.A.name}{2}"].value = addUrlSplitArray[-1]
+            dfAdd.at[2, COLUMN.A.name] = addUrlSplitArray[-1]
 
-        wsAdd[f"{COLUMN.C.name}{2}"].value = url
+        dfAdd.at[2, COLUMN.C.name] = url
         # 상품명 기재
-        wsAdd[f"{COLUMN.T.name}{2}"].value = title
+        dfAdd.at[2, COLUMN.T.name] = title
         # 가격
-        wsAdd[f"{COLUMN.U.name}{2}"].value = useMoney
+        dfAdd.at[2, COLUMN.U.name] = useMoney
         # 브랜드
-        brand = wsAddBefore(f"{COLUMN.A.name}{2}").value
-        wsAdd[f"{COLUMN.E.name}{2}"].value = brand
+        brand = dfAddBefore.at(COLUMN.A.name, 2)
+        dfAdd.at[2, COLUMN.E.name] = brand
 
         # 색이름 리스트 값
         colorNames = []
@@ -928,21 +918,21 @@ def AddOneProduct_Ugg(
         str_saveColorList = Util.JoinArrayToString(colorNames)
         Util.Debug(f"str_saveColorList : {str_saveColorList}")
 
-        wsAdd[f"{COLUMN.F.name}{2}"].value = str_saveColorList
+        dfAdd.at[2, COLUMN.F.name] = str_saveColorList
 
         # 색 이름 과 사아즈 리스트 값(이중 배열)
         str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
         Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
 
-        wsAdd[f"{COLUMN.G.name}{2}"].value = str_saveColorNameDoubleArray
+        dfAdd.at[2, COLUMN.G.name] = str_saveColorNameDoubleArray
 
-        System.xl_J_(wbAdd, wsAdd, 2, "신규 등록", True)
+        System.xl_J_(dfAdd, 2, "신규 등록", True)
 
-        wbAdd.Save()
+        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
 
         # 등록해야 될 것에서 삭제
-        wsAddBefore.Rows(1).Delete()
-        wbAddBefore.Save()
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = True
@@ -968,15 +958,13 @@ def AddDataFromExcel_Ugg():
         "추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 시작"
     )
 
-    xlFileAddBefore = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.xlsx"
-    wbAddBefore = openpyxl.load_workbook(xlFileAddBefore)
-    wsAddBefore = wbAddBefore.active
-    rowCountAddBefore = wsAddBefore.max_row
+    xlFileAddBefore = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
+    dfAddBefore = pd.read_csv(xlFileAddBefore, encoding="cp949")
+    rowCountAddBefore = dfAddBefore.shape[0]
 
-    xlFileAdd = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.xlsx"
-    wbAdd = openpyxl.load_workbook(xlFileAdd)
-    wsAdd = wbAdd.active
-    rowCountAdd = wsAdd.max_row
+    xlFileAdd = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    dfAdd = pd.read_csv(xlFileAdd, encoding="cp949")
+    rowCountAdd = dfAdd.shape[0]
 
     krwUsd = Util.KRWUSD()
 
@@ -987,7 +975,14 @@ def AddDataFromExcel_Ugg():
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
-            data = AddOneProduct_Ugg(wbAddBefore, wbAdd, addOneProductSuccess, krwUsd)
+            data = AddOneProduct_Ugg(
+                dfAddBefore,
+                dfAdd,
+                xlFileAddBefore,
+                xlFileAdd,
+                addOneProductSuccess,
+                krwUsd,
+            )
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
                 if data.addCount:
@@ -995,8 +990,6 @@ def AddDataFromExcel_Ugg():
                 count += 1
                 break
 
-    wbAdd.Quit()
-    wbAddBefore.Quit()
     Util.TelegramSend("추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 끝")
 
     return addCount
@@ -1247,7 +1240,7 @@ def GetMytheresaData(url, exchangeRate):
 
 
 # 스마트 스토어 수정 화면까지 이동
-def ManageAndModifyProducts(ws, row) -> ManageAndModifyProductsData:
+def ManageAndModifyProducts(df, row) -> ManageAndModifyProductsData:
     values = ManageAndModifyProductsData()
     values.isNoProduct = False
     values.isNoNetwork = False
@@ -1279,7 +1272,7 @@ def ManageAndModifyProducts(ws, row) -> ManageAndModifyProductsData:
     if True:
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 조회\상품번호", 150, 10)
         Util.SleepTime(0.5)
-        pyperclip.copy(round(ws[f"{COLUMN.A.name}{row}"].value))
+        pyperclip.copy(round(float(df.at[row, COLUMN.A.name])))
         Util.SleepTime(0.5)
         # 상품번호 붙여넣기
         Util.KeyboardKeyHotkey("ctrl", "v")
@@ -1305,7 +1298,7 @@ def ManageAndModifyProducts(ws, row) -> ManageAndModifyProductsData:
 
 
 # 품절
-def SoldOut(wb, ws, row):
+def SoldOut(df, row):
     # 품절
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션", 0, 0, -500)
     Util.SleepTime(1)
@@ -1348,7 +1341,7 @@ def SoldOut(wb, ws, row):
     # Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", 5, 5)
     # Util.SleepTime(1)
 
-    System.xl_J_(wb, ws, row, "품절 상태로 변경 완료", True)
+    System.xl_J_(df, row, "품절 상태로 변경 완료", True)
 
     Util.TelegramSend(f"품절 상태로 변경 완료 row({row}) ")
 
@@ -1370,23 +1363,17 @@ def UpdateAndReturnSalePrice(korMony):
 
 
 # 품절 완료 된 것 엑셀에서 제거
-def RemoveCompletedSoldOutItems(wb):
-    ws = wb.Sheets(1)
-
+def RemoveCompletedSoldOutItems(df):
     startCount = 2
     while True:
-        Util.Debug(f"ws.UsedRange.Rows.Count : {ws.UsedRange.Rows.Count}")
-        # 중복 여부를 체크합니다.
         isFind = False
-        for i in range(ws.UsedRange.Rows.Coun):
-            if i >= startCount:
-                if "품절 상태로 변경 완료" in ws[f"{COLUMN.J.name}{i}"].value:
-                    ws.Rows(i).Delete()
-                    wb.Save()
-                    isFind = True
-                    startCount = i
-                    Util.Debug(i)
-                    break
+        for i in range(startCount, len(df)):
+            if "품절 상태로 변경 완료" in df.at[i, COLUMN.J]:
+                # 행 삭제
+                df.drop(index=i, inplace=True)
+                isFind = True
+                startCount = i
+                break
 
-        if isFind == False:
+        if not isFind:
             break

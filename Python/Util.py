@@ -85,14 +85,18 @@ def MouseWheelScroll(wheelMove):
     pyautogui.scroll(wheelMove)
 
 
-class Size(NamedTuple):
-    width: int
-    height: int
+class Size:
+    def __init__(self):
+        self.width = ""
+        self.height = ""
 
 
 def ScreenSize():
     screenSize = pyautogui.size()
-    return Size(screenSize.width, screenSize.height)
+    returnValue = Size()
+    returnValue.width = screenSize.width
+    returnValue.height = screenSize.height
+    return returnValue
 
 
 def FoundImage(imageName):
@@ -541,8 +545,9 @@ def IsValueInArray(value, arr):
 def Debug(value, isShowPopup=True):
     nowTime = Util.GetFormattedCurrentDateTime()
     print(nowTime + " " + value)
-    if isShowPopup == True:
-        ShowPopup(value, 3)
+    # Tcl_AsyncDelete: async handler deleted by the wrong thread 가 발생해서 주석
+    # if isShowPopup == True:
+    #     ShowPopup(value, 3)
     return
 
 

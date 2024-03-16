@@ -1,15 +1,8 @@
-import cv2
-import numpy as np
 import openpyxl
-import pyautogui
 import tkinter as tk
 from tkinter import messagebox
 import os
 import Util
-import EnvData
-import requests
-from typing import NamedTuple
-from enum import Enum
 import System
 import traceback
 import psutil
@@ -49,7 +42,7 @@ def show_start_popup():
     except:
         stack_trace_str = traceback.format_exc()
         Util.TelegramSend(str(stack_trace_str), False)
-        save_and_close_open_excel_files()
+        # save_and_close_open_excel_files()
         raise
 
 
