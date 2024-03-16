@@ -11,14 +11,28 @@ import requests
 from typing import NamedTuple
 from enum import Enum
 import System
+import traceback
 
 
 def show_start_popup():
 
-    System.UpdateStoreWithColorInformation(1)
+    try:
+        System.CloseExcelProcesses()
 
-    Util.SleepTime(5)
-    Util.TelegramSend("Test")
+        System.UpdateStoreWithColorInformation(-1)
+
+        System.CloseExcelProcesses()
+
+        Util.SleepTime(5)
+        Util.TelegramSend("Test")
+    except ZeroDivisionError as e:
+        stack_trace_str = traceback.format_exc()
+        Util.TelegramSend(str(stack_trace_str), False)
+        raise e
+    except Exception as e:
+        stack_trace_str = traceback.format_exc()
+        Util.TelegramSend(str(stack_trace_str), False)
+        raise e
 
 
 def show_exit_popup():

@@ -544,24 +544,29 @@ def Debug(value):
     ShowPopup(value, 3)
     return
 
+
 # 현재 실행 중인 팝업 스레드를 저장하는 변수
 current_progress_thread = None
+
 
 def print_progress_thread(output_value, duration):
     global current_progress_thread
     if current_progress_thread:
         # 이전 팝업 스레드가 있으면 종료
         current_progress_thread.join()
-    progress_thread = threading.Thread(target=print_progress, args=(output_value, duration))
+    progress_thread = threading.Thread(
+        target=print_progress, args=(output_value, duration)
+    )
     progress_thread.daemon = True  # 메인 프로세스 종료 시 함께 종료되도록 설정
     progress_thread.start()
     current_progress_thread = progress_thread
     return progress_thread
 
+
 def print_progress(output_value, duration):
     # Tkinter 윈도우 생성
     root = tk.Tk()
-    root.attributes('-alpha', 0.0)  # 윈도우를 투명하게 만듦
+    root.attributes("-alpha", 0.0)  # 윈도우를 투명하게 만듦
     root.geometry("200x100")  # 윈도우 크기 설정
 
     # 화면 크기 구하기
@@ -571,12 +576,12 @@ def print_progress(output_value, duration):
     # 말풍선 생성
     balloon = tk.Toplevel(root)
     balloon.overrideredirect(True)  # 말풍선 윈도우에 테두리와 타이틀 바 숨김
-    balloon.attributes('-alpha', 0.9)  # 말풍선을 투명하게 만들지 않음
-    balloon.attributes('-topmost', True)  # 말풍선을 최상위로 설정
+    balloon.attributes("-alpha", 0.9)  # 말풍선을 투명하게 만들지 않음
+    balloon.attributes("-topmost", True)  # 말풍선을 최상위로 설정
 
     # 화면 왼쪽 하단에 말풍선 위치 설정
     x_position = 0
-    y_position = screen_height - 70 
+    y_position = screen_height - 70
     balloon.geometry("+{}+{}".format(x_position, y_position))
 
     # 말풍선에 텍스트 레이블 추가
@@ -588,6 +593,7 @@ def print_progress(output_value, duration):
 
     # Tkinter 윈도우 실행
     root.mainloop()
+
 
 # 팝업을 보여주는 함수
 def ShowPopup(text, duration):
@@ -906,8 +912,9 @@ def SleepTime(second):
     time.sleep(second)
 
 
-def TelegramSend(Message):
-    Util.Debug(f"TelegramSend : " + Message)
+def TelegramSend(Message, isDebug=True):
+    if isDebug == True:
+        Util.Debug(f"TelegramSend : " + Message)
     ChatID = EnvData.TelegramSend_ChatID()
     Token = EnvData.TelegramSend_Token()
     # 매개변수 설정
