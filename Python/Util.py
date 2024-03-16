@@ -538,10 +538,11 @@ def IsValueInArray(value, arr):
     return False
 
 
-def Debug(value):
+def Debug(value, isShowPopup=True):
     nowTime = Util.GetFormattedCurrentDateTime()
     print(nowTime + " " + value)
-    ShowPopup(value, 3)
+    if isShowPopup == True:
+        ShowPopup(value, 3)
     return
 
 

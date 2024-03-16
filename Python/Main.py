@@ -12,10 +12,31 @@ from typing import NamedTuple
 from enum import Enum
 import System
 import traceback
+import psutil
+
+
+def save_and_close_open_excel_files():
+    for proc in psutil.process_iter(["pid", "name"]):
+        try:
+            if "EXCEL.EXE" in proc.info["name"]:  # 엑셀 프로세스인지 확인
+                for conn in proc.connections():
+                    if (
+                        conn.laddr and conn.laddr.port
+                    ):  # 엑셀 파일에 연결된 프로세스 확인
+                        file_path = conn.laddr.ip  # 파일 경로 또는 IP 주소
+                        # 파일 저장
+                        try:
+                            wb = openpyxl.load_workbook(file_path)
+                            wb.save(f"{os.path.basename(file_path)}_backup.xlsx")
+                            print(f"저장 및 닫기 완료: {file_path}")
+                            wb.close()  # 엑셀 파일 닫기
+                        except Exception as e:
+                            print(f"저장 및 닫기 중 에러 발생: {file_path}", e)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
 
 
 def show_start_popup():
-
     try:
         System.CloseExcelProcesses()
 
@@ -25,14 +46,11 @@ def show_start_popup():
 
         Util.SleepTime(5)
         Util.TelegramSend("Test")
-    except ZeroDivisionError as e:
+    except:
         stack_trace_str = traceback.format_exc()
         Util.TelegramSend(str(stack_trace_str), False)
-        raise e
-    except Exception as e:
-        stack_trace_str = traceback.format_exc()
-        Util.TelegramSend(str(stack_trace_str), False)
-        raise e
+        save_and_close_open_excel_files()
+        raise
 
 
 def show_exit_popup():
@@ -60,6 +78,12 @@ root.geometry(f"{width}x{height}+{x}+{y}")
 # 시작하기 버튼 생성 및 가운데 정렬
 start_button = tk.Button(root, text="시작하기", command=show_start_popup)
 start_button.place(relx=0.3, rely=0.5, anchor="center")
+
+close_excel_button = tk.Button(
+    root, text="엑셀 다 끄기", command=System.CloseExcelProcesses
+)
+close_excel_button.place(relx=0.5, rely=0.2, anchor="center")
+
 
 # 종료하기 버튼 생성 및 가운데 정렬
 exit_button = tk.Button(root, text="종료하기", command=show_exit_popup)
