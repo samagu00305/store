@@ -1,4 +1,5 @@
-- 블록 접기/펴기: Ctrl + Shift + [
-- 정렬 : Shift + Alt + F
-- 주석 설정 : Ctrl + K + C
-- 주석 해제 : Ctrl + K + U
+# 지금 설치 된 것 모두 나열
+pip freeze > Python/requirements.txt
+
+# 설치한 것 한번에 설치하기
+pip install -r Python/requirements.txt
