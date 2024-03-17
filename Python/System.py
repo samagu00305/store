@@ -594,23 +594,22 @@ def ArrayRemove(arr, value):
 
 
 # 신규 등록 할 UGG 목록을 엑셀에 정리
-def SetXlsxUGGNewProductURLs():
+def SetCsvUGGNewProductURLs():
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 시작")
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
     df = pd.read_csv(xlFile, encoding="cp949")
     lastRow = df.shape[0]
 
-    Util.Debug("start xlsx ugg url")
+    Util.Debug("start Csv ugg url")
     # C 열의 데이터를 배열에 저장
     filterUrls = []
-    for row_index in range(1, lastRow + 1):
+    for row_index in range(0, lastRow):
         url = df.at[row_index, "C"]
         if url is not None and "www.ugg.com" in url:
             filterUrls.append(url)
-    Util.TelegramSend(f"end xlsx ugg url Length : {str(len(filterUrls))}")
+    Util.TelegramSend(f"end Csv ugg url Length : {str(len(filterUrls))}")
 
-    wb.save(xlFile)  # 저장
-    wb.close()  # 파일 닫기
+    df.to_excel(xlFile, index=False, encoding="cp949")
 
     # 메뉴 창이 한번은 열려야지 세부 메뉴 창이 정상으로 열림
     webbrowser.open("https://www.ugg.com/women-footwear")
