@@ -23,32 +23,32 @@ from collections import namedtuple
 
 class UggData:
     def __init__(self):
-        self.useMoney = ""
-        self.korMony = ""
-        self.arraySizesAndImgUrls = ""
+        self.useMoney: float = 0
+        self.korMony: float = 0
+        self.arraySizesAndImgUrls = []
         self.title = ""
 
 
 class MytheresaData:
     def __init__(self):
-        self.useMoney = ""
-        self.korMony = ""
-        self.arraySizesAndImgUrls = ""
+        self.useMoney: float = 0
+        self.korMony: float = 0
+        self.arraySizesAndImgUrls = []
         self.title = ""
-        self.sizesLength = ""
-        self.isSoldOut = ""
+        self.sizesLength: int = 0
+        self.isSoldOut: bool = False
 
 
 class AddOneProduct_UggData:
     def __init__(self):
-        self.addCount = ""
-        self.addOneProductSuccess = ""
+        self.addCount: bool = False
+        self.addOneProductSuccess: bool = False
 
 
 class ManageAndModifyProductsData:
     def __init__(self):
-        self.isNoProduct = ""
-        self.isNoNetwork = ""
+        self.isNoProduct: bool = False
+        self.isNoNetwork: bool = False
 
 
 class UggNewProductURLs:
@@ -1178,8 +1178,8 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
                             colorName = colorNames[index]
                         arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
     returnValue = UggData()
-    returnValue.useMoney = useMoney
-    returnValue.korMony = korMony
+    returnValue.useMoney = float(useMoney)
+    returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
     return returnValue
@@ -1250,8 +1250,8 @@ def GetMytheresaData(url, exchangeRate):
         arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
 
     returnValue = MytheresaData()
-    returnValue.useMoney = useMoney
-    returnValue.korMony = korMony
+    returnValue.useMoney = float(useMoney)
+    returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.sizesLength = len(sizes)
