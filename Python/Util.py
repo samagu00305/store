@@ -1145,8 +1145,12 @@ def save_and_close_open_excel_files():
             pass
 
 def TranslateToKorean(enText: str) -> str:
-    trans = Translator()
-    result = trans.translate(enText, dest='ko', src='en')
-    Util.Debug(f"원  문({result.src}): {result.origin}")
-    Util.Debug(f"번역문({result.dest}) : {result.text}")
-    return result.text
+    returnValue = ""
+    if enText:
+        Util.Debug(f"번역 시작 : {enText}")
+        trans = Translator()
+        result = trans.translate(enText, dest='ko', src='en')
+        Util.Debug(f"원  문({result.src}): {result.origin}")
+        Util.Debug(f"번역문({result.dest}) : {result.text}")
+        returnValue = result.text 
+    return returnValue
