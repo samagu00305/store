@@ -819,7 +819,7 @@ def SetExcelOption(doubleArray, is_customsDuty):
             ).value = 300
             ws.cell(
                 row=(allCount + 1), column=(6 if is_customsDuty != False else 5)
-            ).value = (index + index2)
+            ).value = f"{index}{index2}"
             ws.cell(
                 row=(allCount + 1), column=(7 if is_customsDuty != False else 6)
             ).value = "Y"
