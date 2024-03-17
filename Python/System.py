@@ -1168,7 +1168,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     returnValue.useMoney = useMoney
     returnValue.korMony = korMony
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
-    returnValue.title = title
+    returnValue.title = Util.TranslateToKorean(title)
     return returnValue
 
 
@@ -1181,7 +1181,7 @@ def GetMytheresaData(url, exchangeRate):
     arraySizesAndImgUrls = []
 
     # 상품 이름
-    title = ""
+    title: str = ""
 
     isSoldOut = False
 
@@ -1233,7 +1233,7 @@ def GetMytheresaData(url, exchangeRate):
     returnValue.useMoney = useMoney
     returnValue.korMony = korMony
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
-    returnValue.title = title
+    returnValue.title = Util.TranslateToKorean(title)
     returnValue.sizesLength = len(sizes)
     returnValue.isSoldOut = isSoldOut
     return returnValue

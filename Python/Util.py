@@ -7,11 +7,11 @@ from enum import Enum
 import tkinter as tk
 import threading
 import psutil
+from googletrans import Translator
 
 Array_ColroName = 0
 Array_SizeList = 1
 Array_UrlList = 2
-
 
 # 현재 미국 환율 정보 출력
 def KRWUSD():
@@ -1143,3 +1143,10 @@ def save_and_close_open_excel_files():
                             print(f"저장 및 닫기 중 에러 발생: {file_path}", e)
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
+
+def TranslateToKorean(enText: str) -> str:
+    trans = Translator()
+    result = trans.translate(enText, dest='ko', src='en')
+    Util.Debug(f"원  문({result.src}): {result.origin}")
+    Util.Debug(f"번역문({result.dest}) : {result.text}")
+    return result.text
