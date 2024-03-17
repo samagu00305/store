@@ -1201,8 +1201,12 @@ def GetMytheresaData(url, exchangeRate):
             useMoney = match.group(1)
 
         korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
+        
+        match = re.search(r'<title>(.*?)</title>', htmlElementsData)
+        if match:
+            title = str(match.group(1)).replace('| Mytheresa', '')
 
-        # 상품 이름
+        # 재화 타입
         match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
         if match:
             priceCurrency = match.group(1)
