@@ -1,13 +1,12 @@
 ﻿from datetime import datetime
-import win32com.client as win32
 import Util, EnvData, GlobalData
 import urllib.request
 import numpy as np
 import webbrowser, requests, subprocess, pyautogui, time, pyperclip, re, os, cv2, openpyxl
 from enum import Enum
-from typing import NamedTuple
 import tkinter as tk
 import threading
+import psutil
 
 Array_ColroName = 0
 Array_SizeList = 1
@@ -1123,3 +1122,24 @@ def FindImage(
         returnValue.x = 0
         returnValue.y = 0
         return returnValue
+
+
+def save_and_close_open_excel_files():
+    for proc in psutil.process_iter(["pid", "name"]):
+        try:
+            if "EXCEL.EXE" in proc.info["name"]:  # 엑셀 프로세스인지 확인
+                for conn in proc.connections():
+                    if (
+                        conn.laddr and conn.laddr.port
+                    ):  # 엑셀 파일에 연결된 프로세스 확인
+                        file_path = conn.laddr.ip  # 파일 경로 또는 IP 주소
+                        # 파일 저장
+                        try:
+                            wb = openpyxl.load_workbook(file_path)
+                            wb.save(f"{os.path.basename(file_path)}_backup.xlsx")
+                            print(f"저장 및 닫기 완료: {file_path}")
+                            wb.close()  # 엑셀 파일 닫기
+                        except Exception as e:
+                            print(f"저장 및 닫기 중 에러 발생: {file_path}", e)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass

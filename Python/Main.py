@@ -1,32 +1,8 @@
-import openpyxl
 import tkinter as tk
 from tkinter import messagebox
-import os
 import Util
 import System
 import traceback
-import psutil
-
-
-def save_and_close_open_excel_files():
-    for proc in psutil.process_iter(["pid", "name"]):
-        try:
-            if "EXCEL.EXE" in proc.info["name"]:  # 엑셀 프로세스인지 확인
-                for conn in proc.connections():
-                    if (
-                        conn.laddr and conn.laddr.port
-                    ):  # 엑셀 파일에 연결된 프로세스 확인
-                        file_path = conn.laddr.ip  # 파일 경로 또는 IP 주소
-                        # 파일 저장
-                        try:
-                            wb = openpyxl.load_workbook(file_path)
-                            wb.save(f"{os.path.basename(file_path)}_backup.xlsx")
-                            print(f"저장 및 닫기 완료: {file_path}")
-                            wb.close()  # 엑셀 파일 닫기
-                        except Exception as e:
-                            print(f"저장 및 닫기 중 에러 발생: {file_path}", e)
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
 
 
 def show_start_popup():
