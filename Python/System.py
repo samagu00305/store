@@ -51,6 +51,12 @@ class ManageAndModifyProductsData:
         self.isNoNetwork = ""
 
 
+class UggNewProductURLs:
+    def __init__(self):
+        self.name = ""
+        self.productUrls = []
+
+
 class COLUMN(Enum):
     A = "A"  # 상품 번호 칸
     B = "B"  # 상품 url 칸
@@ -498,7 +504,7 @@ def xl_J_(df, row, value, updateTime=False):
 
 
 # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
-def GetNewProductURLs_UGG(name, url, filterUrls):
+def GetNewProductURLs_UGG(name, url, filterUrls) -> UggNewProductURLs:
     Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 시작")
     webbrowser.open(url)
     # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
@@ -569,22 +575,27 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
     for productUrlLine in productUrlLines:
         splitList = productUrlLine.split(".html")
         if len(splitList) > 0:
-            productUrls.append(f"https://www.ugg.com{splitList[1]}.html")
+            productUrls.append(f"https://www.ugg.com{splitList[0]}.html")
         else:
             productUrls.append(productUrlLine)
     uniqueArr = []
     for productUrl in productUrls:
         for filterUrl in filterUrls:
-            if productUrl == filterUrl:
+            if str(productUrl) == str(filterUrl):
                 uniqueArr.append(productUrl)
                 break
 
     for uniqueValue in uniqueArr:
         ArrayRemove(productUrls, uniqueValue)
 
-    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
+    # 중복 제거
+    productUrls = list(set(productUrls))
 
-    return [name, productUrls]
+    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
+    returnValue = UggNewProductURLs()
+    returnValue.name = name
+    returnValue.productUrls = productUrls
+    return returnValue
 
 
 def ArrayRemove(arr, value):
@@ -605,12 +616,10 @@ def SetCsvUGGNewProductURLs():
     # C 열의 데이터를 배열에 저장
     filterUrls = []
     for row_index in range(0, lastRow):
-        url = df.at[row_index, "C"]
+        url = str(df.at[row_index, "C"])
         if url is not None and "www.ugg.com" in url:
             filterUrls.append(url)
     Util.TelegramSend(f"end Csv ugg url Length : {str(len(filterUrls))}")
-
-    df.to_excel(xlFile, index=False, encoding="cp949")
 
     # 메뉴 창이 한번은 열려야지 세부 메뉴 창이 정상으로 열림
     webbrowser.open("https://www.ugg.com/women-footwear")
@@ -619,7 +628,7 @@ def SetCsvUGGNewProductURLs():
     Util.SleepTime(10)
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
-    uggProductUrls = []
+    uggProductUrls: list[UggNewProductURLs] = []
     uggProductUrls.append(
         GetNewProductURLs_UGG(
             "패션잡화 여성신발 부츠 미들부츠",
@@ -653,21 +662,25 @@ def SetCsvUGGNewProductURLs():
     Util.SleepTime(1)
 
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
-    df = pd.read_csv(xlFile, encoding="cp949")
+    try:
+        df = pd.read_csv(xlFile, encoding="cp949")
+    except pd.errors.EmptyDataError:
+        # 빈 파일이므로 빈 데이터프레임 생성
+        df = pd.DataFrame()
 
     # 모든 행을 삭제합니다.
     df.drop(df.index, inplace=True)
 
     allCount = 0
     for item in uggProductUrls:
-        for item2 in item[2]:
+        for productUrl in item.productUrls:
             allCount += 1
             # 각 셀에 값을 설정합니다.
             df.loc[allCount, "A"] = "UGG"
-            df.loc[allCount, "B"] = item[1]  # 메뉴
-            df.loc[allCount, "C"] = item2  # url
+            df.loc[allCount, "B"] = item.name  # 메뉴
+            df.loc[allCount, "C"] = productUrl  # url
 
-    df.to_excel(xlFile, index=False, encoding="cp949")
+    df.to_csv(xlFile, index=False, encoding="cp949")
 
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 끝")
 

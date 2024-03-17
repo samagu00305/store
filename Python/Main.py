@@ -9,6 +9,9 @@ def show_start_popup():
     try:
         System.CloseExcelProcesses()
 
+        # 신규 등록 할 UGG 목록을 CSV에 정리
+        # System.SetCsvUGGNewProductURLs()
+
         System.UpdateStoreWithColorInformation(-1)
 
         System.CloseExcelProcesses()
