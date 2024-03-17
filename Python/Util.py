@@ -13,6 +13,7 @@ Array_ColroName = 0
 Array_SizeList = 1
 Array_UrlList = 2
 
+
 # 현재 미국 환율 정보 출력
 def KRWUSD():
     response = requests.get(
@@ -542,6 +543,7 @@ def IsValueInArray(value, arr):
 
 
 def Debug(value, isShowPopup=True):
+    value = str(value)
     nowTime = Util.GetFormattedCurrentDateTime()
     print(nowTime + " " + value)
     # Tcl_AsyncDelete: async handler deleted by the wrong thread 가 발생해서 주석
@@ -1144,13 +1146,14 @@ def save_and_close_open_excel_files():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 
+
 def TranslateToKorean(enText: str) -> str:
     returnValue = ""
     if enText:
         Util.Debug(f"번역 시작 : {enText}")
         trans = Translator()
-        result = trans.translate(enText, dest='ko', src='en')
+        result = trans.translate(enText, dest="ko", src="en")
         Util.Debug(f"원  문({result.src}): {result.origin}")
         Util.Debug(f"번역문({result.dest}) : {result.text}")
-        returnValue = result.text 
+        returnValue = result.text
     return returnValue
