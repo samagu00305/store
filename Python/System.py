@@ -15,6 +15,7 @@ import shutil
 import psutil
 import pandas as pd
 import numpy as np
+from lxml import etree
 
 
 from collections import namedtuple
@@ -1200,10 +1201,13 @@ def GetMytheresaData(url, exchangeRate):
             useMoney = match.group(1)
 
         korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
-        
-        match = re.search(r'<title>(.*?)</title>', htmlElementsData)
-        if match:
-            title = str(match.group(1)).replace('| Mytheresa', '')
+
+        # HTML 파서를 사용하여 파싱
+        parser = etree.HTMLParser()
+        tree = etree.fromstring(htmlElementsData, parser)
+        # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
+        title = tree.xpath("//title/text()")[0]
+        title = str(title).replace("| Mytheresa", "")
 
         # 재화 타입
         match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
