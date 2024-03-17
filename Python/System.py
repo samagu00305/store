@@ -562,7 +562,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls):
 
     productUrls = []
     # <a href=" 과 " class="js-pdp-link image-link pdp-link"> 중간에 있는 값
-    productUrlLines = Util.GetRegExMatche1List(
+    productUrlLines = Util.GetRegExMatcheGroup1List(
         htmlElementsData, r'<a href="(.*?)" class="js-pdp-link image-link pdp-link">'
     )
     for productUrlLine in productUrlLines:
@@ -1048,7 +1048,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
         endPos = match.end() + startPos
     if startPos and endPos:
         contentValue = htmlElementsData[startPos:endPos]
-        useMoneys = Util.GetRegExMatche1List(contentValue, r"\$(.+)")
+        useMoneys = Util.GetRegExMatcheGroup1List(contentValue, r"\$(.+)")
         if len(useMoneys) > 0:
             useMoney = float(useMoneys[-1])
             Util.Debug(f"useMoney : {useMoney}")
@@ -1056,11 +1056,11 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
         korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
         if onlyUseMoney == False:
-            urlEndColorNames = Util.GetRegExMatche1List(
+            urlEndColorNames = Util.GetRegExMatcheGroup1List(
                 contentValue,
                 r'<span data-attr-value="([^"]*)" class="color-value swatch swatch-circle',
             )
-            colorNames = Util.GetRegExMatche1List(
+            colorNames = Util.GetRegExMatcheGroup1List(
                 contentValue, r'data-attr-color-swatch="[^"]*"\s*title="([^"]*)"'
             )
 
@@ -1088,7 +1088,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
                     # 이미지 url 알아오는 것
                     if True:
                         imgBigUrls = []
-                        imgUrls = Util.GetRegExMatche1List(
+                        imgUrls = Util.GetRegExMatcheGroup1List(
                             colorUrlHtmlElementsData,
                             r'<img[^>]+data-srcset="([^"]+)"[^>]+>',
                         )
@@ -1200,7 +1200,7 @@ def GetMytheresaData(url, exchangeRate):
         if match:
             useMoney = match.group(1)
 
-        korMony: int = Util.GetKorMony(useMoney, exchangeRate)
+        korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
 
         # 상품 이름
         match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
@@ -1215,7 +1215,7 @@ def GetMytheresaData(url, exchangeRate):
         if match:
             isSoldOut = True
 
-        sizeLines = Util.GetRegExMatche1List(
+        sizeLines = Util.GetRegExMatcheGroup1List(
             htmlElementsData, r'<span class="sizeitem__label">(.*?)</span>'
         )
 

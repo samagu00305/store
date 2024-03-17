@@ -864,7 +864,7 @@ def GetRegExMatcheList(value, regexPattern, startPos=1):
     return matcheList
 
 
-def GetRegExMatche1List(value, regexPattern, startPos=1):
+def GetRegExMatcheGroup1List(value, regexPattern, startPos=1):
     matche1List = []
 
     pos = startPos
