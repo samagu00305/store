@@ -1,5 +1,20 @@
-# 지금 설치 된 것 모두 나열
-pip freeze > Python/requirements.txt
+# ######## 지금 설치 된 것 모두 나열
+# pip freeze > Python/requirements.txt
 
-# 설치한 것 한번에 설치하기
-pip install -r Python/requirements.txt
+# ######## 설치한 것 한번에 설치하기
+# pip install -r Python/requirements.txt
+
+# ########  파이썬 저장 포맷 같게 하도록 하는 방법
+# view 를 누르고 > Command Palette
+
+# 입력하는 창에  > Preferences: Open User Settings (json) 를 입력하시면
+# 아래에 노란색 결과물로 뜨는것이 있습니다. 이것을 눌르시면 됩니다.
+
+# 거기에
+# "editor.formatOnType": true,
+#     "editor.formatOnSave": true,
+#     "[python]": {
+#         "editor.defaultFormatter": "ms-python.black-formatter"
+#     },
+#     "editor.defaultFormatter": "mgesbert.python-path"
+# 포함 시키면 저장하는 포맷이 같아 짐
