@@ -175,7 +175,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(
                 f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
             )
-            isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
+            isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
             if isUpdateProduct:
                 df.at[1, COLUMN.P.name] = row
                 df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
@@ -220,7 +220,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         if "www.mytheresa.com" not in url:
             df.at[1, COLUMN.P.name] = row
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(wb)
+            System.SaveWorksheet(df)
             continue
 
         if (
@@ -229,18 +229,18 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         ):
             df.at[1, COLUMN.P.name] = row
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(wb)
+            System.SaveWorksheet(df)
             continue
 
         Util.TelegramSend(
             f"row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
         )
 
-        isUpdateProduct = UpdateProductInfoMoney_Mytheresa(wb, ws, url, row, krwEur)
+        isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
         if isUpdateProduct:
             df.at[1, COLUMN.P.name] = row
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(wb)
+            System.SaveWorksheet(df)
         else:
             row -= 1
 
