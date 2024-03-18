@@ -1273,6 +1273,9 @@ def ManageAndModifyProducts(df, row) -> ManageAndModifyProductsData:
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(2)
 
+    # 확인은 오류가 발생했습니다 라는 팝업이 나오는 경우가 있어서
+    if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 5, 5, 1):
+        Util.SleepTime(2)
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인하기", 5, 5, 1):
         Util.SleepTime(2)
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
