@@ -383,14 +383,14 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
                     )
 
                     System.xl_J_(
-                        df, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)"
+                        df, row, "변경 완료(이전과 동일하지 않아)(가격과 사이즈)", True
                     )
             else:
                 # 가격 변동이 있으면 변경
                 if df.at[row, COLUMN.U.name] != useMoney:
                     df.at[row, COLUMN.U.name] = useMoney
 
-                    System.xl_J_(df, row, "변경 완료(가격만 변동)")
+                    System.xl_J_(df, row, "변경 완료(가격만 변동)", True)
 
                 if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                     # 입력 - (색 이름 리스트, 색 이름과 사아즈 리스트, 갱신 시간, 체크 시간, 체크 상태, 이전 색RGB(16진수) 리스트, 이전 색명(사아즈 리스트))
@@ -422,7 +422,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
                             f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}"
                         )
 
-                        System.xl_J_(df, row, "변경 완료(이전과 동일하지 않아)")
+                        System.xl_J_(df, row, "변경 완료(이전과 동일하지 않아)", True)
 
     return True
 
@@ -454,7 +454,7 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
 
             if data.korMony != 0:
-                System.xl_J_(df, row, "변경 완료(가격만 변동)")
+                System.xl_J_(df, row, "변경 완료(가격만 변동)", True)
             else:
                 System.xl_J_(df, row, "가격이 0이 나왔습니다.")
         else:
@@ -484,7 +484,7 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
                 # Util.SleepTime(1)
 
             if data.korMony != 0:
-                System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)")
+                System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
             else:
                 System.xl_J_(df, row, "가격이 0이 나왔습니다.")
 
