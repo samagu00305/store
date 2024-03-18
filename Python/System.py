@@ -318,7 +318,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
             # 가격 변동이 있으면 변경
             if df.at[row, COLUMN.U.name] != useMoney:
                 # 판매가 입력
-                UpdateAndReturnSalePrice(data.korMony)
+                UpdateAndReturnSalePrice(int(data.korMony))
 
             if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                 # 관세 부가 여부 체크
@@ -788,6 +788,20 @@ def AddOneProduct_Ugg(
 
     # 상품 이름
     title = data.title
+    filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
+    if len(filtered_rows) >= 1:
+        if len(arraySizesAndImgUrls) >= 1:
+            title += data.arraySizesAndImgUrls[0][Util.Array_ColroName]
+        count = 2
+        while True:
+            filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
+            if len(filtered_rows) >= 1:
+                # 1개 이상의 행이 일치합니다.
+                title += f"v{count}"
+                count += 1
+            else:
+                # 일치하는 행이 없습니다.
+                break
 
     Util.FolderToDelete(EnvData.g_DefaultPath() + r"\DownloadImage")
 
@@ -803,7 +817,7 @@ def AddOneProduct_Ugg(
         return returnValue
 
     if len(arraySizesAndImgUrls) >= 1:
-        imgUrls = arraySizesAndImgUrls[1][3]
+        imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
             Util.DownloadImageUrl(imgUrls[i], i)
 
@@ -858,7 +872,7 @@ def AddOneProduct_Ugg(
     Util.SleepTime(0.5)
 
     # 판매가 입력
-    UpdateAndReturnSalePrice(data.korMony)
+    UpdateAndReturnSalePrice(int(data.korMony))
 
     # 옵션 세팅
     if True:

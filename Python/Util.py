@@ -886,7 +886,7 @@ def GetRegExMatcheGroup1List(value, regexPattern, startPos=1):
 
 def DownloadImageUrl(url, saveName) -> bool:
     # 저장할 파일의 경로 및 사용자가 원하는 파일 이름
-    savePath = EnvData.g_DefaultPath() + "\\DownloadImage\\" + saveName + ".png"
+    savePath = EnvData.g_DefaultPath() + "\\DownloadImage\\" + str(saveName) + ".png"
 
     # 이미지 다운로드
     try:
