@@ -318,7 +318,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
             # 가격 변동이 있으면 변경
             if df.at[row, COLUMN.U.name] != useMoney:
                 # 판매가 입력
-                UpdateAndReturnSalePrice(int(data.korMony))
+                UpdateAndReturnSalePrice(data.korMony)
 
             if before_SaveColorNameDoubleArray != str_saveColorNameDoubleArray:
                 # 관세 부가 여부 체크
@@ -872,7 +872,7 @@ def AddOneProduct_Ugg(
     Util.SleepTime(0.5)
 
     # 판매가 입력
-    UpdateAndReturnSalePrice(int(data.korMony))
+    UpdateAndReturnSalePrice(data.korMony)
 
     # 옵션 세팅
     if True:
@@ -1393,7 +1393,7 @@ def UpdateAndReturnSalePrice(korMony):
     Util.SleepTime(0.5)
     Util.KeyboardKeyPress("delete")
     Util.SleepTime(0.5)
-    pyperclip.copy(korMony)
+    pyperclip.copy(int(korMony))
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
