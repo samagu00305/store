@@ -729,7 +729,6 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
     if True:
         htmlData = '<div style="text-align: center;">'
         htmlData += '<img src="https://nacharhan.github.io/photo/2.png"/>'
-        htmlData += "`r`n"
         for item in arraySizesAndImgUrls:
             colorName = item[Util.Array_ColroName]
             imgUrls = item[Util.Array_UrlList]
@@ -738,15 +737,12 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
             htmlData += (
                 '<div><span style="font-size: 30px;">' + colorName + "</span></div>"
             )
-            htmlData += "`r`n"
             for imgUrl in imgUrls:
                 htmlData += '<div style="text-align: center;">'
                 htmlData += '<img src="' + imgUrl + '"/>'
-                htmlData += "`r`n"
 
         htmlData += '<div style="text-align: center;">'
         htmlData += '<img src="https://nacharhan.github.io/photo/11.png"/>'
-        htmlData += "`r`n"
     pyperclip.copy(htmlData)
     Util.SleepTime(1)
     Util.KeyboardKeyHotkey("ctrl", "v")
@@ -906,14 +902,16 @@ def AddOneProduct_Ugg(
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", -80, 5):
         Util.SleepTime(3)
 
-        # 데이터프레임의 두 번째 행에 빈 행을 추가
+        # 새로운 빈 행 생성
+        new_row = pd.DataFrame([np.nan] * len(dfAdd.columns)).T
+        new_row.columns = dfAdd.columns
+        # 원하는 위치에 빈 행 삽입
+        insert_index = 2  # 3번째 행에 삽입하려면 인덱스는 1입니다.
         dfAdd = pd.concat(
-            [
-                dfAdd.iloc[:1],
-                pd.DataFrame([np.nan], columns=dfAdd.columns),
-                dfAdd.iloc[1:],
-            ]
+            [dfAdd.iloc[:insert_index], new_row, dfAdd.iloc[insert_index:]]
         ).reset_index(drop=True)
+
+        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
 
         # 상품 url
         Util.GoToTheAddressWindow()
