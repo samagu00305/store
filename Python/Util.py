@@ -836,7 +836,7 @@ def SetExcelOption(doubleArray, is_customsDuty):
 def CopyToClipboardAndGet():
     pyperclip.copy("")
     Util.SleepTime(0.1)
-    pyperclip.hotkey("ctrl", "c")
+    pyautogui.hotkey("ctrl", "c")
     Util.SleepTime(0.1)
     return pyperclip.paste()
 
