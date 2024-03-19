@@ -1,5 +1,7 @@
 ﻿import Util
 import pyautogui
+import pyperclip
+import EnvData
 
 
 # 상품 등록시 기본 세팅 들
@@ -25,45 +27,26 @@ def ProductRegistrationDefaultSettings():
 
 
 # 이미지 등록(대표, 추가)
-def IamgeRegistration():
-    # 대표 이미지 등록
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\대표이미지", 250, 20)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\내 사진", 0, 0)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\다운로드", 5, 5)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\열기 탐색기\이름", 20, 75)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\열기 탐색기\열기", 5, 5)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\열기 탐색기\이름", 20, 75)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\열기 탐색기\열기", 5, 5)
-    Util.SleepTime(0.5)
-
-    # 추가 이미지 등록
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\추가이미지", 250, 5)
-    Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\내 사진", 0, 0)
-    Util.SleepTime(0.5)
-    Util.DragAtFoundImage(
-        r"파일 탐색기\열기 탐색기\이름", -20, 105, "파일 탐색기\열기 탐색기\열기", 5, 5
-    )
-    Util.SleepTime(0.5)
-    Util.NowMouseClick()
-
-
-# 이미지 등록(대표, 추가)
 def IamgeRegistration_v2():
     # 대표 이미지 등록
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\대표이미지", 250, 20)
     Util.SleepTime(0.5)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\내 사진", 0, 0)
+    Util.SleepTime(1.5)
+    for _ in range(5):
+        pyautogui.hotkey("tab")
+        Util.SleepTime(0.2)
+    pyautogui.hotkey("enter")
+    Util.SleepTime(0.3)
+    pyperclip.copy(EnvData.g_DefaultPath() + r"\DownloadImage")
     Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\DownloadImage", 5, 5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("tab")
+    pyautogui.hotkey("enter")
+    Util.SleepTime(0.3)
+    for _ in range(4):
+        pyautogui.hotkey("tab")
+        Util.SleepTime(0.2)
     Util.SleepTime(0.5)
     pyautogui.hotkey("right")
     Util.SleepTime(0.5)
@@ -89,10 +72,21 @@ def IamgeRegistration_v2():
     )
     Util.SleepTime(0.5)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\내 사진", 0, 0)
+    Util.SleepTime(1.5)
+    for _ in range(5):
+        pyautogui.hotkey("tab")
+        Util.SleepTime(0.2)
+    pyautogui.hotkey("enter")
+    Util.SleepTime(0.3)
+    pyperclip.copy(EnvData.g_DefaultPath() + r"\DownloadImage")
     Util.SleepTime(0.5)
-    Util.ClickAtWhileFoundImage(r"파일 탐색기\DownloadImage", 5, 5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
-    pyautogui.hotkey("tab")
+    pyautogui.hotkey("enter")
+    Util.SleepTime(0.3)
+    for _ in range(4):
+        pyautogui.hotkey("tab")
+        Util.SleepTime(0.2)
     Util.SleepTime(0.5)
     pyautogui.hotkey("right")
     Util.SleepTime(0.5)
