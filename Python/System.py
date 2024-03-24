@@ -637,13 +637,13 @@ def SetCsvUGGNewProductURLs():
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
     uggProductUrls: list[UggNewProductURLs] = []
-    uggProductUrls.append(
-        GetNewProductURLs_UGG(
-            "패션잡화 여성신발 부츠 미들부츠",
-            "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=boots%7Cclassic-boots%7Ccold-weather-boots",
-            filterUrls,
-        )
-    )  # 부츠(미들부츠)
+    # uggProductUrls.append(
+    #     GetNewProductURLs_UGG(
+    #         "패션잡화 여성신발 부츠 미들부츠",
+    #         "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=boots%7Cclassic-boots%7Ccold-weather-boots",
+    #         filterUrls,
+    #     )
+    # )  # 부츠(미들부츠)
     uggProductUrls.append(
         GetNewProductURLs_UGG(
             "패션잡화 여성신발 샌들 뮬",
@@ -782,7 +782,7 @@ def AddOneProduct_Ugg(
     dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, krwUsd
 ) -> AddOneProduct_UggData:
 
-    url = dfAddBefore.at[1, COLUMN.C.name]
+    url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
 
     data: UggData = GetUggData(url, krwUsd)
 
@@ -860,7 +860,7 @@ def AddOneProduct_Ugg(
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
     Util.SleepTime(0.5)
     Util.NowMouseClick()
-    pyperclip.copy(dfAddBefore.at[1, COLUMN.B.name])
+    pyperclip.copy(dfAddBefore.at[dfAddBefore.index[0], COLUMN.B.name])
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
@@ -943,7 +943,7 @@ def AddOneProduct_Ugg(
         # 가격
         dfAdd.at[2, COLUMN.U.name] = useMoney
         # 브랜드
-        brand = dfAddBefore.at(COLUMN.A.name, 2)
+        brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN.A.name]
         dfAdd.at[2, COLUMN.E.name] = brand
 
         # 색이름 리스트 값
