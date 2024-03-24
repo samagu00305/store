@@ -186,9 +186,9 @@ def ClickAtWhileFoundImage(
 
 
 # 이미지 찾아서 더블클릭
-def DoubleClickAtWhileFoundImage(imageName, addX=0, addY=0):
+def DoubleClickAtWhileFoundImage(imageName, addX=0, addY=0, threshold=0.7):
     while True:
-        findImageResult = Util.FindImage_Byref(imageName)
+        findImageResult = Util.FindImage_Byref(imageName, threshold=threshold)
         if findImageResult.resultType == Enum_FIND_IMAGE_RESULT_TYPE.Success:
             imagePosX = findImageResult.x + addX
             imagePosY = findImageResult.y + addY
@@ -401,7 +401,12 @@ def WheelAndMoveAtWhileFoundImage_v2(
 
 
 def FindImage_Byref(
-    imageName, searchStart_x=0, searchStart_y=0, searchEnd_x=-1, searchEnd_y=-1
+    imageName,
+    searchStart_x=0,
+    searchStart_y=0,
+    searchEnd_x=-1,
+    searchEnd_y=-1,
+    threshold=0.7,
 ):
     Util.Debug(f"이미지 찾기 시작({imageName})")
 
@@ -426,6 +431,7 @@ def FindImage_Byref(
             searchEnd_x - searchStart_x,
             searchEnd_y - searchStart_y,
         ),
+        threshold=threshold,
     )
 
     Util.Debug(

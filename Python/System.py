@@ -772,7 +772,9 @@ def UpdateOptionsFromExcel(is_customsDuty):
     if is_customsDuty == True:
         Util.DoubleClickAtWhileFoundImage(r"스마트 스토어\열기\옵션 세팅된 엑셀", 5, 5)
     else:
-        Util.DoubleClickAtWhileFoundImage(r"스마트 스토어\열기\옵션 세팅된 엑셀2", 5, 5)
+        Util.DoubleClickAtWhileFoundImage(
+            r"스마트 스토어\열기\옵션 세팅된 엑셀2", 5, 5, 0.8
+        )
     Util.SleepTime(1)
 
 
