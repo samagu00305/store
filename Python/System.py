@@ -257,6 +257,10 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
 def UpdateProductInfo_UGG(df, url, row, krwUsd):
     data: UggData = GetUggData(url, krwUsd)
 
+    if int(data.korMony) == 25000:
+        System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        return True
+
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
 
@@ -430,6 +434,10 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
 def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
     data = GetMytheresaData(url, krwEur)
 
+    if int(data.korMony) == 25000:
+        System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        return True
+
     # 스마트 스토어 수정 화면까지 이동
     managedata = ManageAndModifyProducts(df, row)
     if managedata.isNoNetwork == True:
@@ -453,7 +461,7 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
             Util.SleepTime(1)
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
 
-            if data.korMony != 0:
+            if int(data.korMony) != 0:
                 System.xl_J_(df, row, "변경 완료(가격만 변동)", True)
             else:
                 System.xl_J_(df, row, "가격이 0이 나왔습니다.")
