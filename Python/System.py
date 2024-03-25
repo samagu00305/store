@@ -43,6 +43,8 @@ class AddOneProduct_UggData:
     def __init__(self):
         self.addCount: bool = False
         self.addOneProductSuccess: bool = False
+        self.dfAddBefore = None
+        self.dfAdd = None
 
 
 class ManageAndModifyProductsData:
@@ -820,6 +822,8 @@ def AddOneProduct_Ugg(
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
         returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
         return returnValue
 
     if len(arraySizesAndImgUrls) >= 1:
@@ -901,6 +905,8 @@ def AddOneProduct_Ugg(
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
         returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
         return returnValue
 
     # HTML 으로 등록
@@ -972,6 +978,8 @@ def AddOneProduct_Ugg(
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = True
         returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
         return returnValue
     else:
         Util.TelegramSend("++++++++++++++ 이름이 입력 안됬음 왜지??")
@@ -984,6 +992,8 @@ def AddOneProduct_Ugg(
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
         returnValue.addOneProductSuccess = False
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
         return returnValue
 
 
@@ -1006,13 +1016,14 @@ def AddDataFromExcel_Ugg():
     # 모두 반복
     addCount = 0
     count = 1
+    data = None
     for _ in range(rowCountAddBefore):
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
             data = AddOneProduct_Ugg(
-                dfAddBefore,
-                dfAdd,
+                dfAddBefore if data is None else data.dfAddBefore,
+                dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
