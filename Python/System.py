@@ -799,7 +799,7 @@ def AddOneProduct_Ugg(
     filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
     if len(filtered_rows) >= 1:
         if len(arraySizesAndImgUrls) >= 1:
-            title += data.arraySizesAndImgUrls[0][Util.Array_ColroName]
+            title += "(" + data.arraySizesAndImgUrls[0][Util.Array_ColroName] + ")"
         count = 2
         while True:
             filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
