@@ -551,7 +551,7 @@ def IsValueInArray(value, arr):
 def Debug(value, isShowPopup=True):
     value = str(value)
     nowTime = Util.GetFormattedCurrentDateTime()
-    print(nowTime + " " + value)
+    print(nowTime.encode("utf-8") + " " + value.encode("utf-8"))
     # Tcl_AsyncDelete: async handler deleted by the wrong thread 가 발생해서 주석
     # if isShowPopup == True:
     #     ShowPopup(value, 3)
