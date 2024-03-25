@@ -169,7 +169,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
 
         if "www.ugg.com" in url:
             Util.TelegramSend(
-                f"www.ugg.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
+                f"www.ugg.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
             isUpdateProduct = UpdateProductInfo_UGG(df, url, row, krwUsd)
             if isUpdateProduct:
@@ -182,7 +182,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             continue
         elif "www.mytheresa.com" in url:
             Util.TelegramSend(
-                f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
+                f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
             isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
             if isUpdateProduct:
