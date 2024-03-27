@@ -608,6 +608,96 @@ def GetNewProductURLs_UGG(name, url, filterUrls) -> UggNewProductURLs:
     return returnValue
 
 
+# BananarePublic 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
+def GetNewProductURLs_BananarePublic(name, url, filterUrls) -> UggNewProductURLs:
+    Util.TelegramSend(f"GetNewProductURLs_BananarePublic() {name} -- 시작")
+    webbrowser.open(url)
+    Util.SleepTime(10)
+
+    # 웹 제일 끝까지 스코롤 한다.
+    while True:
+        # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
+        # -10000 틱 스크롤 다운
+        Util.MouseWheelScroll(-10000)
+        Util.SleepTime(1.5)
+        Util.KeyboardKeyPress("up")
+        Util.SleepTime(1)
+        Util.KeyboardKeyPress("down")
+        Util.KeyboardKeyPress("down")
+        Util.SleepTime(1)
+        # 화면 가로 및 세로 해상도 얻기
+        screen_width = win32api.GetSystemMetrics(0)
+        screen_height = win32api.GetSystemMetrics(1)
+        if (
+            Util.ClickAtWhileFoundImage(
+                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지",
+                0,
+                0,
+                1,
+                1,
+                screen_width - 200,
+                screen_height - 200,
+            )
+            or Util.ClickAtWhileFoundImage(
+                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v2",
+                0,
+                0,
+                1,
+                1,
+                screen_width - 200,
+                screen_height - 200,
+            )
+            or Util.ClickAtWhileFoundImage(
+                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v3",
+                0,
+                0,
+                1,
+                1,
+                screen_width - 200,
+                screen_height - 200,
+            )
+        ):
+            # 상품 더 보기가 있는지 체크
+            if False == Util.ClickAtWhileFoundImage(
+                r"바나나 리퍼블릭\스크롤 끝 인식", 0, 0, 3
+            ):
+                Util.SleepTime(5)
+            else:  # 상품이 더이상 없음
+                break
+
+    htmlElementsData: str = System.GetElementsData()
+    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
+
+    productUrls = []
+    # id="product 과 "><a href= 중간에 있는 값
+    productUrlLines = Util.GetRegExMatcheGroup1List(
+        htmlElementsData, r'id="product(.*?)"><a href='
+    )
+    for pid in productUrlLines:
+        if '"' not in pid:
+            productUrls.append(f"https://bananarepublic.gap.com/browse/product.do?pid={pid}")
+    uniqueArr = []
+    for productUrl in productUrls:
+        for filterUrl in filterUrls:
+            if str(productUrl) == str(filterUrl):
+                uniqueArr.append(productUrl)
+                break
+
+    for uniqueValue in uniqueArr:
+        ArrayRemove(productUrls, uniqueValue)
+
+    # 중복 제거
+    productUrls = list(set(productUrls))
+
+    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
+    returnValue = UggNewProductURLs()
+    returnValue.name = name
+    returnValue.productUrls = productUrls
+    return returnValue
+
+
 def ArrayRemove(arr, value):
     for index, element in enumerate(arr):
         if element == value:
@@ -693,6 +783,84 @@ def SetCsvUGGNewProductURLs():
     df.to_csv(xlFile, index=False, encoding="cp949")
 
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 끝")
+
+
+# 신규 등록 할 BananarePublic 목록을 엑셀에 정리
+def SetCsvBananarePublicNewProductURLs():
+    Util.TelegramSend("신규 등록 할 BananarePublic 목록을 엑셀에 정리 -- 시작")
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
+    lastRow = df.shape[0]
+
+    Util.Debug("start Csv BananarePublic url")
+    # C 열의 데이터를 배열에 저장
+    filterUrls = []
+    for row_index in range(0, lastRow):
+        url = str(df.at[row_index, "C"])
+        if url is not None and "https://bananarepublic.gap.com/" in url:
+            filterUrls.append(url)
+    Util.TelegramSend(f"end Csv BananarePublic url Length : {str(len(filterUrls))}")
+
+    # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
+    uggProductUrls: list[UggNewProductURLs] = []
+    # 샌들(뮬)
+    uggProductUrls.append(
+        GetNewProductURLs_BananarePublic(
+            "패션잡화 여성신발 샌들 뮬",
+            "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1093558&facetOrder=style:1093558",
+            filterUrls,
+        )
+    )
+    # 샌들(뮬)
+    uggProductUrls.append(
+        GetNewProductURLs_BananarePublic(
+            "패션잡화 여성신발 샌들 뮬",
+            "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1050637&facetOrder=style:1050637",
+            filterUrls,
+        )
+    )
+    # 슬리퍼
+    uggProductUrls.append(
+        GetNewProductURLs_BananarePublic(
+            "패션잡화 여성신발 슬리퍼",
+            "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1081941&facetOrder=style:1081941",
+            filterUrls,
+        )
+    )
+    # 운동화
+    uggProductUrls.append(
+        GetNewProductURLs_BananarePublic(
+            "패션잡화 여성신발 운동화 러닝화",
+            "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092",
+            filterUrls,
+        )
+    )
+
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
+
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
+    try:
+        df = pd.read_csv(xlFile, encoding="cp949")
+    except pd.errors.EmptyDataError:
+        # 빈 파일이므로 빈 데이터프레임 생성
+        df = pd.DataFrame()
+
+    # 모든 행을 삭제합니다.
+    df.drop(df.index, inplace=True)
+
+    allCount = 0
+    for item in uggProductUrls:
+        for productUrl in item.productUrls:
+            allCount += 1
+            # 각 셀에 값을 설정합니다.
+            df.loc[allCount, "A"] = "BananarePublic"
+            df.loc[allCount, "B"] = item.name  # 메뉴
+            df.loc[allCount, "C"] = productUrl  # url
+
+    df.to_csv(xlFile, index=False, encoding="cp949")
+
+    Util.TelegramSend("신규 등록 할 BananarePublic 목록을 엑셀에 정리 -- 끝")
 
 
 # HTML 으로 등록
