@@ -76,6 +76,12 @@ class UggNewProductURLs:
         self.productUrls = []
 
 
+class BananarePublicNewProducts:
+    def __init__(self):
+        self.name = ""
+        self.titleAndPids = []
+
+
 class COLUMN(Enum):
     A = "A"  # 상품 번호 칸
     B = "B"  # 상품 url 칸
@@ -626,7 +632,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls) -> UggNewProductURLs:
 
 
 # BananarePublic 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
-def GetNewProductURLs_BananarePublic(name, url, filterUrls) -> UggNewProductURLs:
+def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewProducts:
     Util.TelegramSend(f"GetNewProductURLs_BananarePublic() {name} -- 시작")
     webbrowser.open(url)
     Util.SleepTime(10)
@@ -687,33 +693,23 @@ def GetNewProductURLs_BananarePublic(name, url, filterUrls) -> UggNewProductURLs
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
 
-    productUrls = []
-    # id="product 과 "><a href= 중간에 있는 값
-    productUrlLines = Util.GetRegExMatcheGroup1List(
-        htmlElementsData, r'id="product(.*?)"><a href='
+    titleAndPids = []
+    productTitleAndPids = Util.GetRegExMatcheGroup1And2List(
+        htmlElementsData, r'0"><img alt="(.*?)".*?" id="product(.*?)"'
     )
-    for pid in productUrlLines:
-        if '"' not in pid:
-            productUrls.append(
-                f"https://bananarepublic.gap.com/browse/product.do?pid={pid}"
-            )
-    uniqueArr = []
-    for productUrl in productUrls:
-        for filterUrl in filterUrls:
-            if str(productUrl) == str(filterUrl):
-                uniqueArr.append(productUrl)
-                break
+    for titleAndPid in productTitleAndPids:
+        title = titleAndPid[0]
+        pid = titleAndPid[1]
+        if filterTitles.count(f"[BananarePublic] {title}") == 0:  # 중복 제거
+            if '"' not in pid:
+                titleAndPids.append(titleAndPid)
 
-    for uniqueValue in uniqueArr:
-        ArrayRemove(productUrls, uniqueValue)
-
-    # 중복 제거
-    productUrls = list(set(productUrls))
+    Util.TelegramSend(f"len(titleAndPids) : {len(titleAndPids)}")
 
     Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
-    returnValue = UggNewProductURLs()
+    returnValue = BananarePublicNewProducts()
     returnValue.name = name
-    returnValue.productUrls = productUrls
+    returnValue.titleAndPids = titleAndPids
     return returnValue
 
 
@@ -813,47 +809,63 @@ def SetCsvBananarePublicNewProductURLs():
 
     Util.Debug("start Csv BananarePublic url")
     # C 열의 데이터를 배열에 저장
-    filterUrls = []
+    filterTitles = []
     for row_index in range(0, lastRow):
-        url = str(df.at[row_index, "C"])
+        url = str(df.at[row_index, COLUMN.C.name])
+        title = str(df.at[row_index, COLUMN.T.name])
         if url is not None and "https://bananarepublic.gap.com/" in url:
-            filterUrls.append(url)
-    Util.TelegramSend(f"end Csv BananarePublic url Length : {str(len(filterUrls))}")
+            filterTitles.append(title)
+    Util.TelegramSend(f"end Csv BananarePublic url Length : {str(len(filterTitles))}")
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
-    uggProductUrls: list[UggNewProductURLs] = []
+    newProducts: list[BananarePublicNewProducts] = []
     # 샌들(뮬)
-    uggProductUrls.append(
-        GetNewProductURLs_BananarePublic(
+    newProducts.append(
+        GetNewProducts_BananarePublic(
             "패션잡화 여성신발 샌들 뮬",
             "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1093558&facetOrder=style:1093558",
-            filterUrls,
+            filterTitles,
         )
     )
     # 샌들(뮬)
-    uggProductUrls.append(
-        GetNewProductURLs_BananarePublic(
+    newProducts.append(
+        GetNewProducts_BananarePublic(
             "패션잡화 여성신발 샌들 뮬",
             "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1050637&facetOrder=style:1050637",
-            filterUrls,
+            filterTitles,
         )
     )
     # 슬리퍼
-    uggProductUrls.append(
-        GetNewProductURLs_BananarePublic(
+    newProducts.append(
+        GetNewProducts_BananarePublic(
             "패션잡화 여성신발 슬리퍼",
             "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1081941&facetOrder=style:1081941",
-            filterUrls,
+            filterTitles,
         )
     )
     # 운동화
-    uggProductUrls.append(
-        GetNewProductURLs_BananarePublic(
+    newProducts.append(
+        GetNewProducts_BananarePublic(
             "패션잡화 여성신발 운동화 러닝화",
             "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092",
-            filterUrls,
+            filterTitles,
         )
     )
+
+    # 중복 제거
+    titles: list[str] = []
+    unique_newProducts: list[BananarePublicNewProducts] = []
+    for newProduct in newProducts:
+        titleAndPids = []
+        for titleAndPid in newProduct.titleAndPids:
+            title = titleAndPid[0]
+            if titles.count(title) == 0:
+                titleAndPids.append(titleAndPid)
+                titles.append(title)
+
+        Util.TelegramSend(f"len(titleAndPids) : {len(titleAndPids)}")
+        newProduct.titleAndPids = titleAndPids
+        unique_newProducts.append(newProduct)
 
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
@@ -869,13 +881,15 @@ def SetCsvBananarePublicNewProductURLs():
     df.drop(df.index, inplace=True)
 
     allCount = 0
-    for item in uggProductUrls:
-        for productUrl in item.productUrls:
+    for item in unique_newProducts:
+        for titleAndPid in item.titleAndPids:
             allCount += 1
             # 각 셀에 값을 설정합니다.
             df.loc[allCount, "A"] = "BananarePublic"
             df.loc[allCount, "B"] = item.name  # 메뉴
-            df.loc[allCount, "C"] = productUrl  # url
+            df.loc[allCount, "C"] = (
+                f"https://bananarepublic.gap.com/browse/product.do?pid={titleAndPid[1]}"  # url
+            )
 
     df.to_csv(xlFile, index=False, encoding="cp949")
 
@@ -1163,7 +1177,7 @@ def AddOneProduct_Ugg(
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
         dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
-        
+
         Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
 
         returnValue = AddOneProduct_UggData()
