@@ -1013,10 +1013,12 @@ def AddOneProduct_Ugg(
         returnValue.dfAdd = dfAdd
         return returnValue
 
+    imgCount: int = 0
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
             Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
+            imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -1083,7 +1085,7 @@ def AddOneProduct_Ugg(
         UpdateOptionsFromExcel(is_customsDuty)
 
     # 이미지 등록(대표, 추가)
-    if ProductRegistration.IamgeRegistration_v2() == False:
+    if ProductRegistration.IamgeRegistration_v2(imgCount) == False:
         Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
@@ -1161,6 +1163,8 @@ def AddOneProduct_Ugg(
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
         dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        
+        Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = True
@@ -1230,10 +1234,12 @@ def AddOneProduct_BananarePublic(
         returnValue.dfAdd = dfAdd
         return returnValue
 
+    imgCount: int = 0
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
             Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
+            imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -1300,7 +1306,7 @@ def AddOneProduct_BananarePublic(
         UpdateOptionsFromExcel(is_customsDuty)
 
     # 이미지 등록(대표, 추가)
-    if ProductRegistration.IamgeRegistration_v2() == False:
+    if ProductRegistration.IamgeRegistration_v2(imgCount) == False:
         Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
@@ -1378,6 +1384,8 @@ def AddOneProduct_BananarePublic(
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
         dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+
+        Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
 
         returnValue = AddOneProduct_BananarePublicData()
         returnValue.addCount = True
