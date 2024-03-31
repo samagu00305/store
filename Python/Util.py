@@ -8,6 +8,9 @@ import tkinter as tk
 import threading
 import psutil
 from googletrans import Translator
+from PIL import Image
+import urllib.request
+import os
 
 Array_ColroName = 0
 Array_SizeList = 1
@@ -552,7 +555,7 @@ def Debug(value, isShowPopup=True):
     value = str(value)
     nowTime = Util.GetFormattedCurrentDateTime()
     # 문자열을 UTF-8로 인코딩하여 바이트열로 변환하고 연결
-    result = nowTime.encode("utf-8") + value.encode("utf-8")
+    result = nowTime.encode("utf-8") + b" " + value.encode("utf-8")
     print(result.decode("utf-8"))  # 바이트열을 다시 문자열로 디코딩하여 출력
     # Tcl_AsyncDelete: async handler deleted by the wrong thread 가 발생해서 주석
     # if isShowPopup == True:
@@ -856,7 +859,7 @@ def IsArray(array, checkValue) -> bool:
     return False
 
 
-def GetRegExMatcheList(value, regexPattern, startPos=1):
+def GetRegExMatcheList(value, regexPattern, startPos=1) -> list:
     matcheList = []
 
     pos = startPos
@@ -874,7 +877,7 @@ def GetRegExMatcheList(value, regexPattern, startPos=1):
     return matcheList
 
 
-def GetRegExMatcheGroup1List(value, regexPattern, startPos=1):
+def GetRegExMatcheGroup1List(value, regexPattern, startPos=1) -> list:
     matche1List = []
 
     pos = startPos
@@ -892,17 +895,65 @@ def GetRegExMatcheGroup1List(value, regexPattern, startPos=1):
     return matche1List
 
 
-def DownloadImageUrl(url, saveName) -> bool:
+def GetRegExMatcheGroup1And2List(value, regexPattern, startPos=1) -> list:
+    matche1And2List = []
+
+    pos = startPos
+    while True:
+        match = re.search(regexPattern, value[pos:])
+        if match:
+            matche1And2List.append([match.group(1), match.group(2)])
+            pos += match.end()
+        else:
+            break
+
+    for index, matche1And2 in enumerate(matche1And2List, start=1):
+        Util.Debug(f"matche1List[{index}] : {matche1And2}")
+
+    return matche1And2List
+
+
+# def DownloadImageUrl(url, saveName) -> bool:
+#     # 저장할 파일의 경로 및 사용자가 원하는 파일 이름
+#     savePath = EnvData.g_DefaultPath() + "\\DownloadImage\\" + str(saveName) + ".png"
+
+#     # 이미지 다운로드
+#     try:
+#         urllib.request.urlretrieve(url, savePath)
+#         Util.Debug(f"이미지 다운로드 url : {url}")
+#     except Exception as e:
+#         Util.Debug(f"이미지 다운로드 실패 Error: {e}")
+#         return False
+
+#     return True
+
+def DownloadImageUrl(url, saveName, target_width=None, target_height=None) -> bool:
     # 저장할 파일의 경로 및 사용자가 원하는 파일 이름
-    savePath = EnvData.g_DefaultPath() + "\\DownloadImage\\" + str(saveName) + ".png"
+    save_folder = EnvData.g_DefaultPath() + "\\DownloadImage\\"
+    os.makedirs(save_folder, exist_ok=True)
+    savePath = os.path.join(save_folder, f"{saveName}.png")
 
     # 이미지 다운로드
     try:
         urllib.request.urlretrieve(url, savePath)
-        Util.Debug(f"이미지 다운로드 url : {url}")
+        Util.Debug(f"이미지 다운로드 url: {url}")
     except Exception as e:
         Util.Debug(f"이미지 다운로드 실패 Error: {e}")
         return False
+
+    # 이미지 크기 조정
+    if target_width is not None or target_height is not None:
+        try:
+            img = Image.open(savePath)
+            if target_width is None:
+                target_width = img.width
+            if target_height is None:
+                target_height = img.height
+            img = img.resize((target_width, target_height))
+            img.save(savePath)
+        except Exception as e:
+            Util.Debug(f"이미지 크기 조정 실패 Error: {e}")
+            return False
 
     return True
 
@@ -1002,6 +1053,37 @@ def GetUggKorSize(usSize):
             return 300
         case "14":
             return 310
+    return 0
+
+
+def GetBananarePublicKorSize(size):
+    match size:
+        case "5":
+            return 210
+        case "5 1/2":
+            return 215
+        case "6":
+            return 220
+        case "6 1/2":
+            return 225
+        case "7":
+            return 230
+        case "7 1/2":
+            return 235
+        case "8":
+            return 240
+        case "8 1/2":
+            return 245
+        case "9":
+            return 250
+        case "9 1/2":
+            return 255
+        case "10":
+            return 260
+        case "10 1/2":
+            return 265
+        case "11":
+            return 270
     return 0
 
 

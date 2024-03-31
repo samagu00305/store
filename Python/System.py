@@ -16,12 +16,21 @@ import psutil
 import pandas as pd
 import numpy as np
 from lxml import etree
+from collections import OrderedDict
 
 
 from collections import namedtuple
 
 
 class UggData:
+    def __init__(self):
+        self.useMoney: float = 0
+        self.korMony: float = 0
+        self.arraySizesAndImgUrls = []
+        self.title = ""
+
+
+class BananarePublicData:
     def __init__(self):
         self.useMoney: float = 0
         self.korMony: float = 0
@@ -40,6 +49,14 @@ class MytheresaData:
 
 
 class AddOneProduct_UggData:
+    def __init__(self):
+        self.addCount: bool = False
+        self.addOneProductSuccess: bool = False
+        self.dfAddBefore = None
+        self.dfAdd = None
+
+
+class AddOneProduct_BananarePublicData:
     def __init__(self):
         self.addCount: bool = False
         self.addOneProductSuccess: bool = False
@@ -100,8 +117,8 @@ def SaveWorksheet(df):
 def GetElementsData() -> str:
     Util.KeyboardKeyPress("f12")
     Util.SleepTime(2)
-    if Util.WhileFoundImage(r"크롬\Elements에 html"):
-        Util.MoveAtWhileFoundImage(r"크롬\Elements에 html", 5, 5)
+    if Util.WhileFoundImage(r"크롬\Elements에 lang"):
+        Util.MoveAtWhileFoundImage(r"크롬\Elements에 lang", 5, 5)
         Util.SleepTime(0.5)
         Util.NowMouseClickRight()
         Util.SleepTime(3)
@@ -677,7 +694,9 @@ def GetNewProductURLs_BananarePublic(name, url, filterUrls) -> UggNewProductURLs
     )
     for pid in productUrlLines:
         if '"' not in pid:
-            productUrls.append(f"https://bananarepublic.gap.com/browse/product.do?pid={pid}")
+            productUrls.append(
+                f"https://bananarepublic.gap.com/browse/product.do?pid={pid}"
+            )
     uniqueArr = []
     for productUrl in productUrls:
         for filterUrl in filterUrls:
@@ -963,7 +982,7 @@ def AddOneProduct_Ugg(
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
     # 상품 이름
-    title = data.title
+    title = f"[Ugg] {data.title}"
     filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
     if len(filtered_rows) >= 1:
         if len(arraySizesAndImgUrls) >= 1:
@@ -997,7 +1016,7 @@ def AddOneProduct_Ugg(
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
-            Util.DownloadImageUrl(imgUrls[i], i)
+            Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -1165,6 +1184,223 @@ def AddOneProduct_Ugg(
         return returnValue
 
 
+def AddOneProduct_BananarePublic(
+    dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, krwUsd
+) -> AddOneProduct_BananarePublicData:
+
+    url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
+
+    data: BananarePublicData = GetBananarePublicData(url, krwUsd)
+
+    # UGG에 사이즈 정보로 정보 취합
+    useMoney = data.useMoney
+
+    # 이중 배열
+    arraySizesAndImgUrls = data.arraySizesAndImgUrls
+
+    # 상품 이름
+    title = f"[BananarePublic] {data.title}"
+    filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
+    if len(filtered_rows) >= 1:
+        if len(arraySizesAndImgUrls) >= 1:
+            title += "(" + data.arraySizesAndImgUrls[0][Util.Array_ColroName] + ")"
+        count = 2
+        while True:
+            filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
+            if len(filtered_rows) >= 1:
+                # 1개 이상의 행이 일치합니다.
+                title += f"v{count}"
+                count += 1
+            else:
+                # 일치하는 행이 없습니다.
+                break
+
+    Util.FolderToDelete(EnvData.g_DefaultPath() + r"\DownloadImage")
+
+    if len(arraySizesAndImgUrls) == 0:
+        Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
+        # 등록해야 될 것에서 삭제
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+
+        returnValue = AddOneProduct_BananarePublicData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
+
+    if len(arraySizesAndImgUrls) >= 1:
+        imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
+        for i in range(len(imgUrls)):
+            Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
+
+    Util.SleepTime(1)
+    webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "tab")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(2)
+
+    if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인하기", 5, 5, 1):
+        Util.SleepTime(2)
+    if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
+        Util.SleepTime(1)
+        webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+        Util.SleepTime(0.5)
+        Util.KeyboardKeyHotkey("ctrl", "tab")
+        Util.SleepTime(0.5)
+        Util.KeyboardKeyHotkey("ctrl", "w")
+        Util.SleepTime(2)
+
+    Util.SleepTime(2)
+    Util.KeyboardKeyPress("esc")
+    Util.SleepTime(1)
+
+    # if not addOneProductSuccess:
+    # 	Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\이전 내용 불러오기 확인", -80, 5, 5)
+
+    # 상품 등록시 기본 세팅 들
+    ProductRegistration.ProductRegistrationDefaultSettings()
+
+    # 카테고리명 입력
+    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
+    Util.SleepTime(0.5)
+    Util.NowMouseClick()
+    pyperclip.copy(dfAddBefore.at[dfAddBefore.index[0], COLUMN.B.name])
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("enter")
+    Util.SleepTime(2)
+
+    # 상품명 입력
+    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상품명", 50, 85)
+    Util.SleepTime(1)
+    Util.NowMouseClick()
+    Util.SleepTime(0.5)
+    pyperclip.copy(title)
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
+    Util.SleepTime(0.5)
+
+    # 판매가 입력
+    UpdateAndReturnSalePrice(data.korMony)
+
+    # 옵션 세팅
+    if True:
+        # 관세 부가 여부 체크
+        is_customsDuty = useMoney >= 200
+
+        # 옵션 엑셀 세팅
+        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
+
+        # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
+        UpdateOptionsFromExcel(is_customsDuty)
+
+    # 이미지 등록(대표, 추가)
+    if ProductRegistration.IamgeRegistration_v2() == False:
+        Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
+        # 등록해야 될 것에서 삭제
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+
+        returnValue = AddOneProduct_BananarePublicData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
+
+    # HTML 으로 등록
+    SetHTML(arraySizesAndImgUrls, True)
+
+    Util.SleepTime(1)
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
+    Util.SleepTime(5)
+    if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", -80, 5):
+        Util.SleepTime(3)
+
+        # 새로운 빈 행 생성
+        new_row = pd.DataFrame([np.nan] * len(dfAdd.columns)).T
+        new_row.columns = dfAdd.columns
+        # 원하는 위치에 빈 행 삽입
+        insert_index = 2  # 3번째 행에 삽입하려면 인덱스는 1입니다.
+        dfAdd = pd.concat(
+            [dfAdd.iloc[:insert_index], new_row, dfAdd.iloc[insert_index:]]
+        ).reset_index(drop=True)
+
+        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+
+        # 상품 url
+        Util.GoToTheAddressWindow()
+        Util.SleepTime(0.5)
+        addurl = Util.CopyToClipboardAndGet()
+        Util.Debug(f"addurl : {addurl}")
+        dfAdd.at[2, COLUMN.B.name] = addurl
+        # 크롬 탭 닫기
+        Util.KeyboardKeyHotkey("ctrl", "w")
+        Util.SleepTime(0.5)
+        # 상품 번호
+        addUrlSplitArray = addurl.split("/")
+        if len(addUrlSplitArray) > 0:
+            dfAdd.at[2, COLUMN.A.name] = addUrlSplitArray[-1]
+
+        dfAdd.at[2, COLUMN.C.name] = url
+        # 상품명 기재
+        dfAdd.at[2, COLUMN.T.name] = title
+        # 가격
+        dfAdd.at[2, COLUMN.U.name] = useMoney
+        # 브랜드
+        brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN.A.name]
+        dfAdd.at[2, COLUMN.E.name] = brand
+
+        # 색이름 리스트 값
+        colorNames = []
+        for item in arraySizesAndImgUrls:
+            colorNames.append(item[Util.Array_ColroName])
+        str_saveColorList = Util.JoinArrayToString(colorNames)
+        Util.Debug(f"str_saveColorList : {str_saveColorList}")
+
+        dfAdd.at[2, COLUMN.F.name] = str_saveColorList
+
+        # 색 이름 과 사아즈 리스트 값(이중 배열)
+        str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
+        Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
+
+        dfAdd.at[2, COLUMN.G.name] = str_saveColorNameDoubleArray
+
+        System.xl_J_(dfAdd, 2, "신규 등록", True)
+
+        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+
+        # 등록해야 될 것에서 삭제
+        dfAddBefore = dfAddBefore.iloc[1:]
+        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+
+        returnValue = AddOneProduct_BananarePublicData()
+        returnValue.addCount = True
+        returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
+    else:
+        Util.TelegramSend("++++++++++++++ 이름이 입력 안됬음 왜지??")
+        # 이름이 입력 안됬음  왜지??
+        Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\취소", 5, 5)
+        Util.SleepTime(1)
+        Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
+        Util.SleepTime(1)
+
+        returnValue = AddOneProduct_BananarePublicData()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = False
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
+
+
 # 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
 def AddDataFromExcel_Ugg():
     Util.TelegramSend(
@@ -1177,7 +1413,6 @@ def AddDataFromExcel_Ugg():
 
     xlFileAdd = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
     dfAdd = pd.read_csv(xlFileAdd, encoding="cp949")
-    rowCountAdd = dfAdd.shape[0]
 
     krwUsd = Util.KRWUSD()
 
@@ -1190,6 +1425,49 @@ def AddDataFromExcel_Ugg():
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
             data = AddOneProduct_Ugg(
+                dfAddBefore if data is None else data.dfAddBefore,
+                dfAdd if data is None else data.dfAdd,
+                xlFileAddBefore,
+                xlFileAdd,
+                addOneProductSuccess,
+                krwUsd,
+            )
+            addOneProductSuccess = data.addOneProductSuccess
+            if addOneProductSuccess:
+                if data.addCount:
+                    addCount += 1
+                count += 1
+                break
+
+    Util.TelegramSend("추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 끝")
+
+    return addCount
+
+
+# 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
+def AddDataFromExcel_BananarePublic():
+    Util.TelegramSend(
+        "추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 시작"
+    )
+
+    xlFileAddBefore = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
+    dfAddBefore = pd.read_csv(xlFileAddBefore, encoding="cp949")
+    rowCountAddBefore = dfAddBefore.shape[0]
+
+    xlFileAdd = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    dfAdd = pd.read_csv(xlFileAdd, encoding="cp949")
+
+    krwUsd = Util.KRWUSD()
+
+    # 모두 반복
+    addCount = 0
+    count = 1
+    data = None
+    for _ in range(rowCountAddBefore):
+        addOneProductSuccess = True
+        while True:
+            Util.TelegramSend(f"{count}/{rowCountAddBefore}")
+            data = AddOneProduct_BananarePublic(
                 dfAddBefore if data is None else data.dfAddBefore,
                 dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
@@ -1379,6 +1657,104 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
                             colorName = colorNames[index]
                         arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
     returnValue = UggData()
+    returnValue.useMoney = float(useMoney)
+    returnValue.korMony = float(korMony)
+    returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
+    returnValue.title = Util.TranslateToKorean(title)
+    return returnValue
+
+
+# url에 필요 정보 가져오기
+def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePublicData:
+    # BananarePublic에 사이즈 정보로 정보 취합
+    useMoney = 0
+    korMony = 0
+
+    # 이중 배열
+    arraySizesAndImgUrls = []
+
+    # 상품 이름
+    title = ""
+
+    webbrowser.open(url)
+    Util.SleepTime(10)
+    htmlElementsData: str = System.GetElementsData()
+    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
+
+    # 상품 이름
+    match = re.search(
+        r'\\"productTitle\\":\\"(.*?)\\"',
+        htmlElementsData,
+    )
+    if match:
+        title = match.group(1)
+
+    Util.Debug(f"title : {title}")
+
+    useMoney = 0
+    korMony = 0
+    contentValue = htmlElementsData
+    useMoneys = Util.GetRegExMatcheGroup1List(
+        contentValue, r'\\"localizedCurrentPrice\\":\\"\$([0-9.]+)\\"'
+    )
+    if len(useMoneys) > 0:
+        useMoney = float(useMoneys[-1])
+        Util.Debug(f"useMoney : {useMoney}")
+
+    korMony: int = Util.GetKorMony(useMoney, exchangeRate)
+
+    if onlyUseMoney == False:
+        matcheGroup1And2 = Util.GetRegExMatcheGroup1And2List(
+            contentValue,
+            r'\\"businessCatalogItemId\\":\\"(\d+)\\".*?\\"colorName\\":\\"(.*?)\\"',
+        )
+        # 중복 제거하면서 순서 유지
+        unique_sublists = list(OrderedDict.fromkeys(map(tuple, matcheGroup1And2)))
+        # 다시 리스트로 변환
+        unique_sublists = [list(sublist) for sublist in unique_sublists]
+        for i in range(len(unique_sublists)):
+            Util.Debug("0030 i : " + str(i))
+            productNumber = unique_sublists[i][0]
+            colorName = unique_sublists[i][1]
+            # 문자열의 길이가 25보다 큰지 확인
+            if len(colorName) > 25:
+                # 25자까지만 잘라내기
+                colorName = colorName[:25]
+
+            webbrowser.open(
+                f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}"
+            )
+            Util.SleepTime(10)
+            colorUrlHtmlElementsData: str = System.GetElementsData()
+            # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+            Util.KeyboardKeyHotkey("ctrl", "w")
+            Util.SleepTime(1)
+
+            sizes: list = []
+            sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                colorUrlHtmlElementsData,
+                r'aria-label="Size:(.*?)"',
+            )
+            for i in range(len(sizeDatas)):
+                if Util.GetBananarePublicKorSize(sizeDatas[i]) != 0:
+                    sizes.append(
+                        f"US_{sizeDatas[i]}({Util.GetBananarePublicKorSize(sizeDatas[i])})"
+                    )
+                else:
+                    sizes.append(sizeDatas[i])
+
+            imgBigUrls: list = []
+            matchs: list = Util.GetRegExMatcheGroup1List(
+                colorUrlHtmlElementsData,
+                r'" src="/(.*?).jpg" height=',
+            )
+            for i in range(len(matchs)):
+                imgBigUrls.append(f"https://bananarepublic.gap.com/{matchs[i]}.jpg")
+            arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+
+    returnValue = BananarePublicData()
     returnValue.useMoney = float(useMoney)
     returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
