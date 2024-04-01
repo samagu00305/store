@@ -36,6 +36,7 @@ class BananarePublicData:
         self.korMony: float = 0
         self.arraySizesAndImgUrls = []
         self.title = ""
+        self.isSoldOut: bool = False
 
 
 class MytheresaData:
@@ -114,7 +115,7 @@ def SaveWorksheet(df):
 
     Util.Debug("save 원본 엑셀 파일 저장 시작", False)
     # 원본 엑셀 파일 저장
-    df.to_csv(xlFile, index=False, encoding="cp949")
+    Util.CsvSave(df, xlFile)
     Util.Debug("save 원본 엑셀 파일 저장 끝", False)
 
     shutil.copy(xlFile, xlFile_copy)
@@ -214,6 +215,19 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 System.SaveWorksheet(df)
             else:
                 row -= 1
+        elif "bananarepublic.gap.com" in url:
+            Util.TelegramSend(
+                f"bananarepublic.gap.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
+            )
+            isUpdateProduct = UpdateProductInfoMoney_BananarePublic(
+                df, url, row, krwEur
+            )
+            if isUpdateProduct:
+                df.at[1, COLUMN.P.name] = row
+                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+                System.SaveWorksheet(df)
+            else:
+                row -= 1
 
             continue
         else:
@@ -221,7 +235,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
             System.SaveWorksheet(df)
 
-    df.to_csv(xlFile, index=False, encoding="cp949")
+    Util.CsvSave(df, xlFile)
 
     Util.TelegramSend("등록 된 상품 최신화 -- 끝")
 
@@ -276,7 +290,7 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
         else:
             row -= 1
 
-    df.to_csv(xlFile, index=False, encoding="cp949")
+    Util.CsvSave(df, xlFile)
 
 
 def UpdateProductInfo_UGG(df, url, row, krwUsd):
@@ -520,6 +534,55 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
                 System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
             else:
                 System.xl_J_(df, row, "가격이 0이 나왔습니다.")
+
+    return True
+
+
+def UpdateProductInfoMoney_BananarePublic(df, url, row, krwEur):
+    data = GetBananarePublicData(url, krwEur)
+
+    if int(data.korMony) == 25000:
+        System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        return True
+
+    # 스마트 스토어 수정 화면까지 이동
+    managedata = ManageAndModifyProducts(df, row)
+    if managedata.isNoNetwork == True:
+        return False
+
+    if managedata.isNoProduct == True:
+        System.xl_J_(df, row, "스토어에 상품이 없습니다.")
+        return True
+
+    if data.isSoldOut:
+        # 품절
+        SoldOut(df, row)
+    else:
+        useMoney = data.useMoney
+        arraySizesAndImgUrls = data.arraySizesAndImgUrls
+
+        # 관세 부가 여부 체크
+        is_customsDuty = useMoney >= 150
+
+        # 옵션 엑셀 세팅
+        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
+
+        # 1. 가격 세팅
+        # 2. 엑셀로 옵셥 세팅
+        if True:
+            # 판매가 입력
+            UpdateAndReturnSalePrice(data.korMony)
+
+            # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
+            UpdateOptionsFromExcel(is_customsDuty)
+
+            Util.SleepTime(1)
+            Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
+
+        if data.korMony != 0:
+            System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
+        else:
+            System.xl_J_(df, row, "가격이 0이 나왔습니다.")
 
     return True
 
@@ -795,7 +858,7 @@ def SetCsvUGGNewProductURLs():
             df.loc[allCount, "B"] = item.name  # 메뉴
             df.loc[allCount, "C"] = productUrl  # url
 
-    df.to_csv(xlFile, index=False, encoding="cp949")
+    Util.CsvSave(df, xlFile)
 
     Util.TelegramSend("신규 등록 할 UGG 목록을 엑셀에 정리 -- 끝")
 
@@ -891,7 +954,7 @@ def SetCsvBananarePublicNewProductURLs():
                 f"https://bananarepublic.gap.com/browse/product.do?pid={titleAndPid[1]}"  # url
             )
 
-    df.to_csv(xlFile, index=False, encoding="cp949")
+    Util.CsvSave(df, xlFile)
 
     Util.TelegramSend("신규 등록 할 BananarePublic 목록을 엑셀에 정리 -- 끝")
 
@@ -1018,7 +1081,7 @@ def AddOneProduct_Ugg(
         Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
@@ -1103,7 +1166,7 @@ def AddOneProduct_Ugg(
         Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = False
@@ -1130,7 +1193,7 @@ def AddOneProduct_Ugg(
             [dfAdd.iloc[:insert_index], new_row, dfAdd.iloc[insert_index:]]
         ).reset_index(drop=True)
 
-        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+        Util.CsvSave(dfAdd, xlFileAdd)
 
         # 상품 url
         Util.GoToTheAddressWindow()
@@ -1172,11 +1235,11 @@ def AddOneProduct_Ugg(
 
         System.xl_J_(dfAdd, 2, "신규 등록", True)
 
-        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+        Util.CsvSave(dfAdd, xlFileAdd)
 
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
 
@@ -1239,7 +1302,7 @@ def AddOneProduct_BananarePublic(
         Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         returnValue = AddOneProduct_BananarePublicData()
         returnValue.addCount = False
@@ -1324,7 +1387,7 @@ def AddOneProduct_BananarePublic(
         Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         returnValue = AddOneProduct_BananarePublicData()
         returnValue.addCount = False
@@ -1351,7 +1414,7 @@ def AddOneProduct_BananarePublic(
             [dfAdd.iloc[:insert_index], new_row, dfAdd.iloc[insert_index:]]
         ).reset_index(drop=True)
 
-        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+        Util.CsvSave(dfAdd, xlFileAdd)
 
         # 상품 url
         Util.GoToTheAddressWindow()
@@ -1393,11 +1456,11 @@ def AddOneProduct_BananarePublic(
 
         System.xl_J_(dfAdd, 2, "신규 등록", True)
 
-        dfAdd.to_csv(xlFileAdd, index=False, encoding="cp949")
+        Util.CsvSave(dfAdd, xlFileAdd)
 
         # 등록해야 될 것에서 삭제
         dfAddBefore = dfAddBefore.iloc[1:]
-        dfAddBefore.to_csv(xlFileAddBefore, index=False, encoding="cp949")
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
         Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
 
@@ -1737,7 +1800,6 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
         # 다시 리스트로 변환
         unique_sublists = [list(sublist) for sublist in unique_sublists]
         for i in range(len(unique_sublists)):
-            Util.Debug("0030 i : " + str(i))
             productNumber = unique_sublists[i][0]
             colorName = unique_sublists[i][1]
             # 문자열의 길이가 25보다 큰지 확인
@@ -1781,6 +1843,7 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
+    returnValue.isSoldOut = False
     return returnValue
 
 

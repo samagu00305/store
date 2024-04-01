@@ -927,6 +927,7 @@ def GetRegExMatcheGroup1And2List(value, regexPattern, startPos=1) -> list:
 
 #     return True
 
+
 def DownloadImageUrl(url, saveName, target_width=None, target_height=None) -> bool:
     # 저장할 파일의 경로 및 사용자가 원하는 파일 이름
     save_folder = EnvData.g_DefaultPath() + "\\DownloadImage\\"
@@ -1247,3 +1248,11 @@ def TranslateToKorean(enText: str) -> str:
         Util.Debug(f"번역문({result.dest}) : {result.text}")
         returnValue = result.text
     return returnValue
+
+
+def CsvSave(df, xlFile):
+    # 'nan' 문자열을 'NaN'으로 변환
+    df.replace("nan", float("nan"), inplace=True)
+    # NaN 값을 원하는 값으로 대체 (예: 빈 문자열)
+    df.fillna("", inplace=True)
+    df.to_csv(xlFile, index=False, encoding="cp949")
