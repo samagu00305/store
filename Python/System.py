@@ -763,7 +763,9 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewP
     for titleAndPid in productTitleAndPids:
         title = titleAndPid[0]
         pid = titleAndPid[1]
-        if filterTitles.count(f"[BananarePublic] {title}") == 0:  # 중복 제거
+        if (
+            filterTitles.count(f"[BananarePublic] {Util.TranslateToKorean(title)}") == 0
+        ):  # 중복 제거
             if '"' not in pid:
                 titleAndPids.append(titleAndPid)
 
@@ -1817,17 +1819,19 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
             Util.SleepTime(1)
 
             sizes: list = []
-            sizeDatas: list = Util.GetRegExMatcheGroup1List(
-                colorUrlHtmlElementsData,
-                r'aria-label="Size:(.*?)"',
-            )
-            for i in range(len(sizeDatas)):
-                if Util.GetBananarePublicKorSize(sizeDatas[i]) != 0:
-                    sizes.append(
-                        f"US_{sizeDatas[i]}({Util.GetBananarePublicKorSize(sizeDatas[i])})"
-                    )
-                else:
-                    sizes.append(sizeDatas[i])
+            match = re.search("Size:One Size", colorUrlHtmlElementsData)
+            if not match:
+                sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                    colorUrlHtmlElementsData,
+                    r'aria-label="Size:(.*?)"',
+                )
+                for i in range(len(sizeDatas)):
+                    if Util.GetBananarePublicKorSize(sizeDatas[i]) != 0:
+                        sizes.append(
+                            f"US_{sizeDatas[i]}({Util.GetBananarePublicKorSize(sizeDatas[i])})"
+                        )
+                    else:
+                        sizes.append(sizeDatas[i])
 
             imgBigUrls: list = []
             matchs: list = Util.GetRegExMatcheGroup1List(
