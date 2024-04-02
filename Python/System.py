@@ -1827,6 +1827,8 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
             sizes: list = []
             match = re.search("Size:One Size", colorUrlHtmlElementsData)
             if not match:
+                sizes.append("One Size")
+            else:
                 sizeDatas: list = Util.GetRegExMatcheGroup1List(
                     colorUrlHtmlElementsData,
                     r'aria-label="Size:(.*?)"',
