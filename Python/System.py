@@ -917,6 +917,72 @@ def SetCsvBananarePublicNewProductURLs():
         )
     )
 
+    # 토트백
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 여성가방 토트백",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=1178763&facetOrder=style:1178763",
+            filterTitles,
+        )
+    )
+    # 크로스백
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 여성가방 크로스백",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010863&facetOrder=style:3010863",
+            filterTitles,
+        )
+    )
+    # 힙색
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 여성가방 힙색",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010986&facetOrder=style:3010986",
+            filterTitles,
+        )
+    )
+    # 클러치백
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 여성가방 클러치백",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010862&facetOrder=style:3010862",
+            filterTitles,
+        )
+    )
+
+    # 패션잡화>주얼리>목걸이>패션목걸이
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 주얼리 목걸이 패션목걸이",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183718&facetOrder=department:136,style:1183718",
+            filterTitles,
+        )
+    )
+    # 패션잡화>주얼리>팔찌>패션팔찌
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 주얼리 팔찌 패션팔찌",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183719&facetOrder=department:136,style:1183719",
+            filterTitles,
+        )
+    )
+    # 패션잡화>주얼리>귀걸이>패션귀걸이
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 주얼리 귀걸이 패션귀걸이",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183720&facetOrder=department:136,style:1183720",
+            filterTitles,
+        )
+    )
+    # 패션잡화>주얼리>반지>패션반지
+    newProducts.append(
+        GetNewProducts_BananarePublic(
+            "패션잡화 주얼리 반지 패션반지",
+            "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721",
+            filterTitles,
+        )
+    )
+
     # 중복 제거
     titles: list[str] = []
     unique_newProducts: list[BananarePublicNewProducts] = []
