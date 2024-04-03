@@ -1198,12 +1198,20 @@ def AddOneProduct_Ugg(
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
     Util.SleepTime(0.5)
     Util.NowMouseClick()
+    Util.SleepTime(1)
+    Util.KeyboardKeyPress("1")
     pyperclip.copy(dfAddBefore.at[dfAddBefore.index[0], COLUMN.B.name])
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "v")
     Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("home")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("delete")
+    Util.SleepTime(0.5)
     Util.KeyboardKeyPress("enter")
     Util.SleepTime(2)
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 5, 5, 1)
+    Util.SleepTime(1)
 
     # 상품명 입력
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상품명", 50, 85)
@@ -1431,6 +1439,8 @@ def AddOneProduct_BananarePublic(
     Util.SleepTime(0.5)
     Util.KeyboardKeyPress("enter")
     Util.SleepTime(2)
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 5, 5, 1)
+    Util.SleepTime(1)
 
     # 상품명 입력
     Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상품명", 50, 85)
