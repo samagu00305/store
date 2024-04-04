@@ -26,6 +26,37 @@ def ProductRegistrationDefaultSettings():
     Util.WheelAndMoveAtWhileFoundImage(r"스마트 스토어\제일 위 상품등록", 0, 0, 10000)
 
 
+def ProductCategory(category):
+    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\카테고리명 선택", 0, 50)
+    Util.SleepTime(0.5)
+    Util.NowMouseClick()
+    Util.SleepTime(1)
+    Util.KeyboardKeyPress("1")
+    pyperclip.copy(category)
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("home")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("delete")
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyPress("enter")
+    Util.SleepTime(2)
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 5, 5, 1)
+    Util.SleepTime(1)
+
+
+def ProductTitle(title):
+    Util.MoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상품명", 50, 85)
+    Util.SleepTime(1)
+    Util.NowMouseClick()
+    Util.SleepTime(0.5)
+    pyperclip.copy(title)
+    Util.SleepTime(0.5)
+    Util.KeyboardKeyHotkey("ctrl", "v")
+    Util.SleepTime(0.5)
+
+
 # 이미지 등록(대표, 추가)
 def IamgeRegistration_v2(imgCount: int):
     # 대표 이미지 등록
