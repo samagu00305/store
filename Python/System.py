@@ -1299,7 +1299,9 @@ def AddOneProduct_Ugg(
         dfAddBefore = dfAddBefore.iloc[1:]
         Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
-        Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
+        Util.TelegramSend(
+            f"등록한 스토어 주소 : {addurl} 구매 url: {url} title : {title}  useMoney : {useMoney}"
+        )
 
         returnValue = AddOneProduct_UggData()
         returnValue.addCount = True
@@ -1507,7 +1509,9 @@ def AddOneProduct_BananarePublic(
         dfAddBefore = dfAddBefore.iloc[1:]
         Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
-        Util.TelegramSend(f"등록한 스토어 주소 :{addurl}")
+        Util.TelegramSend(
+            f"등록한 스토어 주소 : {addurl} 구매 url: {url} title : {title}  useMoney : {useMoney}"
+        )
 
         returnValue = AddOneProduct_BananarePublicData()
         returnValue.addCount = True
