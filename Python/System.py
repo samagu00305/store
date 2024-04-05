@@ -200,6 +200,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 df.at[1, COLUMN.P.name] = row
                 df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
                 System.SaveWorksheet(df)
+                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
             else:
                 row -= 1
 
@@ -213,6 +214,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 df.at[1, COLUMN.P.name] = row
                 df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
                 System.SaveWorksheet(df)
+                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
             else:
                 row -= 1
         elif "bananarepublic.gap.com" in url:
@@ -226,6 +228,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 df.at[1, COLUMN.P.name] = row
                 df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
                 System.SaveWorksheet(df)
+                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
             else:
                 row -= 1
 
