@@ -2049,6 +2049,10 @@ def ManageAndModifyProducts(df, row) -> ManageAndModifyProductsData:
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\KC인증", 0, 0, 2):
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\KC인증 닫기", 10, 10, 2)
 
+    # 안전기준 팝업 등이 나오면 끄기 위함
+    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 5, 5, 1)
+    Util.SleepTime(0.5)
+
     return values
 
 
