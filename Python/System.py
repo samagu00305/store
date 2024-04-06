@@ -29,6 +29,7 @@ class UggData:
         self.arraySizesAndImgUrls = []
         self.title = ""
         self.isCheckRobot: bool = False
+        self.details = ""  # 상세 정보
 
 
 class BananarePublicData:
@@ -50,6 +51,7 @@ class MytheresaData:
         self.title = ""
         self.sizesLength: int = 0
         self.isSoldOut: bool = False
+        self.details = ""  # 상세 정보
 
 
 class AddOneProduct_UggData:
@@ -1646,9 +1648,6 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     # 이중 배열
     arraySizesAndImgUrls = []
 
-    # 상품 이름
-    title = ""
-
     # 1145990은 url의 끝에 .html 전에 있는 값
     productNumber = ""
     urlSplitArray = url.split("/")
@@ -1675,8 +1674,9 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
         returnValue = UggData()
         returnValue.isCheckRobot = True
         return returnValue
-    title = ""
+
     # 상품 이름
+    title = ""
     match = re.search(
         r'<div\s+class\s*=\s*"sticky-toolbar__content">\s*<span>([^<]*)</span>',
         htmlElementsData,
@@ -1685,6 +1685,17 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
         title = match.group(1)
 
     Util.Debug(f"title : {title}")
+
+    # 상품 정보
+    details = ""
+    match = re.search(
+        r'"description":"(.*?)"',
+        htmlElementsData,
+    )
+    if match:
+        details = match.group(1)
+
+    Util.Debug(f"details : {details}")
 
     startPos = 0
     useMoney = 0
@@ -1821,6 +1832,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.isCheckRobot = False
+    returnValue.details = Util.TranslateToKorean(details)
     return returnValue
 
 
@@ -1854,7 +1866,7 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     # 세부 사항
     details = ""
     match = re.search(
-        r'"},"description":"(.*?)#',
+        r'"\},"description":"(.*?)#',
         htmlElementsData,
     )
     if match:
@@ -1865,7 +1877,7 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     # 패브릭&케어
     fabricAndCare = ""
     match = re.search(
-        r'\\"fabric\\":{\\"bulletAttributes\\":[\\"(.*?)"',
+        r'\\"fabric\\":\{\\"bulletAttributes\\":\[\\"(.*?)"',
         htmlElementsData,
     )
     if match:
@@ -1943,12 +1955,12 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.isSoldOut = False
-    returnValue.details = details
-    returnValue.fabricAndCare = fabricAndCare
+    returnValue.details = Util.TranslateToKorean(details)
+    returnValue.fabricAndCare = Util.TranslateToKorean(fabricAndCare)
     return returnValue
 
 
-def GetMytheresaData(url, exchangeRate):
+def GetMytheresaData(url, exchangeRate) -> MytheresaData:
     # 사이즈 정보로 정보 취합
     useMoney = 0
     korMony = 0
@@ -1958,6 +1970,9 @@ def GetMytheresaData(url, exchangeRate):
 
     # 상품 이름
     title: str = ""
+
+    # 상세 정보
+    details: str = ""
 
     isSoldOut = False
 
@@ -1984,6 +1999,17 @@ def GetMytheresaData(url, exchangeRate):
         # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
         title = tree.xpath("//title/text()")[0]
         title = str(title).replace("| Mytheresa", "")
+
+        # 세부 사항
+        details = ""
+        match = re.search(
+            r'"description": "(.*?)"',
+            htmlElementsData,
+        )
+        if match:
+            details = match.group(1)
+
+        Util.Debug(f"details : {details}")
 
         # 재화 타입
         match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
@@ -2019,6 +2045,7 @@ def GetMytheresaData(url, exchangeRate):
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.sizesLength = len(sizes)
     returnValue.isSoldOut = isSoldOut
+    returnValue.details = details
     return returnValue
 
 
