@@ -1104,7 +1104,14 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
 # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
 def UpdateOptionsFromExcel(is_customsDuty):
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\옵션", 0, 0, -500)
-    Util.SleepTime(1)
+    Util.SleepTime(0.5)
+    Util.MouseWheelScroll(-100)
+    Util.SleepTime(0.5)
+    current_mouse_x, current_mouse_y = pyautogui.position()
+    Util.MouseMove(current_mouse_x + 220, current_mouse_y + 100 - 100)
+    Util.SleepTime(0.5)
+    Util.NowMouseClick()
+    Util.SleepTime(0.5)
     Util.WheelAndClickAtWhileFoundImage(r"스마트 스토어\상품 수정\엑셀 일괄등록", 0, 0)
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\확인", 0, 0, 2)
