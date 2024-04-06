@@ -38,6 +38,8 @@ class BananarePublicData:
         self.arraySizesAndImgUrls = []
         self.title = ""
         self.isSoldOut: bool = False
+        self.details = ""  # 상세 정보
+        self.fabricAndCare = ""  # 패브릭&케어
 
 
 class MytheresaData:
@@ -1831,9 +1833,6 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     # 이중 배열
     arraySizesAndImgUrls = []
 
-    # 상품 이름
-    title = ""
-
     webbrowser.open(url)
     Util.SleepTime(10)
     htmlElementsData: str = System.GetElementsData()
@@ -1842,6 +1841,7 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     Util.SleepTime(1)
 
     # 상품 이름
+    title = ""
     match = re.search(
         r'\\"productTitle\\":\\"(.*?)\\"',
         htmlElementsData,
@@ -1850,6 +1850,28 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
         title = match.group(1)
 
     Util.Debug(f"title : {title}")
+
+    # 세부 사항
+    details = ""
+    match = re.search(
+        r'"},"description":"(.*?)#',
+        htmlElementsData,
+    )
+    if match:
+        details = match.group(1)
+
+    Util.Debug(f"details : {details}")
+
+    # 패브릭&케어
+    fabricAndCare = ""
+    match = re.search(
+        r'\\"fabric\\":{\\"bulletAttributes\\":[\\"(.*?)"',
+        htmlElementsData,
+    )
+    if match:
+        fabricAndCare = match.group(1)
+
+    Util.Debug(f"fabricAndCare : {fabricAndCare}")
 
     useMoney = 0
     korMony = 0
@@ -1921,6 +1943,8 @@ def GetBananarePublicData(url, exchangeRate, onlyUseMoney=False) -> BananarePubl
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.isSoldOut = False
+    returnValue.details = details
+    returnValue.fabricAndCare = fabricAndCare
     return returnValue
 
 
