@@ -2045,7 +2045,7 @@ def GetMytheresaData(url, exchangeRate) -> MytheresaData:
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.sizesLength = len(sizes)
     returnValue.isSoldOut = isSoldOut
-    returnValue.details = details
+    returnValue.details = Util.TranslateToKorean(details)
     return returnValue
 
 
