@@ -11,6 +11,7 @@ from googletrans import Translator
 from PIL import Image
 import urllib.request
 import os
+import traceback
 
 Array_ColroName = 0
 Array_SizeList = 1
@@ -990,8 +991,19 @@ def TelegramSend(Message, isDebug=True):
     # URL 설정
     URL = "https://api.telegram.org/bot" + Token + "/sendmessage"
 
-    # POST 요청 보내기
-    response = requests.post(URL, data=Param)
+    try:
+        # POST 요청 보내기
+        response = requests.post(URL, data=Param)
+
+    except requests.exceptions.ConnectTimeout:
+        # 연결 시간 초과 예외가 발생했을 때 처리할 내용을 여기에 작성합니다.
+        # 여기서는 그냥 무시하고 계속 진행하는 것으로 처리합니다.
+        # TelegramSend에서 에러 발생해도 진행 되도록 처리
+        stack_trace_str = traceback.format_exc()
+        stack_trace_str = stack_trace_str[:100]
+        Util.Debug(str(stack_trace_str))
+        Util.Debug(f"TelegramSend Error")
+        pass
 
 
 def GetKorMony(mony, exchangeRate) -> int:

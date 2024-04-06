@@ -21,18 +21,12 @@ def show_start_popup():
 
         # addCount = System.AddDataFromExcel_Ugg()
 
-        System.UpdateStoreWithColorInformation(1)
+        System.UpdateStoreWithColorInformation(-1)
 
         System.CloseExcelProcesses()
 
         Util.TelegramSend("End")
         Util.SleepTime(5)
-
-    except requests.exceptions.ConnectTimeout:
-        # 연결 시간 초과 예외가 발생했을 때 처리할 내용을 여기에 작성합니다.
-        # 여기서는 그냥 무시하고 계속 진행하는 것으로 처리합니다.
-        # TelegramSend에서 에러 발생해도 진행 되도록 처리
-        pass
 
     except:
         stack_trace_str = traceback.format_exc()
