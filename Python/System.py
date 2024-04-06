@@ -28,6 +28,7 @@ class UggData:
         self.korMony: float = 0
         self.arraySizesAndImgUrls = []
         self.title = ""
+        self.isCheckRobot: bool = False
 
 
 class BananarePublicData:
@@ -299,8 +300,14 @@ def UpdateStoreWithColorInformationMoney_Mytheresa():
 def UpdateProductInfo_UGG(df, url, row, krwUsd):
     data: UggData = GetUggData(url, krwUsd)
 
+    if data.isCheckRobot:
+        System.xl_J_(df, row, "로봇인지 체크해 걸려서 나중에 다시 시도 하세요")
+        Util.TelegramSend("로봇인지 체크해 걸려서 나중에 다시 시도 하세요")
+        return True
+
     if int(data.korMony) == 25000:
         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
         return True
 
     # UGG에 사이즈 정보로 정보 취합
@@ -1650,6 +1657,15 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
 
+    # 로봇인지 체크
+    match = re.search(
+        r"geo.captcha",
+        htmlElementsData,
+    )
+    if match:
+        returnValue = UggData()
+        returnValue.isCheckRobot = True
+        return returnValue
     title = ""
     # 상품 이름
     match = re.search(
@@ -1795,6 +1811,7 @@ def GetUggData(url, exchangeRate, onlyUseMoney=False) -> UggData:
     returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
+    returnValue.isCheckRobot = False
     return returnValue
 
 
