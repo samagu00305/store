@@ -1006,6 +1006,26 @@ def TelegramSend(Message, isDebug=True):
         pass
 
 
+def DiscordSend(Message, isDebug=True):
+    if isDebug == True:
+        Util.Debug(f"DiscordSend : " + Message)
+    webhook_url = EnvData.DiscordSend_WebhookUrl()
+    data = {"content": Message}
+
+    try:
+        # POST 요청 보내기
+        response = requests.post(webhook_url, json=data)
+    except:
+        # 연결 시간 초과 예외가 발생했을 때 처리할 내용을 여기에 작성합니다.
+        # 여기서는 그냥 무시하고 계속 진행하는 것으로 처리합니다.
+        # DiscordSend에서 에러 발생해도 진행 되도록 처리
+        stack_trace_str = traceback.format_exc()
+        stack_trace_str = stack_trace_str[:100]
+        Util.Debug(str(stack_trace_str))
+        Util.Debug(f"DiscordSend Error")
+        pass
+
+
 def GetKorMony(mony, exchangeRate) -> int:
     # 물건 원가
     korCostPrice = mony * exchangeRate
