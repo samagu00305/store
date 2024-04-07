@@ -31,6 +31,7 @@ def show_start_popup():
     except:
         stack_trace_str = traceback.format_exc()
         Util.TelegramSend(str(stack_trace_str), False)
+        Util.DiscordSend(str(stack_trace_str), False)
         # save_and_close_open_excel_files()
         raise
 
