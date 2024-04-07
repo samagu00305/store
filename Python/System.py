@@ -396,7 +396,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
                 # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
                 if before_SaveColorList != str_saveColorList:
                     # HTML 으로 등록
-                    SetHTML(arraySizesAndImgUrls)
+                    SetHTML(arraySizesAndImgUrls, data.details)
 
             Util.SleepTime(1)
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -1042,7 +1042,7 @@ def SetCsvBananarePublicNewProductURLs():
 
 
 # HTML 으로 등록
-def SetHTML(arraySizesAndImgUrls, isAdd=False):
+def SetHTML(arraySizesAndImgUrls, details, isAdd=False):
     # 상세설명 찾아서 그 아래로 ONE 원형 검색이 존재 하는데 체크(이때는 아래로 조금씩 내리기)
     Util.WheelAndMoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상세 설명")
     findIndex = 0
@@ -1085,6 +1085,18 @@ def SetHTML(arraySizesAndImgUrls, isAdd=False):
     if True:
         htmlData = '<div style="text-align: center;">'
         htmlData += '<img src="https://nacharhan.github.io/photo/2.png"/>'
+        if details != "":
+            details = details.replace(": ", ". <br>")
+            details = details.replace(". ", ". <br>")
+            htmlData += "</div>"
+            htmlData += '<div style="text-align: center;">'
+            htmlData += "<p>상세 정보</p>"
+            htmlData += "</div>"
+            htmlData += "</div>"
+            htmlData += '<div style="text-align: center;">'
+            htmlData += f"<p>{details}</p>"
+            htmlData += "</div>"
+
         for item in arraySizesAndImgUrls:
             colorName = item[Util.Array_ColroName]
             imgUrls = item[Util.Array_UrlList]
@@ -1252,7 +1264,7 @@ def AddOneProduct_Ugg(
         return returnValue
 
     # HTML 으로 등록
-    SetHTML(arraySizesAndImgUrls, True)
+    SetHTML(arraySizesAndImgUrls, data.details, True)
 
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -1462,7 +1474,7 @@ def AddOneProduct_BananarePublic(
         return returnValue
 
     # HTML 으로 등록
-    SetHTML(arraySizesAndImgUrls, True)
+    SetHTML(arraySizesAndImgUrls, data.details, True)
 
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
