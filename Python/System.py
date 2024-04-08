@@ -781,7 +781,7 @@ def GetNewProducts_Zara(name, url, filterTitles) -> ZaraNewProducts:
     titleAndPids = []
     productTitleAndPids = Util.GetRegExMatcheGroup1And2List(
         htmlElementsData,
-        r'="product-click" draggable="false" href="https://www\.zara\.com/us/(.*?)-p(\d+)\.html" tabindex=',
+        r'="product-click" draggable="false" href="https://www\.zara\.com/us/en/(.*?)-p(\d+)\.html" tabindex=',
     )
     # 중첩된 리스트의 중복 제거
     unique_productTitleAndPids = [list(set(sublist)) for sublist in productTitleAndPids]
