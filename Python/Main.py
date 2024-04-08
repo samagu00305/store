@@ -10,15 +10,14 @@ def show_start_popup():
     try:
         System.CloseExcelProcesses()
 
-        # System.SetCsvBananarePublicNewProductURLs()
+        System.SetCsvZaraNewProductURLs()
 
+        # System.SetCsvBananarePublicNewProductURLs()
+        # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_BananarePublic()
 
-        # 신규 등록 할 UGG 목록을 CSV에 정리
         # System.SetCsvUGGNewProductURLs()
-
         # System.CloseExcelProcesses()
-
         # addCount = System.AddDataFromExcel_Ugg()
 
         System.UpdateStoreWithColorInformation(-1)

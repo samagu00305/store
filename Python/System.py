@@ -88,6 +88,12 @@ class BananarePublicNewProducts:
         self.titleAndPids = []
 
 
+class ZaraNewProducts:
+    def __init__(self):
+        self.name = ""
+        self.titleAndPids = []
+
+
 class COLUMN(Enum):
     A = "A"  # 상품 번호 칸
     B = "B"  # 상품 url 칸
@@ -134,9 +140,9 @@ def GetElementsData() -> str:
         Util.SleepTime(0.5)
         Util.NowMouseClickRight()
         Util.SleepTime(3)
-        currentPos = pyautogui.position()
+        # currentPos = pyautogui.position()
         Util.MoveAtWhileFoundImage(
-            r"크롬\Elements에 html의 copy", 5, 5, 10, 1, currentPos.x, currentPos.y
+            r"크롬\Elements에 html의 copy", 5, 5, 10, 1 #, currentPos.x, currentPos.y
         )
         Util.SleepTime(1)
         Util.MoveAtWhileFoundImage(
@@ -145,8 +151,8 @@ def GetElementsData() -> str:
             5,
             10,
             1,
-            currentPos.x,
-            currentPos.y,
+            # currentPos.x,
+            # currentPos.y,
         )
         Util.SleepTime(1)
         Util.NowMouseClick()
@@ -635,35 +641,7 @@ def GetNewProductURLs_UGG(name, url, filterUrls) -> UggNewProductURLs:
         # 화면 가로 및 세로 해상도 얻기
         screen_width = win32api.GetSystemMetrics(0)
         screen_height = win32api.GetSystemMetrics(1)
-        if (
-            Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-            or Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v2",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-            or Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v3",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-        ):
+        if EndBar(screen_width, screen_height):
             # 상품 더 보기가 있는지 체크
             if Util.ClickAtWhileFoundImage(
                 r"UGG\상품 리스트\상품 더 보기 버튼", 0, 0, 3
@@ -728,35 +706,7 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewP
         # 화면 가로 및 세로 해상도 얻기
         screen_width = win32api.GetSystemMetrics(0)
         screen_height = win32api.GetSystemMetrics(1)
-        if (
-            Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-            or Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v2",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-            or Util.ClickAtWhileFoundImage(
-                r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v3",
-                0,
-                0,
-                1,
-                1,
-                screen_width - 200,
-                screen_height - 200,
-            )
-        ):
+        if EndBar(screen_width, screen_height):
             # 상품 더 보기가 있는지 체크
             if False == Util.ClickAtWhileFoundImage(
                 r"바나나 리퍼블릭\스크롤 끝 인식", 0, 0, 3
@@ -785,11 +735,101 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewP
 
     Util.TelegramSend(f"len(titleAndPids) : {len(titleAndPids)}")
 
-    Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 끝")
+    Util.TelegramSend(f"GetNewProductURLs_BananarePublic() {name} -- 끝")
     returnValue = BananarePublicNewProducts()
     returnValue.name = name
     returnValue.titleAndPids = titleAndPids
     return returnValue
+
+
+# Zara 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
+def GetNewProducts_Zara(name, url, filterTitles) -> ZaraNewProducts:
+    Util.TelegramSend(f"GetNewProductURLs_Zara() {name} -- 시작")
+    webbrowser.open(url)
+    Util.SleepTime(10)
+
+    # 웹 제일 끝까지 스코롤 한다.
+    while True:
+        # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
+        # -10000 틱 스크롤 다운
+        Util.MouseWheelScroll(-10000)
+        Util.SleepTime(1.5)
+        Util.KeyboardKeyPress("up")
+        Util.SleepTime(1)
+        Util.KeyboardKeyPress("down")
+        Util.KeyboardKeyPress("down")
+        Util.SleepTime(1)
+        # 화면 가로 및 세로 해상도 얻기
+        screen_width = win32api.GetSystemMetrics(0)
+        screen_height = win32api.GetSystemMetrics(1)
+        if EndBar(screen_width, screen_height):
+            # 상품 더 보기가 있는지 체크
+            if False == Util.ClickAtWhileFoundImage(
+                r"자라\스크롤 끝 인식", 0, 0, 3
+            ):
+                Util.SleepTime(5)
+            else:  # 상품이 더이상 없음
+                break
+
+    htmlElementsData: str = System.GetElementsData()
+    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
+
+    titleAndPids = []
+    productTitleAndPids = Util.GetRegExMatcheGroup1And2List(
+        htmlElementsData,
+        r'="product-click" draggable="false" href="https://www\.zara\.com/us/(.*?)-p(\d+)\.html" tabindex=',
+    )
+    for titleAndPid in productTitleAndPids:
+        title = titleAndPid[0]
+        pid = titleAndPid[1]
+        if (
+            filterTitles.count(f"Zara 자라 {Util.TranslateToKorean(title.replace("-", " "))} {pid[1:5]}/{pid[6:]}")
+            == 0
+        ):  # 중복 제거
+            if '"' not in pid:
+                titleAndPids.append(titleAndPid)
+
+    Util.TelegramSend(f"len(titleAndPids) : {len(titleAndPids)}")
+
+    Util.TelegramSend(f"GetNewProductURLs_Zara() {name} -- 끝")
+    returnValue = ZaraNewProducts()
+    returnValue.name = name
+    returnValue.titleAndPids = titleAndPids
+    return returnValue
+
+
+def EndBar(screen_width, screen_height):
+    return (
+        Util.ClickAtWhileFoundImage(
+            r"크롬\오른쪽 스트롤바가 제일 아래인 이미지",
+            0,
+            0,
+            1,
+            1,
+            screen_width - 200,
+            screen_height - 200,
+        )
+        or Util.ClickAtWhileFoundImage(
+            r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v2",
+            0,
+            0,
+            1,
+            1,
+            screen_width - 200,
+            screen_height - 200,
+        )
+        or Util.ClickAtWhileFoundImage(
+            r"크롬\오른쪽 스트롤바가 제일 아래인 이미지_v3",
+            0,
+            0,
+            1,
+            1,
+            screen_width - 200,
+            screen_height - 200,
+        )
+    )
 
 
 def ArrayRemove(arr, value):
@@ -1039,6 +1079,79 @@ def SetCsvBananarePublicNewProductURLs():
     Util.CsvSave(df, xlFile)
 
     Util.TelegramSend("신규 등록 할 BananarePublic 목록을 엑셀에 정리 -- 끝")
+
+
+# 신규 등록 할 Zara 목록을 엑셀에 정리
+def SetCsvZaraNewProductURLs():
+    Util.TelegramSend("신규 등록 할 Zara 목록을 엑셀에 정리 -- 시작")
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+    df = pd.read_csv(xlFile, encoding="cp949")
+    lastRow = df.shape[0]
+
+    Util.Debug("start Csv Zara url")
+    # C 열의 데이터를 배열에 저장
+    filterTitles = []
+    for row_index in range(0, lastRow):
+        url = str(df.at[row_index, COLUMN.C.name])
+        title = str(df.at[row_index, COLUMN.T.name])
+        if url is not None and "https://www.zara.com/" in url:
+            filterTitles.append(title)
+    Util.TelegramSend(f"end Csv Zara url Length : {str(len(filterTitles))}")
+
+    # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
+    newProducts: list[ZaraNewProducts] = []
+
+    # 크로스백
+    newProducts.append(
+        GetNewProducts_Zara(
+            "패션잡화 여성가방 크로스백",
+            "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462",
+            filterTitles,
+        )
+    )
+
+    # 중복 제거
+    titles: list[str] = []
+    unique_newProducts: list[ZaraNewProducts] = []
+    for newProduct in newProducts:
+        titleAndPids = []
+        for titleAndPid in newProduct.titleAndPids:
+            title = titleAndPid[0]
+            if titles.count(title) == 0:
+                titleAndPids.append(titleAndPid)
+                titles.append(title)
+
+        Util.TelegramSend(f"len(titleAndPids) : {len(titleAndPids)}")
+        newProduct.titleAndPids = titleAndPids
+        unique_newProducts.append(newProduct)
+
+    Util.KeyboardKeyHotkey("ctrl", "w")
+    Util.SleepTime(1)
+
+    xlFile = EnvData.g_DefaultPath() + r"\엑셀\추가 할 것들.CSV"
+    try:
+        df = pd.read_csv(xlFile, encoding="cp949")
+    except pd.errors.EmptyDataError:
+        # 빈 파일이므로 빈 데이터프레임 생성
+        df = pd.DataFrame()
+
+    # 모든 행을 삭제합니다.
+    df.drop(df.index, inplace=True)
+
+    allCount = 0
+    for item in unique_newProducts:
+        for titleAndPid in item.titleAndPids:
+            allCount += 1
+            # 각 셀에 값을 설정합니다.
+            df.loc[allCount, "A"] = "Zara"
+            df.loc[allCount, "B"] = item.name  # 메뉴
+            df.loc[allCount, "C"] = (
+                f"https://www.zara.com/us/en/--p{titleAndPid[1]}.html"  # url
+            )
+
+    Util.CsvSave(df, xlFile)
+
+    Util.TelegramSend("신규 등록 할 Zara 목록을 엑셀에 정리 -- 끝")
 
 
 # HTML 으로 등록
