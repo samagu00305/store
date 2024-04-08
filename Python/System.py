@@ -724,7 +724,9 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewP
     productTitleAndPids = Util.GetRegExMatcheGroup1And2List(
         htmlElementsData, r'0"><img alt="(.*?)".*?" id="product(.*?)"'
     )
-    for titleAndPid in productTitleAndPids:
+    # 중첩된 리스트의 중복 제거
+    unique_productTitleAndPids = [list(set(sublist)) for sublist in productTitleAndPids]
+    for titleAndPid in unique_productTitleAndPids:
         title = titleAndPid[0]
         pid = titleAndPid[1]
         if (
@@ -781,7 +783,9 @@ def GetNewProducts_Zara(name, url, filterTitles) -> ZaraNewProducts:
         htmlElementsData,
         r'="product-click" draggable="false" href="https://www\.zara\.com/us/(.*?)-p(\d+)\.html" tabindex=',
     )
-    for titleAndPid in productTitleAndPids:
+    # 중첩된 리스트의 중복 제거
+    unique_productTitleAndPids = [list(set(sublist)) for sublist in productTitleAndPids]
+    for titleAndPid in unique_productTitleAndPids:
         title = titleAndPid[0]
         pid = titleAndPid[1]
         if (
