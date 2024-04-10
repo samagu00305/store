@@ -1349,6 +1349,7 @@ def AddOneProduct_Ugg(
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+    # 전에 있던 탭 창 삭제
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "tab")
     Util.SleepTime(0.5)
@@ -1360,6 +1361,7 @@ def AddOneProduct_Ugg(
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
         Util.SleepTime(1)
         webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+        # 전에 있던 탭 창 삭제
         Util.SleepTime(0.5)
         Util.KeyboardKeyHotkey("ctrl", "tab")
         Util.SleepTime(0.5)
@@ -1558,6 +1560,7 @@ def AddOneProduct_Zara(
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+    # 전에 있던 탭 창 삭제
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "tab")
     Util.SleepTime(0.5)
@@ -1569,6 +1572,7 @@ def AddOneProduct_Zara(
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
         Util.SleepTime(1)
         webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+        # 전에 있던 탭 창 삭제
         Util.SleepTime(0.5)
         Util.KeyboardKeyHotkey("ctrl", "tab")
         Util.SleepTime(0.5)
@@ -1769,6 +1773,7 @@ def AddOneProduct_BananarePublic(
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+    # 전에 있던 탭 창 삭제
     Util.SleepTime(0.5)
     Util.KeyboardKeyHotkey("ctrl", "tab")
     Util.SleepTime(0.5)
@@ -1780,6 +1785,7 @@ def AddOneProduct_BananarePublic(
     if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
         Util.SleepTime(1)
         webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
+        # 전에 있던 탭 창 삭제
         Util.SleepTime(0.5)
         Util.KeyboardKeyHotkey("ctrl", "tab")
         Util.SleepTime(0.5)
