@@ -630,8 +630,8 @@ def GetNewProductURLs_UGG(name, url, filterUrls) -> UggNewProductURLs:
     # 웹 제일 끝까지 스코롤 한다.
     while True:
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        # -10000 틱 스크롤 다운
-        Util.MouseWheelScroll(-10000)
+        # -100000 틱 스크롤 다운
+        Util.MouseWheelScroll(-100000)
         Util.SleepTime(1.5)
         Util.KeyboardKeyPress("up")
         Util.SleepTime(1)
@@ -695,8 +695,8 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> BananarePublicNewP
     # 웹 제일 끝까지 스코롤 한다.
     while True:
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        # -10000 틱 스크롤 다운
-        Util.MouseWheelScroll(-10000)
+        # -100000 틱 스크롤 다운
+        Util.MouseWheelScroll(-100000)
         Util.SleepTime(1.5)
         Util.KeyboardKeyPress("up")
         Util.SleepTime(1)
@@ -753,8 +753,8 @@ def GetNewProducts_Zara(name, url, filterTitles) -> ZaraNewProducts:
     # 웹 제일 끝까지 스코롤 한다.
     while True:
         # 스크롤 시작 위치에서 아래로 이동하여 스크롤링
-        # -10000 틱 스크롤 다운
-        Util.MouseWheelScroll(-10000)
+        # -100000 틱 스크롤 다운
+        Util.MouseWheelScroll(-100000)
         Util.SleepTime(1.5)
         Util.KeyboardKeyPress("up")
         Util.SleepTime(1)
