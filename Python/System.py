@@ -2288,13 +2288,10 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                 else:
                     sizes.append(size)
             
-            imgUrls: list = []
-            imgNames: list = Util.GetRegExMatcheGroup1List(
+            imgUrls: list = Util.GetRegExMatcheGroup1List(
                 colorUrlHtmlElementsData,
-                r'" src="/(.*?).jpg" height=',
+                r'<img class="media-image__image media__wrapper--media" alt=".*?src="(.*?)"',
             )
-            for imgName in imgNames:
-                imgUrls.append(f"https://bananarepublic.gap.com/{imgName}.jpg")
             arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()
