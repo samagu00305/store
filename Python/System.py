@@ -17,6 +17,11 @@ import pandas as pd
 import numpy as np
 from lxml import etree
 from collections import OrderedDict
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 
 from collections import namedtuple
@@ -190,6 +195,82 @@ def GetElementsData() -> str:
         Util.SleepTime(0.5)
         return outElementsData
     return ""
+
+def GetElementsData_Zara_v2(url: str, colorName = None) -> str:
+    html = ""
+    
+    # 웹 드라이버 초기화
+    driver = webdriver.Chrome()
+
+    # 웹 페이지 열기
+    driver.get(url)
+
+    try:
+        # <button id="onetrust-accept-btn-handler">Accept All Cookies</button>
+        # "Accept All Cookies" 버튼을 찾습니다.
+        accept_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Accept All Cookies')]")
+            )
+        )
+
+        # 버튼 클릭
+        accept_button.click()
+
+        # <span>Yes, stay on United States</span>
+        yes_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(., 'Yes, stay on United States')]")
+            )
+        )
+
+        # 버튼 클릭
+        yes_button.click()
+
+        if colorName != None:
+            # <button class="product-detail-color-selector__color-button" data-qa-action="select-color"><div class="product-detail-color-selector__color-area" style="background-color:#88491D"> <span class="screen-reader-text">Brown</span></div></button>
+            # "Brown" 텍스트를 포함하는 버튼을 클릭합니다. // <span> 요소 내에 있으므로
+            button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, f"//button[contains(., '{colorName}')]")
+                )
+            )
+
+            # 버튼 클릭
+            button.click()
+
+        html = driver.page_source
+
+    except Exception as e:
+        print("버튼을 찾을 수 없습니다:", e)
+
+    finally:
+        # 웹 브라우저 종료
+        driver.quit()
+
+    return html
+
+def GetElementsData_v2(url: str) -> str:
+    html = ""
+    
+    # 웹 드라이버 초기화
+    driver = webdriver.Chrome()
+
+    # 웹 페이지 열기
+    driver.get(url)
+
+    try:
+        html = driver.page_source
+
+    except Exception as e:
+        print("버튼을 찾을 수 없습니다:", e)
+
+    finally:
+        # 웹 브라우저 종료
+        driver.quit()
+
+    return html
+
 
 
 # 등록 된 상품 최신화
@@ -1173,6 +1254,7 @@ def SetCsvNewProductURLs_Zara_v2():
         ".html",
         System.GetNewProducts_Zara,
         [
+            # 가방
             [
                 "패션잡화 여성가방 크로스백",
                 "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462",
@@ -1204,6 +1286,7 @@ def SetCsvNewProductURLs_BananarePublic_v2():
                 "패션잡화 여성신발 운동화 러닝화",
                 "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092",
             ],
+            # 가방
             [
                 "패션잡화 여성가방 토트백",
                 "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=1178763&facetOrder=style:1178763",
@@ -1220,6 +1303,7 @@ def SetCsvNewProductURLs_BananarePublic_v2():
                 "패션잡화 여성가방 클러치백",
                 "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010862&facetOrder=style:3010862",
             ],
+            # 쥬얼리
             [
                 "패션잡화 주얼리 목걸이 패션목걸이",
                 "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183718&facetOrder=department:136,style:1183718",
@@ -2120,7 +2204,7 @@ def GetData_Ugg(url, exchangeRate, onlyUseMoney=False) -> Data_Ugg:
                                         ):
                                             extractedValue = extractedValue[1:]
 
-                                        sizeData = f"US_{extractedValue}({Util.GetUggKorSize(extractedValue)})"
+                                        sizeData = f"US_{extractedValue}({Util.GetKorSize_Ugg(extractedValue)})"
 
                                         Util.Debug(f"size : {sizeData}")
                                         sizes.append(sizeData)
@@ -2128,13 +2212,7 @@ def GetData_Ugg(url, exchangeRate, onlyUseMoney=False) -> Data_Ugg:
                                         sizes.append(defaultExtractedValue)
 
                     if len(sizes) > 0 and len(imgBigUrls) > 0:
-                        # 문자열의 길이가 25보다 큰지 확인
-                        if len(colorNames[index]) > 25:
-                            # 25자까지만 잘라내기
-                            colorName = colorNames[index][:25]
-                        else:
-                            colorName = colorNames[index]
-                        arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+                        arraySizesAndImgUrls.append([colorNames[index][:25], sizes, imgBigUrls])
     returnValue = Data_Ugg()
     returnValue.useMoney = float(useMoney)
     returnValue.korMony = float(korMony)
@@ -2151,17 +2229,12 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     # 이중 배열
     arraySizesAndImgUrls = []
 
-    webbrowser.open(url)
-    Util.SleepTime(10)
-    htmlElementsData: str = System.GetElementsData()
-    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-    Util.KeyboardKeyHotkey("ctrl", "w")
-    Util.SleepTime(1)
+    htmlElementsData: str = System.GetElementsData_Zara_v2(url)
 
     # 상품 이름
     title = ""
     match = re.search(
-        r'\\"productTitle\\":\\"(.*?)\\"',
+        r'\},"name":"([^"]+)","detail"',
         htmlElementsData,
     )
     if match:
@@ -2172,7 +2245,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     # 세부 사항
     details = ""
     match = re.search(
-        r'"\},"description":"(.*?)#',
+        r'"\}\],"description":"(.*?)","rawDescription"',
         htmlElementsData,
     )
     if match:
@@ -2183,66 +2256,46 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     useMoney = 0
     korMony = 0
     contentValue = htmlElementsData
-    useMoneys = Util.GetRegExMatcheGroup1List(
-        contentValue, r'\\"localizedCurrentPrice\\":\\"\$([0-9.]+)\\"'
+    match = re.search(
+        r'<div class="product-detail-info__price-amount price">.*?>\$ (.*?)</span>',
+        htmlElementsData,
     )
-    if len(useMoneys) > 0:
-        useMoney = float(useMoneys[-1])
+    if match:
+        useMoney = match.group(1)
         Util.Debug(f"useMoney : {useMoney}")
 
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
     if onlyUseMoney == False:
-        matcheGroup1And2 = Util.GetRegExMatcheGroup1And2List(
-            contentValue,
-            r'\\"businessCatalogItemId\\":\\"(\d+)\\".*?\\"colorName\\":\\"(.*?)\\"',
+        colorNames: list = Util.GetRegExMatcheGroup1List(
+            htmlElementsData,
+            r'<span class="screen-reader-text">(.*?)</span></div><',
         )
-        # 중복 제거하면서 순서 유지
-        unique_sublists = list(OrderedDict.fromkeys(map(tuple, matcheGroup1And2)))
-        # 다시 리스트로 변환
-        unique_sublists = [list(sublist) for sublist in unique_sublists]
-        for i in range(len(unique_sublists)):
-            productNumber = unique_sublists[i][0]
-            colorName = unique_sublists[i][1]
-            # 문자열의 길이가 25보다 큰지 확인
-            if len(colorName) > 25:
-                # 25자까지만 잘라내기
-                colorName = colorName[:25]
-
-            webbrowser.open(
-                f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}"
-            )
-            Util.SleepTime(10)
-            colorUrlHtmlElementsData: str = System.GetElementsData()
-            # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-            Util.KeyboardKeyHotkey("ctrl", "w")
-            Util.SleepTime(1)
-
+        for colorName in colorNames:
+            colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
+            
             sizes: list = []
-            match = re.search("Size:One Size", colorUrlHtmlElementsData)
-            if not match:
-                sizes.append("One Size")
-            else:
-                sizeDatas: list = Util.GetRegExMatcheGroup1List(
-                    colorUrlHtmlElementsData,
-                    r'aria-label="Size:(.*?)"',
-                )
-                for i in range(len(sizeDatas)):
-                    if Util.GetBananarePublicKorSize(sizeDatas[i]) != 0:
-                        sizes.append(
-                            f"US_{sizeDatas[i]}({Util.GetBananarePublicKorSize(sizeDatas[i])})"
-                        )
-                    else:
-                        sizes.append(sizeDatas[i])
-
-            imgBigUrls: list = []
-            matchs: list = Util.GetRegExMatcheGroup1List(
+            sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                colorUrlHtmlElementsData,
+                r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
+            )
+            for size in sizeDatas:
+                korSize = Util.GetKorSize_Zara(size)
+                if korSize != 0:
+                    sizes.append(
+                        f"US_{size}({korSize})"
+                    )
+                else:
+                    sizes.append(size)
+            
+            imgUrls: list = []
+            imgNames: list = Util.GetRegExMatcheGroup1List(
                 colorUrlHtmlElementsData,
                 r'" src="/(.*?).jpg" height=',
             )
-            for i in range(len(matchs)):
-                imgBigUrls.append(f"https://bananarepublic.gap.com/{matchs[i]}.jpg")
-            arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+            for imgName in imgNames:
+                imgUrls.append(f"https://bananarepublic.gap.com/{imgName}.jpg")
+            arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()
     returnValue.useMoney = float(useMoney)
@@ -2261,12 +2314,14 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
     # 이중 배열
     arraySizesAndImgUrls = []
 
-    webbrowser.open(url)
-    Util.SleepTime(10)
-    htmlElementsData: str = System.GetElementsData()
-    # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-    Util.KeyboardKeyHotkey("ctrl", "w")
-    Util.SleepTime(1)
+    # webbrowser.open(url)
+    # Util.SleepTime(10)
+    # htmlElementsData: str = System.GetElementsData()
+    # # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+    # Util.KeyboardKeyHotkey("ctrl", "w")
+    # Util.SleepTime(1)
+    
+    htmlElementsData: str = System.GetElementsData_v2(url)
 
     # 상품 이름
     title = ""
@@ -2325,19 +2380,17 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
         for i in range(len(unique_sublists)):
             productNumber = unique_sublists[i][0]
             colorName = unique_sublists[i][1]
-            # 문자열의 길이가 25보다 큰지 확인
-            if len(colorName) > 25:
-                # 25자까지만 잘라내기
-                colorName = colorName[:25]
 
-            webbrowser.open(
-                f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}"
-            )
-            Util.SleepTime(10)
-            colorUrlHtmlElementsData: str = System.GetElementsData()
-            # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-            Util.KeyboardKeyHotkey("ctrl", "w")
-            Util.SleepTime(1)
+            # webbrowser.open(
+            #     f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}"
+            # )
+            # Util.SleepTime(10)
+            # colorUrlHtmlElementsData: str = System.GetElementsData()
+            # # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+            # Util.KeyboardKeyHotkey("ctrl", "w")
+            # Util.SleepTime(1)
+            
+            colorUrlHtmlElementsData: str = System.GetElementsData_v2(f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}")
 
             sizes: list = []
             match = re.search("Size:One Size", colorUrlHtmlElementsData)
@@ -2349,9 +2402,9 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
                     r'aria-label="Size:(.*?)"',
                 )
                 for i in range(len(sizeDatas)):
-                    if Util.GetBananarePublicKorSize(sizeDatas[i]) != 0:
+                    if Util.GetKorSize_BananarePublic(sizeDatas[i]) != 0:
                         sizes.append(
-                            f"US_{sizeDatas[i]}({Util.GetBananarePublicKorSize(sizeDatas[i])})"
+                            f"US_{sizeDatas[i]}({Util.GetKorSize_BananarePublic(sizeDatas[i])})"
                         )
                     else:
                         sizes.append(sizeDatas[i])
@@ -2359,11 +2412,11 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
             imgBigUrls: list = []
             matchs: list = Util.GetRegExMatcheGroup1List(
                 colorUrlHtmlElementsData,
-                r'" src="/(.*?).jpg" height=',
+                r'" src="/(.*?).jpg" width=',
             )
             for i in range(len(matchs)):
                 imgBigUrls.append(f"https://bananarepublic.gap.com/{matchs[i]}.jpg")
-            arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+            arraySizesAndImgUrls.append([colorName[:25], sizes, imgBigUrls])
 
     returnValue = Data_BananarePublic()
     returnValue.useMoney = float(useMoney)
@@ -2392,17 +2445,22 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
     isSoldOut = False
 
     if True:
-        webbrowser.open(url)
-        # "mytheresa"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
-        # WinWait, mytheresa
-        Util.SleepTime(10)
-        htmlElementsData: str = System.GetElementsData()
-        # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-        Util.KeyboardKeyHotkey("ctrl", "w")
-        Util.SleepTime(1)
+        # webbrowser.open(url)
+        # # "mytheresa"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
+        # # WinWait, mytheresa
+        # Util.SleepTime(10)
+        # htmlElementsData: str = System.GetElementsData()
+        # # Ctrl + W를 눌러 현재 Chrome 탭 닫기
+        # Util.KeyboardKeyHotkey("ctrl", "w")
+        # Util.SleepTime(1)
 
-        # 정규 표현식과 매치되는지 확인
-        match = re.search(r'PriceSpecification": {\s+"price": (\d+)', htmlElementsData)
+        # match = re.search(r'PriceSpecification": {\s+"price": (\d+)', htmlElementsData)
+        # if match:
+        #     useMoney = match.group(1)
+            
+        # v2 일때
+        htmlElementsData: str = System.GetElementsData_v2(url)
+        match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
         if match:
             useMoney = match.group(1)
 
@@ -2445,7 +2503,7 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
 
         sizes = []
         for sizeLine in sizeLines:
-            sizeData = sizeLine + f"({Util.GetMytheresaKorSize(sizeLine)})"
+            sizeData = sizeLine + f"({Util.GetKorSize_Mytheresa(sizeLine)})"
             Util.Debug(f"size : {sizeData}")
             sizes.append(sizeData)
 
@@ -2462,7 +2520,6 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
     returnValue.isSoldOut = isSoldOut
     returnValue.details = Util.TranslateToKorean(details)
     return returnValue
-
 
 # 스마트 스토어 수정 화면까지 이동
 def ManageAndModifyProducts(df, row) -> ManageAndModifyProductsData:

@@ -1048,7 +1048,7 @@ def GetKorMony(mony, exchangeRate) -> int:
         return int(outValue)
 
 
-def GetUggKorSize(usSize):
+def GetKorSize_Ugg(usSize):
     match usSize:
         case "4":
             return 210
@@ -1089,7 +1089,7 @@ def GetUggKorSize(usSize):
     return 0
 
 
-def GetBananarePublicKorSize(size):
+def GetKorSize_BananarePublic(size):
     match size:
         case "5":
             return 210
@@ -1120,7 +1120,38 @@ def GetBananarePublicKorSize(size):
     return 0
 
 
-def GetMytheresaKorSize(size):
+def GetKorSize_Zara(size):
+    match size:
+        case "5":
+            return 210
+        case "5 1/2":
+            return 215
+        case "6":
+            return 220
+        case "6 1/2":
+            return 225
+        case "7":
+            return 230
+        case "7 1/2":
+            return 235
+        case "8":
+            return 240
+        case "8 1/2":
+            return 245
+        case "9":
+            return 250
+        case "9 1/2":
+            return 255
+        case "10":
+            return 260
+        case "10 1/2":
+            return 265
+        case "11":
+            return 270
+    return 0
+
+
+def GetKorSize_Mytheresa(size):
     match size:
         case "EU 33":
             return "210"
