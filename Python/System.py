@@ -63,6 +63,12 @@ class Data_Mytheresa:
         self.isSoldOut: bool = False
         self.details = ""  # 상세 정보
 
+class AddOneProduct_Data_Common:
+    def __init__(self):
+        self.addCount: bool = False
+        self.addOneProductSuccess: bool = False
+        self.dfAddBefore = None
+        self.dfAdd = None
 
 class AddOneProduct_Data_Ugg:
     def __init__(self):
@@ -70,7 +76,6 @@ class AddOneProduct_Data_Ugg:
         self.addOneProductSuccess: bool = False
         self.dfAddBefore = None
         self.dfAdd = None
-
 
 class AddOneProduct_Data_BananarePublic:
     def __init__(self):
@@ -109,6 +114,11 @@ class NewProducts_Zara:
     def __init__(self):
         self.name = ""
         self.titleAndPids = []
+        
+class NewProducts_Common:
+    def __init__(self):
+        self.name = ""
+        self.titleAndPids = []
 
 
 class COLUMN(Enum):
@@ -129,6 +139,8 @@ class COLUMN(Enum):
     T = "T"  # 상품 이름
     U = "U"  # 상품 원본 가격
 
+firstName_BananarePublic = "[BananarePublic]"
+firstName_Zara = "[Zara] 자라"
 
 # 현재 열려 있는 엑셀 프로세스 닫기
 def CloseExcelProcesses():
@@ -249,8 +261,8 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(
                 f"bananarepublic.gap.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
-            isUpdateProduct = UpdateProductInfoMoney_BananarePublic(
-                df, url, row, krwEur
+            isUpdateProduct = UpdateProductInfoMoney_Common(
+                df, row, GetData_BananarePublic(url, krwUsd)
             )
             if isUpdateProduct:
                 df.at[1, COLUMN.P.name] = row
@@ -575,9 +587,55 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
     return True
 
 
-def UpdateProductInfoMoney_BananarePublic(df, url, row, krwEur):
-    data = GetData_BananarePublic(url, krwEur)
+def UpdateProductInfoMoney_BananarePublic(df, url, row, krwUsd):
+    data = GetData_BananarePublic(url, krwUsd)
 
+    if int(data.korMony) == 25000:
+        System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        return True
+
+    # 스마트 스토어 수정 화면까지 이동
+    managedata = ManageAndModifyProducts(df, row)
+    if managedata.isNoNetwork == True:
+        return False
+
+    if managedata.isNoProduct == True:
+        System.xl_J_(df, row, "스토어에 상품이 없습니다.")
+        return True
+
+    if data.isSoldOut:
+        # 품절
+        SoldOut(df, row)
+    else:
+        useMoney = data.useMoney
+        arraySizesAndImgUrls = data.arraySizesAndImgUrls
+
+        # 관세 부가 여부 체크
+        is_customsDuty = useMoney >= 150
+
+        # 옵션 엑셀 세팅
+        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
+
+        # 1. 가격 세팅
+        # 2. 엑셀로 옵셥 세팅
+        if True:
+            # 판매가 입력
+            UpdateAndReturnSalePrice(data.korMony)
+
+            # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
+            UpdateOptionsFromExcel(is_customsDuty)
+
+            Util.SleepTime(1)
+            Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
+
+        if data.korMony != 0:
+            System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
+        else:
+            System.xl_J_(df, row, "가격이 0이 나왔습니다.")
+
+    return True
+
+def UpdateProductInfoMoney_Common(df, row, data):
     if int(data.korMony) == 25000:
         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
         return True
@@ -751,7 +809,7 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> NewProducts_Banana
         title = titleAndPid[0]
         pid = titleAndPid[1]
         if (
-            filterTitles.count(f"[BananarePublic] {Util.TranslateToKorean(title)}") == 0
+            filterTitles.count(f"{firstName_BananarePublic} {Util.TranslateToKorean(title)}") == 0
         ):  # 중복 제거
             if '"' not in pid:
                 titleAndPids.append(titleAndPid)
@@ -812,7 +870,7 @@ def GetNewProducts_Zara(name, url, filterTitles) -> NewProducts_Zara:
         title = titleAndPid[0]
         pid = titleAndPid[1]
         if (
-            filterTitles.count(f"Zara 자라 {Util.TranslateToKorean(title.replace("-", " "))} {pid[1:5]}/{pid[6:]}")
+            filterTitles.count(f"{firstName_Zara} {Util.TranslateToKorean(title.replace("-", " "))} {pid[1:5]}/{pid[6:]}")
             == 0
         ):  # 중복 제거
             if '"' not in pid:
@@ -1107,39 +1165,112 @@ def SetCsvNewProductURLs_BananarePublic():
 
     Util.TelegramSend("신규 등록 할 BananarePublic 목록을 엑셀에 정리 -- 끝")
 
+def SetCsvNewProductURLs_Zara_v2():
+    System.SetCsvNewProductURLs_Common(
+        "Zara",
+        "https://www.zara.com/",
+        "https://www.zara.com/us/en/--p",
+        ".html",
+        System.GetNewProducts_Zara,
+        [
+            [
+                "패션잡화 여성가방 크로스백",
+                "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462",
+            ],
+        ],
+    )
 
+def SetCsvNewProductURLs_BananarePublic_v2():
+    System.SetCsvNewProductURLs_Common(
+        "BananarePublic",
+        "https://bananarepublic.gap.com/",
+        "https://bananarepublic.gap.com/browse/product.do?pid=",
+        "",
+        System.GetNewProducts_BananarePublic,
+        [
+            [
+                "패션잡화 여성신발 샌들 뮬",
+                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1093558&facetOrder=style:1093558",
+            ],
+            [
+                "패션잡화 여성신발 샌들 뮬",
+                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1050637&facetOrder=style:1050637",
+            ],
+            [
+                "패션잡화 여성신발 슬리퍼",
+                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1081941&facetOrder=style:1081941",
+            ],
+            [
+                "패션잡화 여성신발 운동화 러닝화",
+                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092",
+            ],
+            [
+                "패션잡화 여성가방 토트백",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=1178763&facetOrder=style:1178763",
+            ],
+            [
+                "패션잡화 여성가방 크로스백",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010863&facetOrder=style:3010863",
+            ],
+            [
+                "패션잡화 여성가방 힙색",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010986&facetOrder=style:3010986",
+            ],
+            [
+                "패션잡화 여성가방 클러치백",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010862&facetOrder=style:3010862",
+            ],
+            [
+                "패션잡화 주얼리 목걸이 패션목걸이",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183718&facetOrder=department:136,style:1183718",
+            ],
+            [
+                "패션잡화 주얼리 팔찌 패션팔찌",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183719&facetOrder=department:136,style:1183719",
+            ],
+            [
+                "패션잡화 주얼리 귀걸이 패션귀걸이",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183720&facetOrder=department:136,style:1183720",
+            ],
+            [
+                "패션잡화 주얼리 반지 패션반지",
+                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721",
+            ],
+        ],
+    )
+    
 # 신규 등록 할 Zara 목록을 엑셀에 정리
-def SetCsvNewProductURLs_Zara():
-    Util.TelegramSend("신규 등록 할 Zara 목록을 엑셀에 정리 -- 시작")
+def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, GetNewProducts, dataList):
+    Util.TelegramSend(f"신규 등록 할 {logName} 목록을 엑셀에 정리 -- 시작")
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
     df = pd.read_csv(xlFile, encoding="cp949")
     lastRow = df.shape[0]
 
-    Util.Debug("start Csv Zara url")
+    Util.Debug(f"Start Csv {logName} url")
     # C 열의 데이터를 배열에 저장
     filterTitles = []
     for row_index in range(0, lastRow):
         url = str(df.at[row_index, COLUMN.C.name])
         title = str(df.at[row_index, COLUMN.T.name])
-        if url is not None and "https://www.zara.com/" in url:
+        if url is not None and findFirstUrl in url:
             filterTitles.append(title)
-    Util.TelegramSend(f"end Csv Zara url Length : {str(len(filterTitles))}")
+    Util.TelegramSend(f"end Csv {logName} url Length : {str(len(filterTitles))}")
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
-    newProducts: list[NewProducts_Zara] = []
+    newProducts: list[NewProducts_Common] = []
 
-    # 크로스백
-    newProducts.append(
-        GetNewProducts_Zara(
-            "패션잡화 여성가방 크로스백",
-            "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462",
-            filterTitles,
+    for item in dataList:
+        newProducts.append(
+            GetNewProducts(
+                item[0],
+                item[1],
+                filterTitles,
+            )
         )
-    )
 
     # 중복 제거
     titles: list[str] = []
-    unique_newProducts: list[NewProducts_Zara] = []
+    unique_newProducts: list[NewProducts_Common] = []
     for newProduct in newProducts:
         titleAndPids = []
         for titleAndPid in newProduct.titleAndPids:
@@ -1170,15 +1301,15 @@ def SetCsvNewProductURLs_Zara():
         for titleAndPid in item.titleAndPids:
             allCount += 1
             # 각 셀에 값을 설정합니다.
-            df.loc[allCount, "A"] = "Zara"
+            df.loc[allCount, "A"] = logName
             df.loc[allCount, "B"] = item.name  # 메뉴
             df.loc[allCount, "C"] = (
-                f"https://www.zara.com/us/en/--p{titleAndPid[1]}.html"  # url
+                f"{addStartUrl}{titleAndPid[1]}{addEndUrl}"  # url
             )
 
     Util.CsvSave(df, xlFile)
 
-    Util.TelegramSend("신규 등록 할 Zara 목록을 엑셀에 정리 -- 끝")
+    Util.TelegramSend(f"신규 등록 할 {logName} 목록을 엑셀에 정리 -- 끝")
 
 
 # HTML 으로 등록
@@ -1401,18 +1532,7 @@ def AddOneProduct_Ugg(
         UpdateOptionsFromExcel(is_customsDuty)
 
     # 이미지 등록(대표, 추가)
-    if ProductRegistration.IamgeRegistration_v2(imgCount) == False:
-        Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
-        # 등록해야 될 것에서 삭제
-        dfAddBefore = dfAddBefore.iloc[1:]
-        Util.CsvSave(dfAddBefore, xlFileAddBefore)
-
-        returnValue = AddOneProduct_Data_Ugg()
-        returnValue.addCount = False
-        returnValue.addOneProductSuccess = True
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
+    ProductRegistration.IamgeRegistration_v2(imgCount)
 
     # HTML 으로 등록
     SetHTML(arraySizesAndImgUrls, data.details, True)
@@ -1505,14 +1625,9 @@ def AddOneProduct_Ugg(
         returnValue.dfAdd = dfAdd
         return returnValue
 
-def AddOneProduct_Zara(
-    dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, krwUsd
-) -> AddOneProduct_Data_Zara:
-
-    url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
-
-    data: Data_Zara = GetData_Zara(url, krwUsd)
-
+def AddOneProduct_Common(
+    url, data, dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess
+) -> AddOneProduct_Data_Common:
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
 
@@ -1520,7 +1635,7 @@ def AddOneProduct_Zara(
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
     # 상품 이름
-    title = f"[Zara] {data.title}"
+    title = f"{firstName_Zara} {data.title}"
     filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
     if len(filtered_rows) >= 1:
         if len(arraySizesAndImgUrls) >= 1:
@@ -1544,7 +1659,7 @@ def AddOneProduct_Zara(
         dfAddBefore = dfAddBefore.iloc[1:]
         Util.CsvSave(dfAddBefore, xlFileAddBefore)
 
-        returnValue = AddOneProduct_Data_Zara()
+        returnValue = AddOneProduct_Data_Common()
         returnValue.addCount = False
         returnValue.addOneProductSuccess = True
         returnValue.dfAddBefore = dfAddBefore
@@ -1612,18 +1727,7 @@ def AddOneProduct_Zara(
         UpdateOptionsFromExcel(is_customsDuty)
 
     # 이미지 등록(대표, 추가)
-    if ProductRegistration.IamgeRegistration_v2(imgCount) == False:
-        Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
-        # 등록해야 될 것에서 삭제
-        dfAddBefore = dfAddBefore.iloc[1:]
-        Util.CsvSave(dfAddBefore, xlFileAddBefore)
-
-        returnValue = AddOneProduct_Data_BananarePublic()
-        returnValue.addCount = False
-        returnValue.addOneProductSuccess = True
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
+    ProductRegistration.IamgeRegistration_v2(imgCount)
 
     # HTML 으로 등록
     SetHTML(arraySizesAndImgUrls, data.details, True)
@@ -1695,7 +1799,7 @@ def AddOneProduct_Zara(
             f"등록한 스토어 주소 : {addurl} 구매 url: {url} title : {title}  useMoney : {useMoney}"
         )
 
-        returnValue = AddOneProduct_Data_BananarePublic()
+        returnValue = AddOneProduct_Data_Common()
         returnValue.addCount = True
         returnValue.addOneProductSuccess = True
         returnValue.dfAddBefore = dfAddBefore
@@ -1709,226 +1813,12 @@ def AddOneProduct_Zara(
         Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
         Util.SleepTime(1)
 
-        returnValue = AddOneProduct_Data_BananarePublic()
+        returnValue = AddOneProduct_Data_Common()
         returnValue.addCount = False
         returnValue.addOneProductSuccess = False
         returnValue.dfAddBefore = dfAddBefore
         returnValue.dfAdd = dfAdd
         return returnValue
-
-
-
-def AddOneProduct_BananarePublic(
-    dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, krwUsd
-) -> AddOneProduct_Data_BananarePublic:
-
-    url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
-
-    data: Data_BananarePublic = GetData_BananarePublic(url, krwUsd)
-
-    # UGG에 사이즈 정보로 정보 취합
-    useMoney = data.useMoney
-
-    # 이중 배열
-    arraySizesAndImgUrls = data.arraySizesAndImgUrls
-
-    # 상품 이름
-    title = f"[BananarePublic] {data.title}"
-    filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
-    if len(filtered_rows) >= 1:
-        if len(arraySizesAndImgUrls) >= 1:
-            title += "(" + data.arraySizesAndImgUrls[0][Util.Array_ColroName] + ")"
-        count = 2
-        while True:
-            filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
-            if len(filtered_rows) >= 1:
-                # 1개 이상의 행이 일치합니다.
-                title += f"v{count}"
-                count += 1
-            else:
-                # 일치하는 행이 없습니다.
-                break
-
-    Util.FolderToDelete(EnvData.g_DefaultPath() + r"\DownloadImage")
-
-    if len(arraySizesAndImgUrls) == 0:
-        Util.TelegramSend(f"len(arraySizesAndImgUrls) == 0 url : {url}")
-        # 등록해야 될 것에서 삭제
-        dfAddBefore = dfAddBefore.iloc[1:]
-        Util.CsvSave(dfAddBefore, xlFileAddBefore)
-
-        returnValue = AddOneProduct_Data_BananarePublic()
-        returnValue.addCount = False
-        returnValue.addOneProductSuccess = True
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
-
-    imgCount: int = 0
-    if len(arraySizesAndImgUrls) >= 1:
-        imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
-        for i in range(len(imgUrls)):
-            Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
-            imgCount += 1
-
-    Util.SleepTime(1)
-    webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
-    # 전에 있던 탭 창 삭제
-    Util.SleepTime(0.5)
-    Util.KeyboardKeyHotkey("ctrl", "tab")
-    Util.SleepTime(0.5)
-    Util.KeyboardKeyHotkey("ctrl", "w")
-    Util.SleepTime(2)
-
-    if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인하기", 5, 5, 1):
-        Util.SleepTime(2)
-    if Util.ClickAtWhileFoundImage(r"스마트 스토어\로그인", 5, 5, 1):
-        Util.SleepTime(1)
-        webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
-        # 전에 있던 탭 창 삭제
-        Util.SleepTime(0.5)
-        Util.KeyboardKeyHotkey("ctrl", "tab")
-        Util.SleepTime(0.5)
-        Util.KeyboardKeyHotkey("ctrl", "w")
-        Util.SleepTime(2)
-
-    Util.SleepTime(2)
-    Util.KeyboardKeyPress("esc")
-    Util.SleepTime(1)
-
-    # if not addOneProductSuccess:
-    # 	Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\이전 내용 불러오기 확인", -80, 5, 5)
-
-    # 상품 등록시 기본 세팅 들
-    ProductRegistration.ProductRegistrationDefaultSettings()
-
-    # 카테고리명 입력
-    ProductRegistration.ProductCategory(
-        dfAddBefore.at[dfAddBefore.index[0], COLUMN.B.name]
-    )
-
-    # 상품명 입력
-    ProductRegistration.ProductTitle(title)
-
-    # 판매가 입력
-    UpdateAndReturnSalePrice(data.korMony)
-
-    # 옵션 세팅
-    if True:
-        # 관세 부가 여부 체크
-        is_customsDuty = useMoney >= 200
-
-        # 옵션 엑셀 세팅
-        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
-
-        # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-        UpdateOptionsFromExcel(is_customsDuty)
-
-    # 이미지 등록(대표, 추가)
-    if ProductRegistration.IamgeRegistration_v2(imgCount) == False:
-        Util.TelegramSend(f"대표 이미지 등록 못함(이미지 너무 큼) url : {url}")
-        # 등록해야 될 것에서 삭제
-        dfAddBefore = dfAddBefore.iloc[1:]
-        Util.CsvSave(dfAddBefore, xlFileAddBefore)
-
-        returnValue = AddOneProduct_Data_BananarePublic()
-        returnValue.addCount = False
-        returnValue.addOneProductSuccess = True
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
-
-    # HTML 으로 등록
-    SetHTML(arraySizesAndImgUrls, data.details, True)
-
-    Util.SleepTime(1)
-    Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
-    Util.SleepTime(5)
-    if Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품관리", -80, 5):
-        Util.SleepTime(3)
-
-        # 새로운 빈 행 생성
-        new_row = pd.DataFrame([np.nan] * len(dfAdd.columns)).T
-        new_row.columns = dfAdd.columns
-        # 원하는 위치에 빈 행 삽입
-        insert_index = 2  # 3번째 행에 삽입하려면 인덱스는 1입니다.
-        dfAdd = pd.concat(
-            [dfAdd.iloc[:insert_index], new_row, dfAdd.iloc[insert_index:]]
-        ).reset_index(drop=True)
-
-        Util.CsvSave(dfAdd, xlFileAdd)
-
-        # 상품 url
-        Util.GoToTheAddressWindow()
-        Util.SleepTime(0.5)
-        addurl = Util.CopyToClipboardAndGet()
-        Util.Debug(f"addurl : {addurl}")
-        dfAdd.at[2, COLUMN.B.name] = addurl
-        # 크롬 탭 닫기
-        Util.KeyboardKeyHotkey("ctrl", "w")
-        Util.SleepTime(0.5)
-        # 상품 번호
-        addUrlSplitArray = addurl.split("/")
-        if len(addUrlSplitArray) > 0:
-            dfAdd.at[2, COLUMN.A.name] = addUrlSplitArray[-1]
-
-        dfAdd.at[2, COLUMN.C.name] = url
-        # 상품명 기재
-        dfAdd.at[2, COLUMN.T.name] = title
-        # 가격
-        dfAdd.at[2, COLUMN.U.name] = useMoney
-        # 브랜드
-        brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN.A.name]
-        dfAdd.at[2, COLUMN.E.name] = brand
-
-        # 색이름 리스트 값
-        colorNames = []
-        for item in arraySizesAndImgUrls:
-            colorNames.append(item[Util.Array_ColroName])
-        str_saveColorList = Util.JoinArrayToString(colorNames)
-        Util.Debug(f"str_saveColorList : {str_saveColorList}")
-
-        dfAdd.at[2, COLUMN.F.name] = str_saveColorList
-
-        # 색 이름 과 사아즈 리스트 값(이중 배열)
-        str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
-        Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
-
-        dfAdd.at[2, COLUMN.G.name] = str_saveColorNameDoubleArray
-
-        System.xl_J_(dfAdd, 2, "신규 등록", True)
-
-        Util.CsvSave(dfAdd, xlFileAdd)
-
-        # 등록해야 될 것에서 삭제
-        dfAddBefore = dfAddBefore.iloc[1:]
-        Util.CsvSave(dfAddBefore, xlFileAddBefore)
-
-        Util.TelegramSend(
-            f"등록한 스토어 주소 : {addurl} 구매 url: {url} title : {title}  useMoney : {useMoney}"
-        )
-
-        returnValue = AddOneProduct_Data_BananarePublic()
-        returnValue.addCount = True
-        returnValue.addOneProductSuccess = True
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
-    else:
-        Util.TelegramSend("++++++++++++++ 이름이 입력 안됬음 왜지??")
-        # 이름이 입력 안됬음  왜지??
-        Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\취소", 5, 5)
-        Util.SleepTime(1)
-        Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\상품취소 유실 확인", 5, 5)
-        Util.SleepTime(1)
-
-        returnValue = AddOneProduct_Data_BananarePublic()
-        returnValue.addCount = False
-        returnValue.addOneProductSuccess = False
-        returnValue.dfAddBefore = dfAddBefore
-        returnValue.dfAdd = dfAdd
-        return returnValue
-
 
 # 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
 def AddDataFromExcel_Ugg():
@@ -1973,7 +1863,7 @@ def AddDataFromExcel_Ugg():
     return addCount
 
 # 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
-def AddDataFromExcel_Zara():
+def AddDataFromExcel_Common(GetData, exchangeRate):
     Util.TelegramSend(
         "추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 시작"
     )
@@ -1985,8 +1875,6 @@ def AddDataFromExcel_Zara():
     xlFileAdd = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
     dfAdd = pd.read_csv(xlFileAdd, encoding="cp949")
 
-    krwUsd = Util.KRWUSD()
-
     # 모두 반복
     addCount = 0
     count = 1
@@ -1995,13 +1883,15 @@ def AddDataFromExcel_Zara():
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
-            data = AddOneProduct_Zara(
+            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
+            data = AddOneProduct_Common(
+                url,
+                GetData(url, exchangeRate),
                 dfAddBefore if data is None else data.dfAddBefore,
                 dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
-                krwUsd,
             )
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
@@ -2038,13 +1928,15 @@ def AddDataFromExcel_BananarePublic():
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
-            data = AddOneProduct_BananarePublic(
+            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
+            data = AddOneProduct_Common(
+                url,
+                GetData_BananarePublic(url, krwUsd),
                 dfAddBefore if data is None else data.dfAddBefore,
                 dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
-                krwUsd,
             )
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
@@ -2288,17 +2180,6 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
 
     Util.Debug(f"details : {details}")
 
-    # 패브릭&케어
-    fabricAndCare = ""
-    match = re.search(
-        r'\\"fabric\\":\{\\"bulletAttributes\\":\[\\"(.*?)"',
-        htmlElementsData,
-    )
-    if match:
-        fabricAndCare = match.group(1)
-
-    Util.Debug(f"fabricAndCare : {fabricAndCare}")
-
     useMoney = 0
     korMony = 0
     contentValue = htmlElementsData
@@ -2370,7 +2251,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     returnValue.title = Util.TranslateToKorean(title)
     returnValue.isSoldOut = False
     returnValue.details = Util.TranslateToKorean(details)
-    returnValue.fabricAndCare = Util.TranslateToKorean(fabricAndCare)
+    returnValue.fabricAndCare = ""
     return returnValue
 
 def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_BananarePublic:

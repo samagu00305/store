@@ -3,16 +3,21 @@ from tkinter import messagebox
 import Util
 import System
 import traceback
-import requests
 
 
 def show_start_popup():
     try:
         System.CloseExcelProcesses()
 
-        System.SetCsvNewProductURLs_Zara()
+        System.SetCsvNewProductURLs_Zara_v2()
         System.CloseExcelProcesses()
-        addCount = System.AddDataFromExcel_Zara()
+        addCount = System.AddDataFromExcel_Common(System.GetData_Zara, Util.KRWUSD())
+
+        # System.SetCsvNewProductURLs_BananarePublic_v2()
+        # System.CloseExcelProcesses()
+        # addCount = System.AddDataFromExcel_Common(
+        #     System.GetData_BananarePublic, Util.KRWUSD()
+        # )
 
         # System.SetCsvNewProductURLs_BananarePublic()
         # System.CloseExcelProcesses()
