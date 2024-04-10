@@ -640,6 +640,8 @@ def xl_J_(df, row, value, updateTime=False):
 def GetNewProductURLs_UGG(name, url, filterUrls) -> NewProductURLs_Ugg:
     Util.TelegramSend(f"GetNewProductURLs_UGG() {name} -- 시작")
     webbrowser.open(url)
+    Util.SleepTime(1)
+    Util.KeyboardKeyPress("esc")
     # "ugg"이라는 문자열을 포함하는 Chrome 창이 나타날 때까지 대기
     # WinWait, ugg
     Util.SleepTime(10)
@@ -707,6 +709,8 @@ def GetNewProductURLs_UGG(name, url, filterUrls) -> NewProductURLs_Ugg:
 def GetNewProducts_BananarePublic(name, url, filterTitles) -> NewProducts_BananarePublic:
     Util.TelegramSend(f"GetNewProductURLs_BananarePublic() {name} -- 시작")
     webbrowser.open(url)
+    Util.SleepTime(1)
+    Util.KeyboardKeyPress("esc")
     Util.SleepTime(10)
 
     # 웹 제일 끝까지 스코롤 한다.
@@ -765,6 +769,8 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> NewProducts_Banana
 def GetNewProducts_Zara(name, url, filterTitles) -> NewProducts_Zara:
     Util.TelegramSend(f"GetNewProductURLs_Zara() {name} -- 시작")
     webbrowser.open(url)
+    Util.SleepTime(1)
+    Util.KeyboardKeyPress("esc")
     Util.SleepTime(10)
 
     # 웹 제일 끝까지 스코롤 한다.
