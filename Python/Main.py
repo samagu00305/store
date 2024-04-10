@@ -14,11 +14,11 @@ def show_start_popup():
         System.CloseExcelProcesses()
         addCount = System.AddDataFromExcel_Zara()
 
-        System.SetCsvNewProductURLs_BananarePublic()
+        # System.SetCsvNewProductURLs_BananarePublic()
         # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_BananarePublic()
 
-        System.SetCsvNewProductURLs_Ugg()
+        # System.SetCsvNewProductURLs_Ugg()
         # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_Ugg()
 
