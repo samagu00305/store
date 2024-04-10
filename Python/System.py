@@ -2261,7 +2261,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
         htmlElementsData,
     )
     if match:
-        useMoney = match.group(1)
+        useMoney = float(match.group(1))
         Util.Debug(f"useMoney : {useMoney}")
 
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
@@ -2453,13 +2453,13 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
 
         # match = re.search(r'PriceSpecification": {\s+"price": (\d+)', htmlElementsData)
         # if match:
-        #     useMoney = match.group(1)
+        #     useMoney = float(match.group(1))
             
         # v2 일때
         htmlElementsData: str = System.GetElementsData_v2(url)
         match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
         if match:
-            useMoney = match.group(1)
+            useMoney = float(match.group(1))
 
         korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
 
