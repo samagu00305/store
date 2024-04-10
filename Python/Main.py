@@ -10,13 +10,15 @@ def show_start_popup():
     try:
         System.CloseExcelProcesses()
 
-        System.SetCsvZaraNewProductURLs()
+        System.SetCsvNewProductURLs_Zara()
+        System.CloseExcelProcesses()
+        addCount = System.AddDataFromExcel_Zara()
 
-        # System.SetCsvBananarePublicNewProductURLs()
+        System.SetCsvNewProductURLs_BananarePublic()
         # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_BananarePublic()
 
-        # System.SetCsvUGGNewProductURLs()
+        System.SetCsvNewProductURLs_Ugg()
         # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_Ugg()
 
