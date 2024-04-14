@@ -1559,8 +1559,8 @@ def AddOneProduct_Ugg(
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
-            Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
-            imgCount += 1
+            if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
+                imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -1717,7 +1717,7 @@ def AddOneProduct_Common(
 
     # 이중 배열
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
-
+    
     # 상품 이름
     title = f"{firstName_Zara} {data.title}"
     filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
@@ -1754,8 +1754,8 @@ def AddOneProduct_Common(
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
-            Util.DownloadImageUrl(imgUrls[i], i, 750, 1000)
-            imgCount += 1
+            if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
+                imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -2290,8 +2290,9 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
             
             imgUrls: list = Util.GetRegExMatcheGroup1List(
                 colorUrlHtmlElementsData,
-                r'<img class="media-image__image media__wrapper--media" alt=".*?src="(.*?)"',
+                r'<img class="media-image__image media__wrapper--media" alt=".*?src="(.*?)\?',
             )
+            imgUrls = list(filter(lambda x: ("background" in x) == False , imgUrls))
             arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()

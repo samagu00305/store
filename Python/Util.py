@@ -817,6 +817,27 @@ def SetExcelOption(doubleArray, is_customsDuty):
     for index, item in enumerate(doubleArray):
         colorName = item[Array_ColroName]
         sizes = item[Array_SizeList]
+        if len(sizes) == 0:
+            index2 = 0
+            allCount += 1
+            ws.cell(row=(allCount + 1), column=1).value = colorName
+            ws.cell(row=(allCount + 1), column=2).value = "One Size"
+            if is_customsDuty != False:
+                ws.cell(row=(allCount + 1), column=3).value = (
+                    "관부가세(23%) 수취인 부담(통관시 납부)"
+                )
+            ws.cell(
+                row=(allCount + 1), column=(4 if is_customsDuty != False else 3)
+            ).value = 0
+            ws.cell(
+                row=(allCount + 1), column=(5 if is_customsDuty != False else 4)
+            ).value = 300
+            ws.cell(
+                row=(allCount + 1), column=(6 if is_customsDuty != False else 5)
+            ).value = f"{index}{index2}"
+            ws.cell(
+                row=(allCount + 1), column=(7 if is_customsDuty != False else 6)
+            ).value = "Y"
         for index2, size in enumerate(sizes):
             allCount += 1
             ws.cell(row=(allCount + 1), column=1).value = colorName
@@ -940,7 +961,7 @@ def DownloadImageUrl(url, saveName, target_width=None, target_height=None) -> bo
         urllib.request.urlretrieve(url, savePath)
         Util.Debug(f"이미지 다운로드 url: {url}")
     except Exception as e:
-        Util.Debug(f"이미지 다운로드 실패 Error: {e}")
+        Util.DiscordSend(f"이미지 다운로드 실패 Error: {e}  url :{url}")
         return False
 
     # 이미지 크기 조정
@@ -954,7 +975,7 @@ def DownloadImageUrl(url, saveName, target_width=None, target_height=None) -> bo
             img = img.resize((target_width, target_height))
             img.save(savePath)
         except Exception as e:
-            Util.Debug(f"이미지 크기 조정 실패 Error: {e}")
+            Util.DiscordSend(f"이미지 크기 조정 실패 Error: {e}  url :{url}")
             return False
 
     return True
@@ -1027,6 +1048,8 @@ def DiscordSend(Message, isDebug=True):
 
 
 def GetKorMony(mony, exchangeRate) -> int:
+    mony = float(mony)
+    exchangeRate = float(exchangeRate)
     # 물건 원가
     korCostPrice = mony * exchangeRate
     if korCostPrice == 0 and mony != 0:
