@@ -1935,6 +1935,7 @@ def AddDataFromExcel_Ugg():
                 addOneProductSuccess,
                 krwUsd,
             )
+            dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
                 if data.addCount:
@@ -1977,6 +1978,7 @@ def AddDataFromExcel_Common(GetData, exchangeRate):
                 xlFileAdd,
                 addOneProductSuccess,
             )
+            dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
                 if data.addCount:
@@ -2022,6 +2024,7 @@ def AddDataFromExcel_BananarePublic():
                 xlFileAdd,
                 addOneProductSuccess,
             )
+            dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
             if addOneProductSuccess:
                 if data.addCount:
