@@ -1562,8 +1562,9 @@ def AddOneProduct_Ugg(
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
-            if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
-                imgCount += 1
+            if i < 10: # 스마스 스토어 사진 추가 이미지 9까지만 밖에 안되서
+                if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
+                    imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -1757,8 +1758,9 @@ def AddOneProduct_Common(
     if len(arraySizesAndImgUrls) >= 1:
         imgUrls = arraySizesAndImgUrls[0][Util.Array_UrlList]
         for i in range(len(imgUrls)):
-            if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
-                imgCount += 1
+            if i < 10: # 스마스 스토어 사진 추가 이미지 9까지만 밖에 안되서
+                if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
+                    imgCount += 1
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -2277,7 +2279,8 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
         if match:
             oneColorName = match.group(1)
             matchComingSoon = re.search("<span>Coming soon</span>", htmlElementsData)
-            if not matchComingSoon:
+            matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
+            if not matchComingSoon and not matchOutOfStock:
                 sizes: list = []
                 sizeDatas: list = Util.GetRegExMatcheGroup1List(
                     htmlElementsData,
@@ -2307,7 +2310,8 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                 colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
                 
                 matchComingSoon = re.search("<span>Coming soon</span>", colorUrlHtmlElementsData)
-                if not matchComingSoon:
+                matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
+                if not matchComingSoon and not matchOutOfStock:
                     sizes: list = []
                     sizeDatas: list = Util.GetRegExMatcheGroup1List(
                         colorUrlHtmlElementsData,
