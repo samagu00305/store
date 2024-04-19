@@ -204,8 +204,11 @@ def GetElementsData_Zara_v2(url: str, colorName = None) -> str:
 
     # 웹 페이지 열기
     driver.get(url)
-
+    
     try:
+        # 페이지를 전체 화면으로 표시
+        driver.maximize_window()
+        
         # <button id="onetrust-accept-btn-handler">Accept All Cookies</button>
         # "Accept All Cookies" 버튼을 찾습니다.
         accept_button = WebDriverWait(driver, 10).until(
@@ -242,7 +245,7 @@ def GetElementsData_Zara_v2(url: str, colorName = None) -> str:
         html = driver.page_source
 
     except Exception as e:
-        print("버튼을 찾을 수 없습니다:", e)
+        Util.DiscordSend("버튼을 찾을 수 없습니다:", e);
 
     finally:
         # 웹 브라우저 종료
@@ -2270,33 +2273,61 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
     if onlyUseMoney == False:
-        colorNames: list = Util.GetRegExMatcheGroup1List(
-            htmlElementsData,
-            r'<span class="screen-reader-text">(.*?)</span></div><',
-        )
-        for colorName in colorNames:
-            colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
-            
-            sizes: list = []
-            sizeDatas: list = Util.GetRegExMatcheGroup1List(
-                colorUrlHtmlElementsData,
-                r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
+        match = re.search(r'<p class="product-color-extended-name product-detail-info__color" data-qa-qualifier="product-detail-info-color">(.*?) \|', htmlElementsData)
+        if match:
+            oneColorName = match.group(1)
+            matchComingSoon = re.search("<span>Coming soon</span>", htmlElementsData)
+            if not matchComingSoon:
+                sizes: list = []
+                sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                    htmlElementsData,
+                    r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
+                )
+                for size in sizeDatas:
+                    korSize = Util.GetKorSize_Zara(size)
+                    if korSize != 0:
+                        sizes.append(
+                            f"US_{size}({korSize})"
+                        )
+                    else:
+                        sizes.append(size)
+                        
+                imgUrls: list = Util.GetRegExMatcheGroup1List(
+                    htmlElementsData,
+                    r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
+                )
+                # imgUrls = list([url for url in imgUrls if url.startswith('https://')])
+                arraySizesAndImgUrls.append([oneColorName[:25], sizes, imgUrls])
+        else:
+            colorNames: list = Util.GetRegExMatcheGroup1List(
+                htmlElementsData,
+                r'<span class="screen-reader-text">(.*?)</span></div><',
             )
-            for size in sizeDatas:
-                korSize = Util.GetKorSize_Zara(size)
-                if korSize != 0:
-                    sizes.append(
-                        f"US_{size}({korSize})"
+            for colorName in colorNames:
+                colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
+                
+                matchComingSoon = re.search("<span>Coming soon</span>", colorUrlHtmlElementsData)
+                if not matchComingSoon:
+                    sizes: list = []
+                    sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                        colorUrlHtmlElementsData,
+                        r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
                     )
-                else:
-                    sizes.append(size)
-            
-            imgUrls: list = Util.GetRegExMatcheGroup1List(
-                colorUrlHtmlElementsData,
-                r'<img class="media-image__image media__wrapper--media" alt=".*?src="(.*?)\?',
-            )
-            imgUrls = list(filter(lambda x: ("background" in x) == False , imgUrls))
-            arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
+                    for size in sizeDatas:
+                        korSize = Util.GetKorSize_Zara(size)
+                        if korSize != 0:
+                            sizes.append(
+                                f"US_{size}({korSize})"
+                            )
+                        else:
+                            sizes.append(size)
+                    
+                    imgUrls: list = Util.GetRegExMatcheGroup1List(
+                        colorUrlHtmlElementsData,
+                        r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
+                    )
+                    # imgUrls = list([url for url in imgUrls if url.startswith('https://')])
+                    arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()
     returnValue.useMoney = float(useMoney)
