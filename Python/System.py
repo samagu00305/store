@@ -2299,7 +2299,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                     htmlElementsData,
                     r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
                 )
-                # imgUrls = list([url for url in imgUrls if url.startswith('https://')])
+                imgUrls = list([string.split("&amp;")[0] for string in imgUrls])
                 arraySizesAndImgUrls.append([oneColorName[:25], sizes, imgUrls])
         else:
             colorNames: list = Util.GetRegExMatcheGroup1List(
@@ -2330,7 +2330,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                         colorUrlHtmlElementsData,
                         r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
                     )
-                    # imgUrls = list([url for url in imgUrls if url.startswith('https://')])
+                    imgUrls = list([string.split("&amp;")[0] for string in imgUrls])
                     arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()
