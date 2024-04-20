@@ -966,10 +966,12 @@ def DownloadImageUrl(url, saveName, target_width=None, target_height=None) -> bo
                 urllib.request.urlretrieve(url.split("?ts=")[0], savePath)
                 Util.Debug(f"이미지 다운로드 url: {url.split("?ts=")[0]}")
             else:
-                Util.DiscordSend(f"이미지 다운로드 실패 Error: {e}  url :{url}")
+                # Util.DiscordSend(f"이미지 다운로드 실패 Error: {e}  url :{url}")
+                Util.Debug(f"이미지 다운로드 실패 Error: {e}  url :{url}")
                 return False
         except Exception as e:
-            Util.DiscordSend(f"이미지 다운로드 실패 Error: {e}  url :{url}")
+            # Util.DiscordSend(f"이미지 다운로드 실패 Error: {e}  url :{url}")
+            Util.Debug(f"이미지 다운로드 실패 Error: {e}  url :{url}")
             return False
 
     # 이미지 크기 조정
