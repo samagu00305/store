@@ -327,8 +327,6 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
             else:
                 row -= 1
-
-            continue
         elif "www.mytheresa.com" in url:
             Util.TelegramSend(
                 f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
@@ -355,8 +353,20 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
             else:
                 row -= 1
-
-            continue
+        elif "zara.com" in url:
+            Util.TelegramSend(
+                f"zara.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
+            )
+            isUpdateProduct = UpdateProductInfoMoney_Common(
+                df, row, GetData_Zara(url, krwUsd)
+            )
+            if isUpdateProduct:
+                df.at[1, COLUMN.P.name] = row
+                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+                System.SaveWorksheet(df)
+                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
+            else:
+                row -= 1
         else:
             df.at[1, COLUMN.P.name] = row
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
