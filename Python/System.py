@@ -2299,7 +2299,6 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
 
     useMoney = 0
     korMony = 0
-    contentValue = htmlElementsData
     match = re.search(
         r'<div class="product-detail-info__price-amount price">.*?>\$ (.*?)</span>',
         htmlElementsData,
@@ -2347,7 +2346,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                     colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
                     
                     matchComingSoon = re.search("<span>Coming soon</span>", colorUrlHtmlElementsData)
-                    matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
+                    matchOutOfStock = re.search("<span>OUT OF STOCK</span>", colorUrlHtmlElementsData)
                     if not matchComingSoon and not matchOutOfStock:
                         sizes: list = []
                         sizeDatas: list = Util.GetRegExMatcheGroup1List(
