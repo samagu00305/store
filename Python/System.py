@@ -1566,6 +1566,19 @@ def AddOneProduct_Ugg(
                 if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
                     imgCount += 1
 
+    if imgCount == 0:
+        Util.TelegramSend(f"imgCount == 0 url : {url}")
+        # 등록해야 될 것에서 삭제
+        dfAddBefore = dfAddBefore.iloc[1:]
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
+
+        returnValue = AddOneProduct_Data_Ugg()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
+
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
     # 전에 있던 탭 창 삭제
@@ -1761,6 +1774,19 @@ def AddOneProduct_Common(
             if i < 10: # 스마스 스토어 사진 추가 이미지 9까지만 밖에 안되서
                 if True == Util.DownloadImageUrl(imgUrls[i], i, 750, 1000):
                     imgCount += 1
+
+    if imgCount == 0:
+        Util.TelegramSend(f"imgCount == 0 url : {url}")
+        # 등록해야 될 것에서 삭제
+        dfAddBefore = dfAddBefore.iloc[1:]
+        Util.CsvSave(dfAddBefore, xlFileAddBefore)
+
+        returnValue = AddOneProduct_Data_Common()
+        returnValue.addCount = False
+        returnValue.addOneProductSuccess = True
+        returnValue.dfAddBefore = dfAddBefore
+        returnValue.dfAdd = dfAdd
+        return returnValue
 
     Util.SleepTime(1)
     webbrowser.open("https://sell.smartstore.naver.com/#/products/create")
@@ -2307,31 +2333,32 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
                 r'<span class="screen-reader-text">(.*?)</span></div><',
             )
             for colorName in colorNames:
-                colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
-                
-                matchComingSoon = re.search("<span>Coming soon</span>", colorUrlHtmlElementsData)
-                matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
-                if not matchComingSoon and not matchOutOfStock:
-                    sizes: list = []
-                    sizeDatas: list = Util.GetRegExMatcheGroup1List(
-                        colorUrlHtmlElementsData,
-                        r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
-                    )
-                    for size in sizeDatas:
-                        korSize = Util.GetKorSize_Zara(size)
-                        if korSize != 0:
-                            sizes.append(
-                                f"US_{size}({korSize})"
-                            )
-                        else:
-                            sizes.append(size)
+                if colorName != "":
+                    colorUrlHtmlElementsData = System.GetElementsData_Zara_v2(url, colorName)
                     
-                    imgUrls: list = Util.GetRegExMatcheGroup1List(
-                        colorUrlHtmlElementsData,
-                        r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
-                    )
-                    imgUrls = list([string.split("&amp;")[0] for string in imgUrls])
-                    arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
+                    matchComingSoon = re.search("<span>Coming soon</span>", colorUrlHtmlElementsData)
+                    matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
+                    if not matchComingSoon and not matchOutOfStock:
+                        sizes: list = []
+                        sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                            colorUrlHtmlElementsData,
+                            r'<div class="product-size-info__main-label" data-qa-qualifier="product-size-info-main-label">(\d+)(½)?</div></div></div></div></li>',
+                        )
+                        for size in sizeDatas:
+                            korSize = Util.GetKorSize_Zara(size)
+                            if korSize != 0:
+                                sizes.append(
+                                    f"US_{size}({korSize})"
+                                )
+                            else:
+                                sizes.append(size)
+                        
+                        imgUrls: list = Util.GetRegExMatcheGroup1List(
+                            colorUrlHtmlElementsData,
+                            r'<img class="media-image__image media__wrapper--media" alt=".*?srcset="(.*?) ',
+                        )
+                        imgUrls = list([string.split("&amp;")[0] for string in imgUrls])
+                        arraySizesAndImgUrls.append([colorName[:25], sizes, imgUrls])
 
     returnValue = Data_Zara()
     returnValue.useMoney = float(useMoney)
