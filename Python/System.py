@@ -743,7 +743,7 @@ def UpdateProductInfoMoney_Common(df, row, data):
         System.xl_J_(df, row, "스토어에 상품이 없습니다.")
         return True
 
-    if data.isSoldOut or arraySizesAndImgUrls.Length() == 0:
+    if data.isSoldOut or data.arraySizesAndImgUrls.Length() == 0:
         # 품절
         SoldOut(df, row)
     else:
