@@ -156,14 +156,14 @@ def CloseExcelProcesses():
 
 def SaveWorksheet(df):
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
-    xlFile_copy = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.CSV"
+    # xlFile_copy = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트_복제.CSV"
 
     Util.Debug("save 원본 엑셀 파일 저장 시작", False)
     # 원본 엑셀 파일 저장
     Util.CsvSave(df, xlFile)
     Util.Debug("save 원본 엑셀 파일 저장 끝", False)
 
-    shutil.copy(xlFile, xlFile_copy)
+    # shutil.copy(xlFile, xlFile_copy)
 
 
 def GetElementsData() -> str:
