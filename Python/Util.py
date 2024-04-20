@@ -1016,8 +1016,13 @@ def TelegramSend(Message, isDebug=True):
         Util.Debug(f"TelegramSend : " + Message)
     ChatID = EnvData.TelegramSend_ChatID()
     Token = EnvData.TelegramSend_Token()
+    
+    Message = str(Message)
+    nowTime = Util.GetFormattedCurrentDateTime()
+    # 문자열을 UTF-8로 인코딩하여 바이트열로 변환하고 연결
+    result = nowTime.encode("utf-8") + b" " + Message.encode("utf-8")
     # 매개변수 설정
-    Param = {"chat_id": ChatID, "text": Message}
+    Param = {"chat_id": ChatID, "text": result.decode("utf-8")}
 
     # URL 설정
     URL = "https://api.telegram.org/bot" + Token + "/sendmessage"
@@ -1041,7 +1046,11 @@ def DiscordSend(Message, isDebug=True):
     if isDebug == True:
         Util.Debug(f"DiscordSend : " + Message)
     webhook_url = EnvData.DiscordSend_WebhookUrl()
-    data = {"content": Message}
+    Message = str(Message)
+    nowTime = Util.GetFormattedCurrentDateTime()
+    # 문자열을 UTF-8로 인코딩하여 바이트열로 변환하고 연결
+    result = nowTime.encode("utf-8") + b" " + Message.encode("utf-8")
+    data = {"content": result}
 
     try:
         # POST 요청 보내기
