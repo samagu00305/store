@@ -1361,3 +1361,10 @@ def CsvSave(df, xlFile):
     # NaN 값을 원하는 값으로 대체 (예: 빈 문자열)
     df.fillna("", inplace=True)
     df.to_csv(xlFile, index=False, encoding="cp949")
+
+def IsFloat(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False

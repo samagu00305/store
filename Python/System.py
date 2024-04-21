@@ -2149,8 +2149,9 @@ def GetData_Ugg(url, exchangeRate, onlyUseMoney=False) -> Data_Ugg:
         contentValue = htmlElementsData[startPos:endPos]
         useMoneys = Util.GetRegExMatcheGroup1List(contentValue, r"\$(.+)")
         if len(useMoneys) > 0:
-            useMoney = float(useMoneys[-1])
-            Util.Debug(f"useMoney : {useMoney}")
+            if(Util.IsFloat(useMoneys[-1].replace(",", ""))):
+                useMoney = float(useMoneys[-1].replace(",", ""))
+                Util.Debug(f"useMoney : {useMoney}")
 
         korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
@@ -2304,8 +2305,9 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
         htmlElementsData,
     )
     if match:
-        useMoney = float(match.group(1))
-        Util.Debug(f"useMoney : {useMoney}")
+        if(Util.IsFloat(match.group(1).replace(",", ""))):
+            useMoney = float(match.group(1).replace(",", ""))
+            Util.Debug(f"useMoney : {useMoney}")
 
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
@@ -2435,8 +2437,9 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
         contentValue, r'\\"localizedCurrentPrice\\":\\"\$([0-9.]+)\\"'
     )
     if len(useMoneys) > 0:
-        useMoney = float(useMoneys[-1])
-        Util.Debug(f"useMoney : {useMoney}")
+        if(Util.IsFloat(useMoneys[-1].replace(",", ""))):
+            useMoney = float(useMoneys[-1].replace(",", ""))
+            Util.Debug(f"useMoney : {useMoney}")
 
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
 
@@ -2534,7 +2537,8 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
         htmlElementsData: str = System.GetElementsData_v2(url)
         match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
         if match:
-            useMoney = float(match.group(1))
+            if(Util.IsFloat(match.group(1).replace(",", ""))):
+                useMoney = float(match.group(1).replace(",", ""))
 
         korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
 
