@@ -618,6 +618,7 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
 
     if int(data.korMony) == 25000:
         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
         return True
 
     # 스마트 스토어 수정 화면까지 이동
@@ -686,6 +687,7 @@ def UpdateProductInfoMoney_BananarePublic(df, url, row, krwUsd):
 
     if int(data.korMony) == 25000:
         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
         return True
 
     # 스마트 스토어 수정 화면까지 이동
@@ -732,6 +734,7 @@ def UpdateProductInfoMoney_BananarePublic(df, url, row, krwUsd):
 def UpdateProductInfoMoney_Common(df, row, data):
     if int(data.korMony) == 25000:
         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+        Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
         return True
 
     # 스마트 스토어 수정 화면까지 이동
