@@ -2524,10 +2524,16 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
             
         # v2 일때
         htmlElementsData: str = System.GetElementsData_v2(url)
-        match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
+        # 할인 일때 먼저 체크 하고 
+        match = re.search(r'"pricing__prices__value pricing__prices__value--discount"><span class="pricing__prices__price"> <!-- -->€ (.*?)</span></span></div><div', htmlElementsData)
         if match:
             if(Util.IsFloat(match.group(1).replace(",", ""))):
                 useMoney = float(match.group(1).replace(",", ""))
+        else:
+            match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
+            if match:
+                if(Util.IsFloat(match.group(1).replace(",", ""))):
+                    useMoney = float(match.group(1).replace(",", ""))
 
         korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
 
