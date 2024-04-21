@@ -17,6 +17,9 @@ Array_ColroName = 0
 Array_SizeList = 1
 Array_UrlList = 2
 
+# 다음 단계로 진행 안되고 있을 때 알림 보내기 위한 변수
+lastCheckNextStepTime = time.time()
+threadCheckNextStepTimeAndDiscordSend = None
 
 # 현재 미국 환율 정보 출력
 def KRWUSD():
@@ -1009,9 +1012,26 @@ def ExcelSystemKill():
 
 def SleepTime(second):
     time.sleep(second)
+    
+def CheckNextStepTimeAndDiscordSend():
+    global lastCheckNextStepTime
+    while True:
+        # 현재 시간과 마지막 체크 시간을 비교하여 5초가 지났는지 확인
+        if time.time() - lastCheckNextStepTime >= (60 * 10):
+            DiscordSend("10분 동안 다음 단계로 진행되고 있지 않습니다. 확인을 해주세요")
+            lastCheckNextStepTime = time.time()  # 체크 시간 초기화
+            return
+        time.sleep(1)  # 1초마다 체크
+
+
+def ResetCheckTime():
+    global lastCheckNextStepTime
+    lastCheckNextStepTime = time.time()
 
 
 def TelegramSend(Message, isDebug=True):
+    ResetCheckTime()
+    
     if isDebug == True:
         Util.Debug(f"TelegramSend : " + Message)
     ChatID = EnvData.TelegramSend_ChatID()
@@ -1040,7 +1060,16 @@ def TelegramSend(Message, isDebug=True):
         Util.Debug(str(stack_trace_str))
         Util.Debug(f"TelegramSend Error")
         pass
-
+    
+    global threadCheckNextStepTimeAndDiscordSend 
+    # check_thread가 None이 아니라면 이미 스레드가 실행 중이므로 다시 시작하지 않음
+    if threadCheckNextStepTimeAndDiscordSend is None:
+        global lastCheckNextStepTime # last_check_time 변수를 전역 변수로 선언
+        lastCheckNextStepTime = time.time()
+        # 백그라운드에서 시간 체크 및 로그 출력을 담당하는 스레드 실행
+        threadCheckNextStepTimeAndDiscordSend = threading.Thread(target=CheckNextStepTimeAndDiscordSend)
+        threadCheckNextStepTimeAndDiscordSend.daemon = True  # 메인 스레드 종료 시 함께 종료
+        threadCheckNextStepTimeAndDiscordSend.start()
 
 def DiscordSend(Message, isDebug=True):
     if isDebug == True:
