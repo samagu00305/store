@@ -2535,7 +2535,8 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
         parser = etree.HTMLParser()
         tree = etree.fromstring(htmlElementsData, parser)
         # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
-        title = tree.xpath("//title/text()")[0]
+        if tree is not None:
+            title = tree.xpath("//title/text()")[0]
         title = str(title).replace("| Mytheresa", "")
 
         # 세부 사항
