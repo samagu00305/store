@@ -1050,7 +1050,7 @@ def DiscordSend(Message, isDebug=True):
     nowTime = Util.GetFormattedCurrentDateTime()
     # 문자열을 UTF-8로 인코딩하여 바이트열로 변환하고 연결
     result = nowTime.encode("utf-8") + b" " + Message.encode("utf-8")
-    data = {"content": result}
+    data = {"content": result.decode("utf-8")}
 
     try:
         # POST 요청 보내기
