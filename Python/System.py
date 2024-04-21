@@ -64,9 +64,9 @@ class Data_Mytheresa:
         self.korMony: float = 0
         self.arraySizesAndImgUrls = []
         self.title = ""
-        self.sizesLength: int = 0
         self.isSoldOut: bool = False
         self.details = ""  # 상세 정보
+        self.fabricAndCare = ""  # 패브릭&케어
 
 class AddOneProduct_Data_Common:
     def __init__(self):
@@ -331,42 +331,17 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(
                 f"www.mytheresa.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
-            isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
-            if isUpdateProduct:
-                df.at[1, COLUMN.P.name] = row
-                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-                System.SaveWorksheet(df)
-                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
-            else:
-                row -= 1
+            UpdateAndNotifyProduct(df, row, GetData_Mytheresa(url, krwEur))
         elif "bananarepublic.gap.com" in url:
             Util.TelegramSend(
                 f"bananarepublic.gap.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
-            isUpdateProduct = UpdateProductInfoMoney_Common(
-                df, row, GetData_BananarePublic(url, krwUsd)
-            )
-            if isUpdateProduct:
-                df.at[1, COLUMN.P.name] = row
-                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-                System.SaveWorksheet(df)
-                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
-            else:
-                row -= 1
+            UpdateAndNotifyProduct(df, row, GetData_BananarePublic(url, krwUsd))
         elif "zara.com" in url:
             Util.TelegramSend(
                 f"zara.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
-            isUpdateProduct = UpdateProductInfoMoney_Common(
-                df, row, GetData_Zara(url, krwUsd)
-            )
-            if isUpdateProduct:
-                df.at[1, COLUMN.P.name] = row
-                df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-                System.SaveWorksheet(df)
-                Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
-            else:
-                row -= 1
+            UpdateAndNotifyProduct(df, row, GetData_Zara(url, krwUsd))
         else:
             df.at[1, COLUMN.P.name] = row
             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
@@ -376,58 +351,68 @@ def UpdateStoreWithColorInformation(inputRow=-1):
 
     Util.TelegramSend("등록 된 상품 최신화 -- 끝")
 
+def UpdateAndNotifyProduct(df, row, data):
+    isUpdateProduct = UpdateProductInfoMoney_Common(df, row, data)
+    if isUpdateProduct:
+        df.at[1, COLUMN.P.name] = row
+        df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+        System.SaveWorksheet(df)
+        Util.TelegramSend(f"url : {df.at[row, COLUMN.B.name]}")
+    else:
+        row -= 1
 
-def UpdateStoreWithColorInformationMoney_Mytheresa():
-    xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
-    df = pd.read_csv(xlFile, encoding="cp949")
-    lastRow = df.shape[0]
 
-    row = round(float(df.at[1, COLUMN.P.name]))
+# def UpdateStoreWithColorInformationMoney_Mytheresa():
+#     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
+#     df = pd.read_csv(xlFile, encoding="cp949")
+#     lastRow = df.shape[0]
 
-    krwEur = Util.KRWEUR()
+#     row = round(float(df.at[1, COLUMN.P.name]))
 
-    while True:
-        row += 1
+#     krwEur = Util.KRWEUR()
 
-        if row > lastRow:
-            break
+#     while True:
+#         row += 1
 
-        Util.Debug(f"row({row}) / lastRow({lastRow})")
-        if row % 10 == 0:
-            Util.TelegramSend(
-                f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
-            )
+#         if row > lastRow:
+#             break
 
-        # 웹 브라우저 열기 및 상품 url로 이동
-        url = df.at[row, COLUMN.C.name]
-        if "www.mytheresa.com" not in url:
-            df.at[1, COLUMN.P.name] = row
-            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(df)
-            continue
+#         Util.Debug(f"row({row}) / lastRow({lastRow})")
+#         if row % 10 == 0:
+#             Util.TelegramSend(
+#                 f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
+#             )
 
-        if (
-            df.at[row, COLUMN.J.name]
-            and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
-        ):
-            df.at[1, COLUMN.P.name] = row
-            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(df)
-            continue
+#         # 웹 브라우저 열기 및 상품 url로 이동
+#         url = df.at[row, COLUMN.C.name]
+#         if "www.mytheresa.com" not in url:
+#             df.at[1, COLUMN.P.name] = row
+#             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+#             System.SaveWorksheet(df)
+#             continue
 
-        Util.TelegramSend(
-            f"row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
-        )
+#         if (
+#             df.at[row, COLUMN.J.name]
+#             and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
+#         ):
+#             df.at[1, COLUMN.P.name] = row
+#             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+#             System.SaveWorksheet(df)
+#             continue
 
-        isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
-        if isUpdateProduct:
-            df.at[1, COLUMN.P.name] = row
-            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(df)
-        else:
-            row -= 1
+#         Util.TelegramSend(
+#             f"row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
+#         )
 
-    Util.CsvSave(df, xlFile)
+#         isUpdateProduct = UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur)
+#         if isUpdateProduct:
+#             df.at[1, COLUMN.P.name] = row
+#             df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+#             System.SaveWorksheet(df)
+#         else:
+#             row -= 1
+
+#     Util.CsvSave(df, xlFile)
 
 
 def UpdateProductInfo_UGG(df, url, row, krwUsd):
@@ -682,54 +667,54 @@ def UpdateProductInfoMoney_Mytheresa(df, url, row, krwEur):
     return True
 
 
-def UpdateProductInfoMoney_BananarePublic(df, url, row, krwUsd):
-    data = GetData_BananarePublic(url, krwUsd)
+# def UpdateProductInfoMoney_BananarePublic(df, url, row, krwUsd):
+#     data = GetData_BananarePublic(url, krwUsd)
 
-    if int(data.korMony) == 25000:
-        System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
-        Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
-        return True
+#     if int(data.korMony) == 25000:
+#         System.xl_J_(df, row, "korMony이 25000 나와서 나중에 다시 시도 하세요")
+#         Util.TelegramSend("korMony이 25000 나와서 나중에 다시 시도 하세요")
+#         return True
 
-    # 스마트 스토어 수정 화면까지 이동
-    managedata = ManageAndModifyProducts(df, row)
-    if managedata.isNoNetwork == True:
-        return False
+#     # 스마트 스토어 수정 화면까지 이동
+#     managedata = ManageAndModifyProducts(df, row)
+#     if managedata.isNoNetwork == True:
+#         return False
 
-    if managedata.isNoProduct == True:
-        System.xl_J_(df, row, "스토어에 상품이 없습니다.")
-        return True
+#     if managedata.isNoProduct == True:
+#         System.xl_J_(df, row, "스토어에 상품이 없습니다.")
+#         return True
 
-    if data.isSoldOut:
-        # 품절
-        SoldOut(df, row)
-    else:
-        useMoney = data.useMoney
-        arraySizesAndImgUrls = data.arraySizesAndImgUrls
+#     if data.isSoldOut:
+#         # 품절
+#         SoldOut(df, row)
+#     else:
+#         useMoney = data.useMoney
+#         arraySizesAndImgUrls = data.arraySizesAndImgUrls
 
-        # 관세 부가 여부 체크
-        is_customsDuty = useMoney >= 150
+#         # 관세 부가 여부 체크
+#         is_customsDuty = useMoney >= 150
 
-        # 옵션 엑셀 세팅
-        Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
+#         # 옵션 엑셀 세팅
+#         Util.SetExcelOption(arraySizesAndImgUrls, is_customsDuty)
 
-        # 1. 가격 세팅
-        # 2. 엑셀로 옵셥 세팅
-        if True:
-            # 판매가 입력
-            UpdateAndReturnSalePrice(data.korMony)
+#         # 1. 가격 세팅
+#         # 2. 엑셀로 옵셥 세팅
+#         if True:
+#             # 판매가 입력
+#             UpdateAndReturnSalePrice(data.korMony)
 
-            # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
-            UpdateOptionsFromExcel(is_customsDuty)
+#             # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
+#             UpdateOptionsFromExcel(is_customsDuty)
 
-            Util.SleepTime(1)
-            Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
+#             Util.SleepTime(1)
+#             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
 
-        if data.korMony != 0:
-            System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
-        else:
-            System.xl_J_(df, row, "가격이 0이 나왔습니다.")
+#         if data.korMony != 0:
+#             System.xl_J_(df, row, "변경 완료(가격과 사이즈 변동)", True)
+#         else:
+#             System.xl_J_(df, row, "가격이 0이 나왔습니다.")
 
-    return True
+#     return True
 
 def UpdateProductInfoMoney_Common(df, row, data):
     if int(data.korMony) == 25000:
@@ -2595,7 +2580,7 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
     returnValue.korMony = float(korMony)
     returnValue.arraySizesAndImgUrls = arraySizesAndImgUrls
     returnValue.title = Util.TranslateToKorean(title)
-    returnValue.sizesLength = len(sizes)
+    # returnValue.sizesLength = len(sizes)
     returnValue.isSoldOut = isSoldOut
     returnValue.details = Util.TranslateToKorean(details)
     return returnValue
