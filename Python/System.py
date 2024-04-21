@@ -143,6 +143,7 @@ class COLUMN(Enum):
     Q = "Q"  # 마지막 실행 시켰던 라인의 시간 입력
     T = "T"  # 상품 이름
     U = "U"  # 상품 원본 가격
+    V = "V"  # 상품 카테고리
 
 firstName_BananarePublic = "[BananarePublic]"
 firstName_Zara = "[Zara] 자라"
@@ -295,7 +296,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
     while True:
         row += 1
 
-        if row > lastRow:
+        if row >= lastRow:
             break
 
         Util.Debug(f"row({row}) / lastRow({lastRow})")
