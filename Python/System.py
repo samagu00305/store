@@ -2529,9 +2529,24 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
         if match:
             isSoldOut = True
 
-        match = re.search(r"error404__title", htmlElementsData)
-        if match:
-            isSoldOut = True
+        if isSoldOut == False:
+            match = re.search(r"error404__title", htmlElementsData)
+            if match:
+                isSoldOut = True
+            
+        if isSoldOut == False:
+            # HTML 파서를 사용하여 파싱
+            parser = etree.HTMLParser()
+            tree = etree.fromstring(htmlElementsData, parser)
+            # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
+            if tree is not None:
+                if tree.xpath("//title/text()"):
+                    title = tree.xpath("//title/text()")[0]
+                else:
+                    isSoldOut = True
+            else:
+                isSoldOut = True
+            title = str(title).replace("| Mytheresa", "")
             
         if isSoldOut == False:
             # 할인 일때 먼저 체크 하고 
@@ -2546,14 +2561,6 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
                         useMoney = float(match.group(1).replace(",", ""))
 
             korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
-
-            # HTML 파서를 사용하여 파싱
-            parser = etree.HTMLParser()
-            tree = etree.fromstring(htmlElementsData, parser)
-            # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
-            if tree is not None:
-                title = tree.xpath("//title/text()")[0]
-            title = str(title).replace("| Mytheresa", "")
 
             # 세부 사항
             details = ""
