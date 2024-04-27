@@ -2524,43 +2524,7 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
             
         # v2 일때
         htmlElementsData: str = System.GetElementsData_v2(url)
-        # 할인 일때 먼저 체크 하고 
-        match = re.search(r'"pricing__prices__value pricing__prices__value--discount"><span class="pricing__prices__price"> <!-- -->€ (.*?)</span></span></div><div', htmlElementsData)
-        if match:
-            if(Util.IsFloat(match.group(1).replace(",", ""))):
-                useMoney = float(match.group(1).replace(",", ""))
-        else:
-            match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
-            if match:
-                if(Util.IsFloat(match.group(1).replace(",", ""))):
-                    useMoney = float(match.group(1).replace(",", ""))
-
-        korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
-
-        # HTML 파서를 사용하여 파싱
-        parser = etree.HTMLParser()
-        tree = etree.fromstring(htmlElementsData, parser)
-        # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
-        if tree is not None:
-            title = tree.xpath("//title/text()")[0]
-        title = str(title).replace("| Mytheresa", "")
-
-        # 세부 사항
-        details = ""
-        match = re.search(
-            r'"description": "(.*?)"',
-            htmlElementsData,
-        )
-        if match:
-            details = match.group(1)
-
-        Util.Debug(f"details : {details}")
-
-        # 재화 타입
-        match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
-        if match:
-            priceCurrency = match.group(1)
-
+        
         match = re.search(r">Sold Out<", htmlElementsData)
         if match:
             isSoldOut = True
@@ -2568,20 +2532,58 @@ def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:
         match = re.search(r"error404__title", htmlElementsData)
         if match:
             isSoldOut = True
+            
+        if isSoldOut == False:
+            # 할인 일때 먼저 체크 하고 
+            match = re.search(r'"pricing__prices__value pricing__prices__value--discount"><span class="pricing__prices__price"> <!-- -->€ (.*?)</span></span></div><div', htmlElementsData)
+            if match:
+                if(Util.IsFloat(match.group(1).replace(",", ""))):
+                    useMoney = float(match.group(1).replace(",", ""))
+            else:
+                match = re.search(r'"productinfo__price"><div class="pricing">.*?<!-- -->€ (.*?)<', htmlElementsData)
+                if match:
+                    if(Util.IsFloat(match.group(1).replace(",", ""))):
+                        useMoney = float(match.group(1).replace(",", ""))
 
-        sizeLines = Util.GetRegExMatcheGroup1List(
-            htmlElementsData, r'<span class="sizeitem__label">(.*?)</span>'
-        )
+            korMony: int = Util.GetKorMony(float(useMoney), float(exchangeRate))
 
-        sizes = []
-        for sizeLine in sizeLines:
-            sizeData = sizeLine + f"({Util.GetKorSize_Mytheresa(sizeLine)})"
-            Util.Debug(f"size : {sizeData}")
-            sizes.append(sizeData)
+            # HTML 파서를 사용하여 파싱
+            parser = etree.HTMLParser()
+            tree = etree.fromstring(htmlElementsData, parser)
+            # XPath를 사용하여 타이틀 요소를 선택하고 텍스트를 추출
+            if tree is not None:
+                title = tree.xpath("//title/text()")[0]
+            title = str(title).replace("| Mytheresa", "")
 
-        colorName = "One Color"
-        imgBigUrls = []
-        arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
+            # 세부 사항
+            details = ""
+            match = re.search(
+                r'"description": "(.*?)"',
+                htmlElementsData,
+            )
+            if match:
+                details = match.group(1)
+
+            Util.Debug(f"details : {details}")
+
+            # 재화 타입
+            match = re.search(r'"priceCurrency":\s*"([A-Z]{3})"', htmlElementsData)
+            if match:
+                priceCurrency = match.group(1)
+
+            sizeLines = Util.GetRegExMatcheGroup1List(
+                htmlElementsData, r'<span class="sizeitem__label">(.*?)</span>'
+            )
+
+            sizes = []
+            for sizeLine in sizeLines:
+                sizeData = sizeLine + f"({Util.GetKorSize_Mytheresa(sizeLine)})"
+                Util.Debug(f"size : {sizeData}")
+                sizes.append(sizeData)
+
+            colorName = "One Color"
+            imgBigUrls = []
+            arraySizesAndImgUrls.append([colorName, sizes, imgBigUrls])
 
     returnValue = Data_Mytheresa()
     returnValue.useMoney = float(useMoney)
