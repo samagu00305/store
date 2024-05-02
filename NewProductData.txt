@@ -13,4 +13,5 @@
     { "brand": "BananarePublic", "category": "패션잡화 주얼리 반지 패션반지", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721"},
     { "brand": "BananarePublic", "category": "패션잡화 패션소품 스카프 롱", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20"},
     { "brand": "BananarePublic", "category": "패션잡화 선글라스 안경소품", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20" }
+    { "brand": "Zara", "category": "패션잡화 여성가방 크로스백", "url": "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462" }
 ]

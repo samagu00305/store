@@ -1169,13 +1169,7 @@ def SetCsvNewProductURLs_Zara_v2():
         "https://www.zara.com/us/en/--p",
         ".html",
         System.GetNewProducts_Zara,
-        [
-            # 가방
-            [
-                "패션잡화 여성가방 크로스백",
-                "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462",
-            ],
-        ],
+        "Zara"
     )
 
 def SetCsvNewProductURLs_BananarePublic_v2():
@@ -1185,62 +1179,11 @@ def SetCsvNewProductURLs_BananarePublic_v2():
         "https://bananarepublic.gap.com/browse/product.do?pid=",
         "",
         System.GetNewProducts_BananarePublic,
-        [
-            [
-                "패션잡화 여성신발 샌들 뮬",
-                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1093558&facetOrder=style:1093558",
-            ],
-            [
-                "패션잡화 여성신발 샌들 뮬",
-                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1050637&facetOrder=style:1050637",
-            ],
-            [
-                "패션잡화 여성신발 슬리퍼",
-                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1081941&facetOrder=style:1081941",
-            ],
-            [
-                "패션잡화 여성신발 운동화 러닝화",
-                "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092",
-            ],
-            # 가방
-            [
-                "패션잡화 여성가방 토트백",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=1178763&facetOrder=style:1178763",
-            ],
-            [
-                "패션잡화 여성가방 크로스백",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010863&facetOrder=style:3010863",
-            ],
-            [
-                "패션잡화 여성가방 힙색",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010986&facetOrder=style:3010986",
-            ],
-            [
-                "패션잡화 여성가방 클러치백",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010862&facetOrder=style:3010862",
-            ],
-            # 쥬얼리
-            [
-                "패션잡화 주얼리 목걸이 패션목걸이",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183718&facetOrder=department:136,style:1183718",
-            ],
-            [
-                "패션잡화 주얼리 팔찌 패션팔찌",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183719&facetOrder=department:136,style:1183719",
-            ],
-            [
-                "패션잡화 주얼리 귀걸이 패션귀걸이",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183720&facetOrder=department:136,style:1183720",
-            ],
-            [
-                "패션잡화 주얼리 반지 패션반지",
-                "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721",
-            ],
-        ],
+        "BananarePublic",
     )
     
 # 신규 등록 할 Zara 목록을 엑셀에 정리
-def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, GetNewProducts, dataList):
+def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, GetNewProducts, brand):
     Util.TelegramSend(f"신규 등록 할 {logName} 목록을 엑셀에 정리 -- 시작")
     xlFile = EnvData.g_DefaultPath() + r"\엑셀\마구싸5_구매루트.CSV"
     df = pd.read_csv(xlFile, encoding="cp949")
@@ -1258,15 +1201,19 @@ def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, G
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
     newProducts: list[NewProducts_Common] = []
+    
+    with open('NewProductData.txt', 'r', encoding='utf-8') as file:
+        jsonDataList = json.load(file)
 
-    for item in dataList:
-        newProducts.append(
-            GetNewProducts(
-                item[0],
-                item[1],
-                filterTitles,
+    for jsonData in jsonDataList:
+        if jsonData["brand"] == brand:
+            newProducts.append(
+                GetNewProducts(
+                    jsonData["category"],
+                    jsonData["url"],
+                    filterTitles,
+                )
             )
-        )
 
     # 중복 제거
     titles: list[str] = []
