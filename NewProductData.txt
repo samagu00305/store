@@ -12,6 +12,10 @@
     { "brand": "BananarePublic", "category": "패션잡화 주얼리 귀걸이 패션귀걸이", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183720&facetOrder=department:136,style:1183720"},
     { "brand": "BananarePublic", "category": "패션잡화 주얼리 반지 패션반지", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721"},
     { "brand": "BananarePublic", "category": "패션잡화 패션소품 스카프 롱", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20"},
-    { "brand": "BananarePublic", "category": "패션잡화 선글라스 안경소품", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20" }
-    { "brand": "Zara", "category": "패션잡화 여성가방 크로스백", "url": "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462" }
+    { "brand": "BananarePublic", "category": "패션잡화 선글라스 안경소품", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20"},
+    { "brand": "Zara", "category": "패션잡화 여성가방 크로스백", "url": "https://www.zara.com/us/en/woman-bags-crossbody-l1032.html?v1=2353462"},
+    { "brand": "UGG", "category":"패션잡화 여성신발 부츠 미들부츠", "url": "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=boots%7Cclassic-boots%7Ccold-weather-boots"},
+    { "brand": "UGG", "category":"패션잡화 여성신발 샌들 뮬", "url": "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=dress-shoes%7Csandals"},
+    { "brand": "UGG", "category":"패션잡화 여성신발 슬리퍼", "url": "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=clogs%7Cslippers"},
+    { "brand": "UGG", "category":"패션잡화 여성신발 운동화 러닝화", "url": "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=sneakers"},
 ]

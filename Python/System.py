@@ -1032,34 +1032,18 @@ def SetCsvNewProductURLs_Ugg():
 
     # UGG 현재 웹 창의 전체 상품 URL 리스트 정보 가져옴
     uggProductUrls: list[NewProductURLs_Ugg] = []
-    # uggProductUrls.append(
-    #     GetNewProductURLs_UGG(
-    #         "패션잡화 여성신발 부츠 미들부츠",
-    #         "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=boots%7Cclassic-boots%7Ccold-weather-boots",
-    #         filterUrls,
-    #     )
-    # )  # 부츠(미들부츠)
-    uggProductUrls.append(
-        GetNewProductURLs_UGG(
-            "패션잡화 여성신발 샌들 뮬",
-            "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=dress-shoes%7Csandals",
-            filterUrls,
-        )
-    )  # 샌들(뮬)
-    uggProductUrls.append(
-        GetNewProductURLs_UGG(
-            "패션잡화 여성신발 슬리퍼",
-            "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=clogs%7Cslippers",
-            filterUrls,
-        )
-    )  # 슬리퍼
-    uggProductUrls.append(
-        GetNewProductURLs_UGG(
-            "패션잡화 여성신발 운동화 러닝화",
-            "https://www.ugg.com/women-footwear/?prefn1=type&prefv1=sneakers",
-            filterUrls,
-        )
-    )  # 운동화
+    with open('NewProductData.txt', 'r', encoding='utf-8') as file:
+        jsonDataList = json.load(file)
+
+    for jsonData in jsonDataList:
+        if jsonData["brand"] == "UGG":
+            uggProductUrls.append(
+                GetNewProductURLs_UGG(
+                    jsonData["category"],
+                    jsonData["url"],
+                    filterUrls,
+                )
+            )
 
     Util.KeyboardKeyHotkey("ctrl", "w")
     Util.SleepTime(1)
