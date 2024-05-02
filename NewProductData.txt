@@ -1,0 +1,16 @@
+[
+    { "brand": "BananarePublic", "category": "패션잡화 여성신발 샌들 뮬", "url": "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1093558&facetOrder=style:1093558"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성신발 샌들 뮬", "url": "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1050637&facetOrder=style:1050637"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성신발 슬리퍼", "url": "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1081941&facetOrder=style:1081941"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성신발 운동화 러닝화", "url": "https://bananarepublic.gap.com/browse/category.do?cid=29818&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AShoes#style=1112092&facetOrder=style:1112092"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성가방 토트백", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=1178763&facetOrder=style:1178763"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성가방 크로스백", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010863&facetOrder=style:3010863"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성가방 힙색", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010986&facetOrder=style:3010986"},
+    { "brand": "BananarePublic", "category": "패션잡화 여성가방 클러치백", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1141785&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3ABags#style=3010862&facetOrder=style:3010862"},
+    { "brand": "BananarePublic", "category": "패션잡화 주얼리 목걸이 패션목걸이", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183718&facetOrder=department:136,style:1183718"},
+    { "brand": "BananarePublic", "category": "패션잡화 주얼리 팔찌 패션팔찌", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183719&facetOrder=department:136,style:1183719"},
+    { "brand": "BananarePublic", "category": "패션잡화 주얼리 귀걸이 패션귀걸이", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183720&facetOrder=department:136,style:1183720"},
+    { "brand": "BananarePublic", "category": "패션잡화 주얼리 반지 패션반지", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1140707&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AJewelry#department=136&style=1183721&facetOrder=department:136,style:1183721"},
+    { "brand": "BananarePublic", "category": "패션잡화 패션소품 스카프 롱", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20"},
+    { "brand": "BananarePublic", "category": "패션잡화 선글라스 안경소품", "url": "https://bananarepublic.gap.com/browse/category.do?cid=1131133&nav=meganav%3AWomen%3AShoes%20%26%20Accessories%3AScarves%20" }
+]
