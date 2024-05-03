@@ -3,15 +3,18 @@ from tkinter import messagebox
 import Util
 import System
 import traceback
+import pandas as pd
 
 
 def show_start_popup():
     try:
+        pd.set_option("future.no_silent_downcasting", True)
+
         System.CloseExcelProcesses()
 
-        System.SetCsvNewProductURLs_Zara_v2()
-        System.CloseExcelProcesses()
-        addCount = System.AddDataFromExcel_Common(System.GetData_Zara, Util.KRWUSD())
+        # System.SetCsvNewProductURLs_Zara_v2()
+        # System.CloseExcelProcesses()
+        # addCount = System.AddDataFromExcel_Common(System.GetData_Zara, Util.KRWUSD())
 
         # System.SetCsvNewProductURLs_BananarePublic_v2()
         # System.CloseExcelProcesses()
@@ -27,11 +30,11 @@ def show_start_popup():
         # System.CloseExcelProcesses()
         # addCount = System.AddDataFromExcel_Ugg()
 
-        System.UpdateStoreWithColorInformation(-1)
+        System.UpdateStoreWithColorInformation(1)
 
         System.CloseExcelProcesses()
 
-        Util.TelegramSend("End")
+        Util.DiscordSend("End")
         Util.SleepTime(5)
 
     except:
