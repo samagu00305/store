@@ -754,6 +754,50 @@ def UpdateProductInfoMoney_Common(df, row, data):
 
             # 상품 수정에서 옵션을 엑셀 파일로 일괄 등록
             UpdateOptionsFromExcel(is_customsDuty)
+            
+            # 기존 것과 같은지 비교(같으면 스마트 스토어에 하지 않기 위함)
+            before_SaveColorList = df.at[row, COLUMN.F.name]
+            Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
+
+            # 기존 색 이름 과 사아즈를 변수로 저장
+            before_SaveColorNameDoubleArray = df.at[row, COLUMN.G.name]
+            Util.Debug(f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}")
+
+            # 색이름 리스트 값
+            colorNames = []
+            for item in arraySizesAndImgUrls:
+                colorNames.append(item[Util.Array_ColroName])
+            str_saveColorList = Util.JoinArrayToString(colorNames)
+            Util.Debug(f"str_saveColorList : {str_saveColorList}")
+
+            # 색 이름 과 사아즈 리스트 값(이중 배열)
+            str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
+            Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
+
+            # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
+            if before_SaveColorList != str_saveColorList:
+                # HTML 으로 등록
+                SetHTML(arraySizesAndImgUrls, data.details)
+
+            # 색 이름 리스트 표시
+            df.at[row, COLUMN.F.name] = str_saveColorList
+            Util.Debug(f"str_saveColorList : {str_saveColorList}")
+
+            # 색 이름과 사아즈 리스트 표시
+            df.at[row, COLUMN.G.name] = str_saveColorNameDoubleArray
+            Util.Debug(
+                f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}"
+            )
+
+            # 이전 색 이름 리스트 표시
+            df.at[row, COLUMN.K.name] = before_SaveColorList
+            Util.Debug(f"before_SaveColorList : {before_SaveColorList}")
+
+            # 이전 색 이름과 사아즈 리스트 표시
+            df.at[row, COLUMN.L.name] = before_SaveColorNameDoubleArray
+            Util.Debug(
+                f"before_SaveColorNameDoubleArray : {before_SaveColorNameDoubleArray}"
+            )
 
             Util.SleepTime(1)
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
