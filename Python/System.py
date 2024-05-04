@@ -426,6 +426,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
     if data.isCheckRobot:
         System.xl_J_(df, row, "로봇인지 체크해 걸려서 나중에 다시 시도 하세요")
         Util.TelegramSend("로봇인지 체크해 걸려서 나중에 다시 시도 하세요")
+        Util.DiscordSend("로봇인지 체크해 걸려서 나중에 다시 시도 하세요")
         return True
 
     if int(data.korMony) == 25000:
