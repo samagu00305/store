@@ -309,14 +309,14 @@ def UpdateStoreWithColorInformation(inputRow=-1):
                 f"__ row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()}"
             )
 
-        if (
-            df.at[row, COLUMN.J.name]
-            and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
-        ):
-            df.at[1, COLUMN.P.name] = row
-            df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
-            System.SaveWorksheet(df)
-            continue
+        # if (
+        #     df.at[row, COLUMN.J.name]
+        #     and "품절 상태로 변경 완료" in df.at[row, COLUMN.J.name]
+        # ):
+        #     df.at[1, COLUMN.P.name] = row
+        #     df.at[1, COLUMN.Q.name] = Util.GetFormattedCurrentDateTime()
+        #     System.SaveWorksheet(df)
+        #     continue
 
         url = df.at[row, COLUMN.C.name]
 
