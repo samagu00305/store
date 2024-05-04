@@ -207,6 +207,8 @@ def GetElementsData_Zara_v2(url: str, colorName = None) -> str:
     # 웹 페이지 열기
     driver.get(url)
     
+    Util.SleepTime(5)
+    
     try:
         # 페이지를 전체 화면으로 표시
         driver.maximize_window()
@@ -263,6 +265,7 @@ def GetElementsData_v2(url: str) -> str:
 
     # 웹 페이지 열기
     driver.get(url)
+    Util.SleepTime(5)
 
     try:
         html = driver.page_source
