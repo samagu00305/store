@@ -1639,7 +1639,7 @@ def AddOneProduct_Ugg(
         return returnValue
 
 def AddOneProduct_Common(
-    url, data, dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess
+    url, data, dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, firstName
 ) -> AddOneProduct_Data_Common:
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
@@ -1648,7 +1648,7 @@ def AddOneProduct_Common(
     arraySizesAndImgUrls = data.arraySizesAndImgUrls
     
     # 상품 이름
-    title = f"{firstName_Zara} {data.title}"
+    title = f"{firstName} {data.title}"
     filtered_rows = dfAdd[dfAdd[System.COLUMN.T.name] == title]
     if len(filtered_rows) >= 1:
         if len(arraySizesAndImgUrls) >= 1:
@@ -1891,7 +1891,7 @@ def AddDataFromExcel_Ugg():
     return addCount
 
 # 추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기
-def AddDataFromExcel_Common(GetData, exchangeRate):
+def AddDataFromExcel_Common(GetData, exchangeRate, firstName):
     Util.TelegramSend(
         "추가할 엑셀 정보를 가지고 실제로 스마트스토어에 등록하기 -- 시작"
     )
@@ -1920,6 +1920,7 @@ def AddDataFromExcel_Common(GetData, exchangeRate):
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
+                firstName,
             )
             dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
@@ -1967,6 +1968,7 @@ def AddDataFromExcel_BananarePublic():
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
+                firstName_BananarePublic
             )
             dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess

@@ -14,17 +14,15 @@ def show_start_popup():
 
         # System.SetCsvNewProductURLs_Zara_v2()
         # System.CloseExcelProcesses()
-        # addCount = System.AddDataFromExcel_Common(System.GetData_Zara, Util.KRWUSD())
+        # addCount = System.AddDataFromExcel_Common(System.GetData_Zara, Util.KRWUSD(), System.firstName_Zara)
 
         # System.SetCsvNewProductURLs_BananarePublic_v2()
-        # System.CloseExcelProcesses()
-        # addCount = System.AddDataFromExcel_Common(
-        #     System.GetData_BananarePublic, Util.KRWUSD()
-        # )
-
-        # System.SetCsvNewProductURLs_BananarePublic()
-        # System.CloseExcelProcesses()
-        # addCount = System.AddDataFromExcel_BananarePublic()
+        System.CloseExcelProcesses()
+        addCount = System.AddDataFromExcel_Common(
+            System.GetData_BananarePublic,
+            Util.KRWUSD(),
+            System.firstName_BananarePublic,
+        )
 
         # System.SetCsvNewProductURLs_Ugg()
         # System.CloseExcelProcesses()
@@ -36,6 +34,10 @@ def show_start_popup():
 
         Util.DiscordSend("End")
         Util.SleepTime(5)
+
+        # System.SetCsvNewProductURLs_BananarePublic()
+        # System.CloseExcelProcesses()
+        # addCount = System.AddDataFromExcel_BananarePublic()
 
     except:
         stack_trace_str = traceback.format_exc()
