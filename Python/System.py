@@ -1119,9 +1119,9 @@ def SetCsvNewProductURLs_Ugg():
         for productUrl in item.productUrls:
             allCount += 1
             # 각 셀에 값을 설정합니다.
-            df.loc[allCount, "A"] = "UGG"
-            df.loc[allCount, "B"] = item.name  # 메뉴
-            df.loc[allCount, "C"] = productUrl  # url
+            df.loc[allCount, COLUMN_Add.A.name] = "UGG"
+            df.loc[allCount, COLUMN_Add.B.name] = item.name  # 메뉴
+            df.loc[allCount, COLUMN_Add.C.name] = productUrl  # url
 
     Util.CsvSave(df, xlFile)
 
@@ -1192,9 +1192,9 @@ def SetCsvNewProductURLs_BananarePublic():
         for titleAndPid in item.titleAndPids:
             allCount += 1
             # 각 셀에 값을 설정합니다.
-            df.loc[allCount, "A"] = "BananarePublic"
-            df.loc[allCount, "B"] = item.name  # 메뉴
-            df.loc[allCount, "C"] = (
+            df.loc[allCount, COLUMN_Add.A.name] = "BananarePublic"
+            df.loc[allCount, COLUMN_Add.B.name] = item.name  # 메뉴
+            df.loc[allCount, COLUMN_Add.C.name] = (
                 f"https://bananarepublic.gap.com/browse/product.do?pid={titleAndPid[1]}"  # url
             )
 
@@ -1288,9 +1288,9 @@ def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, G
         for titleAndPid in item.titleAndPids:
             allCount += 1
             # 각 셀에 값을 설정합니다.
-            df.loc[allCount, "A"] = logName
-            df.loc[allCount, "B"] = item.name  # 메뉴
-            df.loc[allCount, "C"] = (
+            df.loc[allCount, COLUMN_Add.A.name] = logName
+            df.loc[allCount, COLUMN_Add.B.name] = item.name  # 메뉴
+            df.loc[allCount, COLUMN_Add.C.name] = (
                 f"{addStartUrl}{titleAndPid[1]}{addEndUrl}"  # url
             )
 
