@@ -2391,12 +2391,16 @@ def GetData_BananarePublic(url, exchangeRate, category, onlyUseMoney=False) -> D
                     colorUrlHtmlElementsData,
                     r'aria-label="Size:(.*?)"',
                 )
-                for i in range(len(sizeDatas)):
-                    if Util.GetKorSize_BananarePublic(sizeDatas[i]) != 0:
-                        sizes.append(
-                            f"US_{sizeDatas[i]}({Util.GetKorSize_BananarePublic(sizeDatas[i])})"
-                        )
-                    else:
+                if " 여성신발 " in category:
+                    for i in range(len(sizeDatas)):
+                        if Util.GetKorSize_BananarePublic(sizeDatas[i]) != 0:
+                            sizes.append(
+                                f"US_{sizeDatas[i]}({Util.GetKorSize_BananarePublic(sizeDatas[i])})"
+                            )
+                        else:
+                            sizes.append(sizeDatas[i])
+                else:
+                    for i in range(len(sizeDatas)):
                         sizes.append(sizeDatas[i])
 
             imgBigUrls: list = []
