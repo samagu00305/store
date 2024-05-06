@@ -36,7 +36,7 @@ class Data_Ugg:
         self.title = ""
         self.isCheckRobot: bool = False
         self.details = ""  # 상세 정보
-
+        self.htmlEndAdd = ""
 
 class Data_BananarePublic:
     def __init__(self):
@@ -47,6 +47,7 @@ class Data_BananarePublic:
         self.isSoldOut: bool = False
         self.details = ""  # 상세 정보
         self.fabricAndCare = ""  # 패브릭&케어
+        self.htmlEndAdd = ""
         
 class Data_Zara:
     def __init__(self):
@@ -57,7 +58,7 @@ class Data_Zara:
         self.isSoldOut: bool = False
         self.details = ""  # 상세 정보
         self.fabricAndCare = ""  # 패브릭&케어
-
+        self.htmlEndAdd = ""
 
 class Data_Mytheresa:
     def __init__(self):
@@ -68,6 +69,7 @@ class Data_Mytheresa:
         self.isSoldOut: bool = False
         self.details = ""  # 상세 정보
         self.fabricAndCare = ""  # 패브릭&케어
+        self.htmlEndAdd = ""
 
 class AddOneProduct_Data_Common:
     def __init__(self):
@@ -126,6 +128,10 @@ class NewProducts_Common:
         self.name = ""
         self.titleAndPids = []
 
+class COLUMN_Add(Enum):
+    A = "A"  # 브랜드 칸 = E
+    B = "B"  # 카테고리 칸 = V
+    C = "C"  # 상품 구매 url 칸
 
 class COLUMN(Enum):
     A = "A"  # 상품 번호 칸
@@ -341,7 +347,7 @@ def UpdateStoreWithColorInformation(inputRow=-1):
             Util.TelegramSend(
                 f"bananarepublic.gap.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
             )
-            UpdateAndNotifyProduct(df, row, GetData_BananarePublic(url, krwUsd))
+            UpdateAndNotifyProduct(df, row, GetData_BananarePublic(url, krwUsd, df.at[row, COLUMN.V.name]))
         elif "zara.com" in url:
             Util.TelegramSend(
                 f"zara.com row({row}) / lastRow({lastRow}) {Util.GetFormattedCurrentDateTime()} -- url:{url}"
@@ -516,7 +522,7 @@ def UpdateProductInfo_UGG(df, url, row, krwUsd):
                 # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
                 if before_SaveColorList != str_saveColorList:
                     # HTML 으로 등록
-                    SetHTML(arraySizesAndImgUrls, data.details)
+                    SetHTML(arraySizesAndImgUrls, data.details, "")
 
             Util.SleepTime(1)
             Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -778,10 +784,12 @@ def UpdateProductInfoMoney_Common(df, row, data):
             str_saveColorNameDoubleArray = Util.DoubleArrayToString(arraySizesAndImgUrls)
             Util.Debug(f"str_saveColorNameDoubleArray : {str_saveColorNameDoubleArray}")
 
-            # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
-            if before_SaveColorList != str_saveColorList:
-                # HTML 으로 등록
-                SetHTML(arraySizesAndImgUrls, data.details)
+            # # 색은 그대로 인 상태에서 사이즈 숫자만 바꿔서 상세 페이지 갱신 하지 않도록 처리
+            # if before_SaveColorList != str_saveColorList:
+            #     # HTML 으로 등록
+            #     SetHTML(arraySizesAndImgUrls, data.details, data.htmlEndAdd)
+                
+            SetHTML(arraySizesAndImgUrls, data.details, data.htmlEndAdd)
 
             # 색 이름 리스트 표시
             df.at[row, COLUMN.F.name] = str_saveColorList
@@ -1292,7 +1300,7 @@ def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, G
 
 
 # HTML 으로 등록
-def SetHTML(arraySizesAndImgUrls, details, isAdd=False):
+def SetHTML(arraySizesAndImgUrls, details, htmlEndAdd, isAdd=False):
     # 상세설명 찾아서 그 아래로 ONE 원형 검색이 존재 하는데 체크(이때는 아래로 조금씩 내리기)
     Util.WheelAndMoveAtWhileFoundImage(r"스마트 스토어\상품 수정\상세 설명")
     findIndex = 0
@@ -1361,6 +1369,7 @@ def SetHTML(arraySizesAndImgUrls, details, isAdd=False):
 
         htmlData += '<div style="text-align: center;">'
         htmlData += '<img src="https://nacharhan.github.io/photo/11.png"/>'
+        htmlData += htmlEndAdd
     pyperclip.copy(htmlData)
     Util.SleepTime(1)
     Util.KeyboardKeyHotkey("ctrl", "v")
@@ -1528,7 +1537,7 @@ def AddOneProduct_Ugg(
     ProductRegistration.IamgeRegistration_v2(imgCount)
 
     # HTML 으로 등록
-    SetHTML(arraySizesAndImgUrls, data.details, True)
+    SetHTML(arraySizesAndImgUrls, data.details, "", True)
 
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -1713,7 +1722,7 @@ def AddOneProduct_Common(
 
     # 카테고리명 입력
     ProductRegistration.ProductCategory(
-        dfAddBefore.at[dfAddBefore.index[0], COLUMN.B.name]
+        dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.B.name]
     )
 
     # 상품명 입력
@@ -1737,7 +1746,7 @@ def AddOneProduct_Common(
     ProductRegistration.IamgeRegistration_v2(imgCount)
 
     # HTML 으로 등록
-    SetHTML(arraySizesAndImgUrls, data.details, True)
+    SetHTML(arraySizesAndImgUrls, data.details, "", True)
 
     Util.SleepTime(1)
     Util.ClickAtWhileFoundImage(r"스마트 스토어\상품 수정\저장하기", 5, 5)
@@ -1776,7 +1785,7 @@ def AddOneProduct_Common(
         # 가격
         dfAdd.at[2, COLUMN.U.name] = useMoney
         # 브랜드
-        brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN.A.name]
+        brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.A.name]
         dfAdd.at[2, COLUMN.E.name] = brand
 
         # 색이름 리스트 값
@@ -1937,10 +1946,11 @@ def AddDataFromExcel_BananarePublic():
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
-            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
+            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.C.name]
+            category = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.B.name]
             data = AddOneProduct_Common(
                 url,
-                GetData_BananarePublic(url, krwUsd),
+                GetData_BananarePublic(url, krwUsd, category),
                 dfAddBefore if data is None else data.dfAddBefore,
                 dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
@@ -2263,7 +2273,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     returnValue.fabricAndCare = ""
     return returnValue
 
-def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_BananarePublic:
+def GetData_BananarePublic(url, exchangeRate, category, onlyUseMoney=False) -> Data_BananarePublic:
     useMoney = 0
     korMony = 0
 
@@ -2324,7 +2334,30 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
             Util.Debug(f"useMoney : {useMoney}")
 
     korMony: int = Util.GetKorMony(useMoney, exchangeRate)
-
+    
+    htmlEndAdd = ""
+    if " 여성신발 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">US</th><th style="text-align: center;">한국</th></tr><tr bgcolor="#ffffff" align="center"><td>5   </td><td>210</td></tr><tr bgcolor="#ffffff" align="center"><td>5.5 </td><td>215</td></tr><tr bgcolor="#ffffff" align="center"><td>6   </td><td>220</td></tr><tr bgcolor="#ffffff" align="center"><td>6.5 </td><td>225</td></tr><tr bgcolor="#ffffff" align="center"><td>7   </td><td>230</td></tr><tr bgcolor="#ffffff" align="center"><td>7.5 </td><td>235</td></tr><tr bgcolor="#ffffff" align="center"><td>8   </td><td>240</td></tr><tr bgcolor="#ffffff" align="center"><td>8.5 </td><td>245</td></tr><tr bgcolor="#ffffff" align="center"><td>9   </td><td>250</td></tr><tr bgcolor="#ffffff" align="center"><td>9.5 </td><td>255</td></tr><tr bgcolor="#ffffff" align="center"><td>10  </td><td>260</td></tr><tr bgcolor="#ffffff" align="center"><td>10.5</td><td>265</td></tr><tr bgcolor="#ffffff" align="center"><td>11  </td><td>270</td></tr></table>'
+    elif " 반지 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">직경 (mm)</th></tr><tr bgcolor="#ffffff" align="center"><td> S </td><td> 5 </td><td> 16 </td></tr><tr bgcolor="#ffffff" align="center"><td> S </td><td> 6 </td><td> 17 </td></tr><tr bgcolor="#ffffff" align="center"><td> M </td><td> 7 </td><td> 18 </td></tr><tr bgcolor="#ffffff" align="center"><td> L </td><td> 8 </td><td> 19 </td></tr></table>'
+    elif "여성의류 원피스" in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">가슴 (인치)</th><th style="text-align: center;">허리 (인치)</th><th style="text-align: center;">엉덩이 (인치)</th></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>30.5</td><td>24  </td><td>33.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>31.5</td><td>25  </td><td>34.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>32.5</td><td>26  </td><td>35.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>33.5</td><td>27  </td><td>36.5</td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>34.5</td><td>28  </td><td>37.5</td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>35.5</td><td>29  </td><td>38.5</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>36.5</td><td>30  </td><td>39.5</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>37.5</td><td>31  </td><td>40.5</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>39  </td><td>32.5</td><td>42  </td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>40.5</td><td>34  </td><td>43.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>42.5</td><td>36  </td><td>45.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>44.5</td><td>38  </td><td>47.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>46.5</td><td>40  </td><td>49.5</td></tr></table>'
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">가슴 (cm)</th><th style="text-align: center;">허리 (cm)</th><th style="text-align: center;">엉덩이 (cm)</th></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>77 </td><td>61 </td><td>95 </td></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>80 </td><td>64 </td><td>98 </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>83 </td><td>66 </td><td>85 </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>85 </td><td>69 </td><td>90 </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>88 </td><td>71 </td><td>93 </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>90 </td><td>74 </td><td>88 </td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>93 </td><td>76 </td><td>100</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>95 </td><td>79 </td><td>103</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>99 </td><td>83 </td><td>107</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>103</td><td>86 </td><td>110</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>108</td><td>91 </td><td>116</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>113</td><td>97 </td><td>121</td></tr><tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>118</td><td>102</td><td>126</td></tr></table>'
+    elif "여성의류 바지" in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">수치</th><th style="text-align: center;">허리(인치)</th><th style="text-align: center;">허리(cm)</th><th style="text-align: center;">엉덩이(인치)</th><th style="text-align: center;">엉덩이(cm)</th></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>23</td><td>24  </td><td>61  </td><td>33.5</td><td>85   </td></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>24</td><td>25  </td><td>63.5</td><td>34.5</td><td>87.5 </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>25</td><td>26  </td><td>66  </td><td>35.5</td><td>90   </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>26</td><td>27  </td><td>68.5</td><td>36.5</td><td>93   </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>27</td><td>28  </td><td>71  </td><td>37.5</td><td>95   </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>28</td><td>29  </td><td>73.5</td><td>38.5</td><td>98   </td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>29</td><td>30  </td><td>76  </td><td>39.5</td><td>100  </td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>30</td><td>31  </td><td>79  </td><td>40.5</td><td>103  </td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>31</td><td>32.5</td><td>82  </td><td>42  </td><td>106.5</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>32</td><td>34  </td><td>86.5</td><td>43.5</td><td>110.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>33</td><td>36  </td><td>91.5</td><td>45.5</td><td>115.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>34</td><td>38  </td><td>96.5</td><td>47.5</td><td>120.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>35</td><td>41  </td><td>104 </td><td>50.5</td><td>128  </td></tr> </table>'
+    elif " 치마 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">허리 (인치)</th><th style="text-align: center;">엉덩이 (인치)</th></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>24  </td><td>33.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>25  </td><td>34.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>26  </td><td>35.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>27  </td><td>36.5</td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>28  </td><td>37.5</td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>29  </td><td>38.5</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>30  </td><td>39.5</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>31  </td><td>40.5</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>32.5</td><td>42  </td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>34  </td><td>43.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>36  </td><td>45.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>38  </td><td>47.5</td></tr><tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>40  </td><td>49.5</td></tr></table>'
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">허리 (cm)</th><th style="text-align: center;">엉덩이 (cm)</th></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>61 </td><td>85 </td></tr><tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>64 </td><td>88 </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>66 </td><td>90 </td></tr><tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>69 </td><td>93 </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>71 </td><td>95 </td></tr><tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>74 </td><td>98 </td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>76 </td><td>100</td></tr><tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>79 </td><td>103</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>83 </td><td>107</td></tr><tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>86 </td><td>110</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>91 </td><td>116</td></tr><tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>97 </td><td>121</td></tr><tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>102</td><td>126</td></tr></table>'
+    elif " 벨트 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">바지 벨트 (중앙 구멍)(인치)</th><th style="text-align: center;">바지 벨트 (조절 범위)(인치)</th><th style="text-align: center;">허리 벨트 (중앙 구멍)(인치)</th><th style="text-align: center;">허리 벨트 (조절 범위)(인치)</th></tr><tr bgcolor="#ffffff" align="center"><td> XXS </td><td> 0-2  </td><td> 29 </td><td> 27-31 </td><td> 27 </td><td> 25-29 </td></tr><tr bgcolor="#ffffff" align="center"><td> XS  </td><td> 4-6  </td><td> 31 </td><td> 29-33 </td><td> 29 </td><td> 27-31 </td></tr><tr bgcolor="#ffffff" align="center"><td> S   </td><td> 8-10 </td><td> 33 </td><td> 31-35 </td><td> 31 </td><td> 29-33 </td></tr><tr bgcolor="#ffffff" align="center"><td> M   </td><td> 12-14</td><td> 35 </td><td> 33-37 </td><td> 33 </td><td> 31-35 </td></tr><tr bgcolor="#ffffff" align="center"><td> L   </td><td> 16-18</td><td> 38 </td><td> 36-40 </td><td> 36 </td><td> 34-38 </td></tr><tr bgcolor="#ffffff" align="center"><td> XL  </td><td> 20   </td><td> 42 </td><td> 40-44 </td><td> 40 </td><td> 38-42 </td></tr><tr bgcolor="#ffffff" align="center"><td> XXL </td><td> 22   </td><td> 46 </td><td> 44-48 </td><td> 44 </td><td> 42-46 </td></tr></table>'
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">크기</th><th style="text-align: center;">바지 벨트 (중앙 구멍)(cm)</th><th style="text-align: center;">바지 벨트 (조절 범위)(cm)</th><th style="text-align: center;">허리 벨트 (중앙 구멍)(cm)</th><th style="text-align: center;">허리 벨트 (조절 범위)(cm)</th></tr><tr bgcolor="#ffffff" align="center"><td> XXS </td><td> 0-2   </td><td> 74  </td><td> 69-79   </td><td> 69  </td><td> 64-74   </td></tr><tr bgcolor="#ffffff" align="center"><td> XS  </td><td> 4-6   </td><td> 79  </td><td> 74-84   </td><td> 74  </td><td> 69-79   </td></tr><tr bgcolor="#ffffff" align="center"><td> S   </td><td> 8-10  </td><td> 84  </td><td> 79-89   </td><td> 79  </td><td> 74-84   </td></tr><tr bgcolor="#ffffff" align="center"><td> M   </td><td> 12-14 </td><td> 89  </td><td> 84-94   </td><td> 84  </td><td> 79-89   </td></tr><tr bgcolor="#ffffff" align="center"><td> L   </td><td> 16-18 </td><td> 96  </td><td> 91-102  </td><td> 91  </td><td> 86-96   </td></tr><tr bgcolor="#ffffff" align="center"><td> XL  </td><td> 20    </td><td> 107 </td><td> 102-112 </td><td> 102 </td><td> 96-107  </td></tr><tr bgcolor="#ffffff" align="center"><td> XXL </td><td> 22    </td><td> 117 </td><td> 112-122 </td><td> 112 </td><td> 107-117 </td></tr></table>'
+    elif " 모자 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">둘레 (인치)</th><th style="text-align: center;">둘레 (cm)</th></tr><tr bgcolor="#ffffff" align="center"><td> S </td><td> 22 </td><td> 55.88 </td></tr><tr bgcolor="#ffffff" align="center"><td> M </td><td> 23 </td><td> 58.42 </td></tr><tr bgcolor="#ffffff" align="center"><td> L </td><td> 24 </td><td> 60.97 </td></tr></table>'
+    elif " 장갑 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">길이 (인치)</th><th style="text-align: center;">길이 (cm)</th></tr><tr bgcolor="#ffffff" align="center"><td> S </td><td> 8 ⅛ </td><td> 21 </td></tr><tr bgcolor="#ffffff" align="center"><td> M </td><td> 8 ½ </td><td> 22 </td></tr><tr bgcolor="#ffffff" align="center"><td> L </td><td> 8 ⅞ </td><td> 23 </td></tr> </table>'
+    elif " 타이즈 " in category:
+        htmlEndAdd += '<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;"><tr bgcolor="#f2f2f2"><th style="text-align: center;">크기</th><th style="text-align: center;">키 (Ft)</th><th style="text-align: center;">몸무게 (Lbs)</th><th style="text-align: center;">키 (cm)</th><th style="text-align: center;">몸무게 (kg)</th></tr><tr bgcolor="#ffffff" align="center"><td> PETITE </td><td> 4.8 - 5.25 </td><td> 90 - 125  </td><td> 147 - 160 </td><td> 41 - 57  </td></tr><tr bgcolor="#ffffff" align="center"><td> S/M    </td><td> 5 - 5.6    </td><td> 90 - 145  </td><td> 152 - 170 </td><td> 41 - 66  </td></tr><tr bgcolor="#ffffff" align="center"><td> M/L    </td><td> 5.6+       </td><td> 145 - 175 </td><td> 170+      </td><td> 66 - 79  </td></tr><tr bgcolor="#ffffff" align="center"><td> TALL   </td><td> 5.6 - 6    </td><td> 175 - 245 </td><td> 170 - 183 </td><td> 79 - 111 </td></tr></table>'
+    
     if onlyUseMoney == False:
         matcheGroup1And2 = Util.GetRegExMatcheGroup1And2List(
             contentValue,
@@ -2383,6 +2416,7 @@ def GetData_BananarePublic(url, exchangeRate, onlyUseMoney=False) -> Data_Banana
     returnValue.isSoldOut = False
     returnValue.details = Util.TranslateToKorean(details)
     returnValue.fabricAndCare = Util.TranslateToKorean(fabricAndCare)
+    returnValue.htmlEndAdd = htmlEndAdd
     return returnValue
 
 def GetData_Mytheresa(url, exchangeRate) -> Data_Mytheresa:

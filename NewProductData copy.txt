@@ -1,0 +1,470 @@
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+  <th style="text-align: center;">크기</th>
+  <th style="text-align: center;">직경 (mm)</th>
+</tr>
+  <tr bgcolor="#ffffff" align="center">
+    <td>S</td>
+    <td>16</td>
+  </tr>
+</table>
+
+
+bottoms
+하의
+| 크기 | 크기 | 수치 | 허리(인치) | 허리(cm) | 엉덩이(인치) | 엉덩이(cm) |
+|---|---|--|----|----|----|-----|
+|XXS|000|23|24  |61  |33.5|85   |
+|XXS|00 |24|25  |63.5|34.5|87.5 |
+|XS |0  |25|26  |66  |35.5|90   |
+|XS |2  |26|27  |68.5|36.5|93   |
+|S  |4  |27|28  |71  |37.5|95   |
+|S  |6  |28|29  |73.5|38.5|98   |
+|M  |8  |29|30  |76  |39.5|100  |
+|M  |10 |30|31  |79  |40.5|103  |
+|L  |12 |31|32.5|82  |42  |106.5|
+|L  |14 |32|34  |86.5|43.5|110.5|
+|XL |16 |33|36  |91.5|45.5|115.5|
+|XL |18 |34|38  |96.5|47.5|120.5|
+|XXL|20 |35|41  |104 |50.5|128  | 
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+  <th style="text-align: center;">크기</th>
+  <th style="text-align: center;">크기</th>
+  <th style="text-align: center;">수치</th>
+  <th style="text-align: center;">허리(인치)</th>
+  <th style="text-align: center;">허리(cm)</th>
+  <th style="text-align: center;">엉덩이(인치)</th>
+  <th style="text-align: center;">엉덩이(cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>23</td><td>24  </td><td>61  </td><td>33.5</td><td>85   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>24</td><td>25  </td><td>63.5</td><td>34.5</td><td>87.5 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>25</td><td>26  </td><td>66  </td><td>35.5</td><td>90   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>26</td><td>27  </td><td>68.5</td><td>36.5</td><td>93   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>27</td><td>28  </td><td>71  </td><td>37.5</td><td>95   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>28</td><td>29  </td><td>73.5</td><td>38.5</td><td>98   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>29</td><td>30  </td><td>76  </td><td>39.5</td><td>100  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>30</td><td>31  </td><td>79  </td><td>40.5</td><td>103  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>31</td><td>32.5</td><td>82  </td><td>42  </td><td>106.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>32</td><td>34  </td><td>86.5</td><td>43.5</td><td>110.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>33</td><td>36  </td><td>91.5</td><td>45.5</td><td>115.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>34</td><td>38  </td><td>96.5</td><td>47.5</td><td>120.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>35</td><td>41  </td><td>104 </td><td>50.5</td><td>128  </td></tr> 
+</table>
+
+
+blazers & outerwear
+블레이저 & 아우터웨어
+| 크기 | 크기 | 가슴 (인치) | 허리 (인치) | 엉덩이 (인치) | 소매 길이 (인치) |
+|---|---|----|----|----|----|
+|XXS|000|30.5|24  |33.5|30  |
+|XXS|00 |31.5|25  |34.5|30  |
+|XS |0  |32.5|26  |35.5|31  |
+|XS |2  |33.5|27  |36.5|31  |
+|S  |4  |34.5|28  |37.5|31.5|
+|S  |6  |35.5|29  |38.5|31.5|
+|M  |8  |36.5|30  |39.5|32  |
+|M  |10 |37.5|31  |40.5|32  |
+|L  |12 |39  |32.5|42  |32.5|
+|L  |14 |40.5|34  |43.5|32.5|
+|XL |16 |42.5|36  |45.5|33.5|
+|XL |18 |44.5|38  |47.5|33.5|
+|XXL|20 |47.5|41  |50.5|34  |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">가슴 (인치)</th>
+    <th style="text-align: center;">허리 (인치)</th>
+    <th style="text-align: center;">엉덩이 (인치)</th>
+    <th style="text-align: center;">소매 길이 (인치)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>30.5</td><td>24  </td><td>33.5</td><td>30  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>31.5</td><td>25  </td><td>34.5</td><td>30  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>32.5</td><td>26  </td><td>35.5</td><td>31  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>33.5</td><td>27  </td><td>36.5</td><td>31  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>34.5</td><td>28  </td><td>37.5</td><td>31.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>35.5</td><td>29  </td><td>38.5</td><td>31.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>36.5</td><td>30  </td><td>39.5</td><td>32  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>37.5</td><td>31  </td><td>40.5</td><td>32  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>39  </td><td>32.5</td><td>42  </td><td>32.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>40.5</td><td>34  </td><td>43.5</td><td>32.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>42.5</td><td>36  </td><td>45.5</td><td>33.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>44.5</td><td>38  </td><td>47.5</td><td>33.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>47.5</td><td>41  </td><td>50.5</td><td>34  </td></tr>
+</table>
+
+
+| 크기 | 크기 | 가슴 (cm) | 허리 (cm) | 엉덩이 (cm) | 소매 길이 (cm) |
+|---|---|-----|----|-----|----|
+|XXS|000|77.5 |61  |85   |76  |
+|XXS|00 |80   |63.5|87.5 |76  |
+|XS |0  |82.5 |66  |90   |79  |
+|XS |2  |85   |68.5|93   |79  |
+|S  |4  |87.5 |71  |95   |80  |
+|S  |6  |90   |73.5|98   |80  |
+|M  |8  |92.5 |76  |100  |81  |
+|M  |10 |95   |79  |103  |81  |
+|L  |12 |99   |82.5|106.5|82.5|
+|L  |14 |103  |86.5|110.5|82.5|
+|XL |16 |108  |91.5|115.5|85  |
+|XL |18 |113  |96.5|120.5|85  |
+|XXL|20 |120.5|104 |128  |86.5|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">가슴 (cm)</th>
+    <th style="text-align: center;">허리 (cm)</th>
+    <th style="text-align: center;">엉덩이 (cm)</th>
+    <th style="text-align: center;">소매 길이 (cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>77.5 </td><td>61  </td><td>85   </td><td>76  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>80   </td><td>63.5</td><td>87.5 </td><td>76  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>82.5 </td><td>66  </td><td>90   </td><td>79  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>85   </td><td>68.5</td><td>93   </td><td>79  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>87.5 </td><td>71  </td><td>95   </td><td>80  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>90   </td><td>73.5</td><td>98   </td><td>80  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>92.5 </td><td>76  </td><td>100  </td><td>81  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>95   </td><td>79  </td><td>103  </td><td>81  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>99   </td><td>82.5</td><td>106.5</td><td>82.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>103  </td><td>86.5</td><td>110.5</td><td>82.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>108  </td><td>91.5</td><td>115.5</td><td>85  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>113  </td><td>96.5</td><td>120.5</td><td>85  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>120.5</td><td>104 </td><td>128  </td><td>86.5</td></tr>
+</table>
+
+dresses
+드래스
+| 크기 | 크기 | 가슴 (인치) | 허리 (인치) | 엉덩이 (인치) |
+|---|---|----|----|----|
+|XXS|000|30.5|24  |33.5|
+|XXS|00 |31.5|25  |34.5|
+|XS |0  |32.5|26  |35.5|
+|XS |2  |33.5|27  |36.5|
+|S  |4  |34.5|28  |37.5|
+|S  |6  |35.5|29  |38.5|
+|M  |8  |36.5|30  |39.5|
+|M  |10 |37.5|31  |40.5|
+|L  |12 |39  |32.5|42  |
+|L  |14 |40.5|34  |43.5|
+|XL |16 |42.5|36  |45.5|
+|XL |18 |44.5|38  |47.5|
+|XXL|20 |46.5|40  |49.5|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">가슴 (인치)</th>
+    <th style="text-align: center;">허리 (인치)</th>
+    <th style="text-align: center;">엉덩이 (인치)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>30.5</td><td>24  </td><td>33.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>31.5</td><td>25  </td><td>34.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>32.5</td><td>26  </td><td>35.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>33.5</td><td>27  </td><td>36.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>34.5</td><td>28  </td><td>37.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>35.5</td><td>29  </td><td>38.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>36.5</td><td>30  </td><td>39.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>37.5</td><td>31  </td><td>40.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>39  </td><td>32.5</td><td>42  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>40.5</td><td>34  </td><td>43.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>42.5</td><td>36  </td><td>45.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>44.5</td><td>38  </td><td>47.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>46.5</td><td>40  </td><td>49.5</td></tr>
+</table>
+
+
+| 크기 | 크기 | 가슴 (cm) | 허리 (cm) | 엉덩이 (cm) |
+|---|---|---|---|---|
+|XXS|000|77 |61 |95 |
+|XXS|00 |80 |64 |98 |
+|XS |0  |83 |66 |85 |
+|XS |2  |85 |69 |90 |
+|S  |4  |88 |71 |93 |
+|S  |6  |90 |74 |88 |
+|M  |8  |93 |76 |100|
+|M  |10 |95 |79 |103|
+|L  |12 |99 |83 |107|
+|L  |14 |103|86 |110|
+|XL |16 |108|91 |116|
+|XL |18 |113|97 |121|
+|XXL|20 |118|102|126|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">가슴 (cm)</th>
+    <th style="text-align: center;">허리 (cm)</th>
+    <th style="text-align: center;">엉덩이 (cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>77 </td><td>61 </td><td>95 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>80 </td><td>64 </td><td>98 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>83 </td><td>66 </td><td>85 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>85 </td><td>69 </td><td>90 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>88 </td><td>71 </td><td>93 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>90 </td><td>74 </td><td>88 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>93 </td><td>76 </td><td>100</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>95 </td><td>79 </td><td>103</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>99 </td><td>83 </td><td>107</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>103</td><td>86 </td><td>110</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>108</td><td>91 </td><td>116</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>113</td><td>97 </td><td>121</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>118</td><td>102</td><td>126</td></tr>
+</table>
+
+skirts
+치마
+| 크기 | 크기 | 허리 (인치) | 엉덩이 (인치) |
+|---|---|----|----|
+|XXS|000|24  |33.5|
+|XXS|00 |25  |34.5|
+|XS |0  |26  |35.5|
+|XS |2  |27  |36.5|
+|S  |4  |28  |37.5|
+|S  |6  |29  |38.5|
+|M  |8  |30  |39.5|
+|M  |10 |31  |40.5|
+|L  |12 |32.5|42  |
+|L  |14 |34  |43.5|
+|XL |16 |36  |45.5|
+|XL |18 |38  |47.5|
+|XXL|20 |40  |49.5|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">허리 (인치)</th>
+    <th style="text-align: center;">엉덩이 (인치)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>24  </td><td>33.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>25  </td><td>34.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>26  </td><td>35.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>27  </td><td>36.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>28  </td><td>37.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>29  </td><td>38.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>30  </td><td>39.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>31  </td><td>40.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>32.5</td><td>42  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>34  </td><td>43.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>36  </td><td>45.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>38  </td><td>47.5</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>40  </td><td>49.5</td></tr>
+</table>
+
+
+| 크기 | 크기 | 허리 (cm) | 엉덩이 (cm) |
+|---|---|---|---|
+|XXS|000|61 |85 |
+|XXS|00 |64 |88 |
+|XS |0  |66 |90 |
+|XS |2  |69 |93 |
+|S  |4  |71 |95 |
+|S  |6  |74 |98 |
+|M  |8  |76 |100|
+|M  |10 |79 |103|
+|L  |12 |83 |107|
+|L  |14 |86 |110|
+|XL |16 |91 |116|
+|XL |18 |97 |121|
+|XXL|20 |102|126|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">허리 (cm)</th>
+    <th style="text-align: center;">엉덩이 (cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>000</td><td>61 </td><td>85 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXS</td><td>00 </td><td>64 </td><td>88 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>0  </td><td>66 </td><td>90 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XS </td><td>2  </td><td>69 </td><td>93 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>4  </td><td>71 </td><td>95 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>S  </td><td>6  </td><td>74 </td><td>98 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>8  </td><td>76 </td><td>100</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>M  </td><td>10 </td><td>79 </td><td>103</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>12 </td><td>83 </td><td>107</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>L  </td><td>14 </td><td>86 </td><td>110</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>16 </td><td>91 </td><td>116</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XL </td><td>18 </td><td>97 </td><td>121</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>XXL</td><td>20 </td><td>102</td><td>126</td></tr>
+</table>
+
+신발
+| US | 한국 |
+|----|---|
+|5   |210|
+|5.5 |215|
+|6   |220|
+|6.5 |225|
+|7   |230|
+|7.5 |235|
+|8   |240|
+|8.5 |245|
+|9   |250|
+|9.5 |255|
+|10  |260|
+|10.5|265|
+|11  |270|
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">US</th>
+    <th style="text-align: center;">한국</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td>5   </td><td>210</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>5.5 </td><td>215</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>6   </td><td>220</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>6.5 </td><td>225</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>7   </td><td>230</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>7.5 </td><td>235</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>8   </td><td>240</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>8.5 </td><td>245</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>9   </td><td>250</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>9.5 </td><td>255</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>10  </td><td>260</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>10.5</td><td>265</td></tr>
+<tr bgcolor="#ffffff" align="center"><td>11  </td><td>270</td></tr>
+</table>
+
+벨트
+| 크기  | 크기  | 바지 벨트 (중앙 구멍)(인치) | 바지 벨트 (조절 범위)(인치) | 허리 벨트 (중앙 구멍)(인치) | 허리 벨트 (조절 범위)(인치) |
+|------|------|-----------------------|-----------------------|-----------------------|-----------------------|
+| XXS  | 0-2  | 29                    | 27-31                 | 27                    | 25-29                 |
+| XS   | 4-6  | 31                    | 29-33                 | 29                    | 27-31                 |
+| S    | 8-10 | 33                    | 31-35                 | 31                    | 29-33                 |
+| M    | 12-14| 35                    | 33-37                 | 33                    | 31-35                 |
+| L    | 16-18| 38                    | 36-40                 | 36                    | 34-38                 |
+| XL   | 20   | 42                    | 40-44                 | 40                    | 38-42                 |
+| XXL  | 22   | 46                    | 44-48                 | 44                    | 42-46                 |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">바지 벨트 (중앙 구멍)(인치)</th>
+    <th style="text-align: center;">바지 벨트 (조절 범위)(인치)</th>
+    <th style="text-align: center;">허리 벨트 (중앙 구멍)(인치)</th>
+    <th style="text-align: center;">허리 벨트 (조절 범위)(인치)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> XXS </td><td> 0-2  </td><td> 29 </td><td> 27-31 </td><td> 27 </td><td> 25-29 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XS  </td><td> 4-6  </td><td> 31 </td><td> 29-33 </td><td> 29 </td><td> 27-31 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> S   </td><td> 8-10 </td><td> 33 </td><td> 31-35 </td><td> 31 </td><td> 29-33 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M   </td><td> 12-14</td><td> 35 </td><td> 33-37 </td><td> 33 </td><td> 31-35 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> L   </td><td> 16-18</td><td> 38 </td><td> 36-40 </td><td> 36 </td><td> 34-38 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XL  </td><td> 20   </td><td> 42 </td><td> 40-44 </td><td> 40 </td><td> 38-42 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XXL </td><td> 22   </td><td> 46 </td><td> 44-48 </td><td> 44 </td><td> 42-46 </td></tr>
+</table>
+
+| 크기 | 크기 범위 | 바지 벨트 (중앙 구멍)(cm) | 바지 벨트 (조절 범위)(cm) | 허리 벨트 (중앙 구멍)(cm) | 허리 벨트 (조절 범위)(cm) |
+|------|---------|-------------------------|------------------------|-------------------------|------------------------|
+| XXS  | 0-2     | 74                      | 69-79                  | 69                      | 64-74                  |
+| XS   | 4-6     | 79                      | 74-84                  | 74                      | 69-79                  |
+| S    | 8-10    | 84                      | 79-89                  | 79                      | 74-84                  |
+| M    | 12-14   | 89                      | 84-94                  | 84                      | 79-89                  |
+| L    | 16-18   | 96                      | 91-102                 | 91                      | 86-96                  |
+| XL   | 20      | 107                     | 102-112                | 102                     | 96-107                 |
+| XXL  | 22      | 117                     | 112-122                | 112                     | 107-117                |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">바지 벨트 (중앙 구멍)(cm)</th>
+    <th style="text-align: center;">바지 벨트 (조절 범위)(cm)</th>
+    <th style="text-align: center;">허리 벨트 (중앙 구멍)(cm)</th>
+    <th style="text-align: center;">허리 벨트 (조절 범위)(cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> XXS </td><td> 0-2   </td><td> 74  </td><td> 69-79   </td><td> 69  </td><td> 64-74   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XS  </td><td> 4-6   </td><td> 79  </td><td> 74-84   </td><td> 74  </td><td> 69-79   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> S   </td><td> 8-10  </td><td> 84  </td><td> 79-89   </td><td> 79  </td><td> 74-84   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M   </td><td> 12-14 </td><td> 89  </td><td> 84-94   </td><td> 84  </td><td> 79-89   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> L   </td><td> 16-18 </td><td> 96  </td><td> 91-102  </td><td> 91  </td><td> 86-96   </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XL  </td><td> 20    </td><td> 107 </td><td> 102-112 </td><td> 102 </td><td> 96-107  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> XXL </td><td> 22    </td><td> 117 </td><td> 112-122 </td><td> 112 </td><td> 107-117 </td></tr>
+</table>
+
+모자
+| 크기 | 둘레 (인치) | 둘레 (cm) |
+|------|---------|----------|
+| S    | 22      | 55.88    |
+| M    | 23      | 58.42    |
+| L    | 24      | 60.97    |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">둘레 (인치)</th>
+    <th style="text-align: center;">둘레 (cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> S </td><td> 22 </td><td> 55.88 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M </td><td> 23 </td><td> 58.42 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> L </td><td> 24 </td><td> 60.97 </td></tr>
+</table>
+
+장갑
+| 크기 | 길이 (인치) | 길이 (cm) |
+|------|------|---------|
+| S    | 8 ⅛  | 21      |
+| M    | 8 ½  | 22      |
+| L    | 8 ⅞  | 23      | 
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">길이 (인치)</th>
+    <th style="text-align: center;">길이 (cm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> S </td><td> 8 ⅛ </td><td> 21 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M </td><td> 8 ½ </td><td> 22 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> L </td><td> 8 ⅞ </td><td> 23 </td></tr> 
+</table>
+
+타이즈
+| 크기   | 키 (Ft) | 몸무게 (Lbs) | 키 (cm) | 몸무게 (kg) |
+|--------|-------------|--------------|-------------|-------------|
+| PETITE | 4.8 - 5.25  | 90 - 125     | 147 - 160   | 41 - 57     |
+| S/M    | 5 - 5.6     | 90 - 145     | 152 - 170   | 41 - 66     |
+| M/L    | 5.6+        | 145 - 175    | 170+        | 66 - 79     |
+| TALL   | 5.6 - 6     | 175 - 245    | 170 - 183   | 79 - 111    |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">키 (Ft)</th>
+    <th style="text-align: center;">몸무게 (Lbs)</th>
+    <th style="text-align: center;">키 (cm)</th>
+    <th style="text-align: center;">몸무게 (kg)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> PETITE </td><td> 4.8 - 5.25 </td><td> 90 - 125  </td><td> 147 - 160 </td><td> 41 - 57  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> S/M    </td><td> 5 - 5.6    </td><td> 90 - 145  </td><td> 152 - 170 </td><td> 41 - 66  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M/L    </td><td> 5.6+       </td><td> 145 - 175 </td><td> 170+      </td><td> 66 - 79  </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> TALL   </td><td> 5.6 - 6    </td><td> 175 - 245 </td><td> 170 - 183 </td><td> 79 - 111 </td></tr>
+</table>
+
+반지
+| 크기 | 크기 | 직경 (mm) |
+|------|--------|-------|
+| S    | 5      | 16    |
+| S    | 6      | 17    |
+| M    | 7      | 18    |
+| L    | 8      | 19    |
+
+<table border="1" cellpadding="10" cellspacing="0" width="50%" align="center" style="margin-left: auto; margin-right: auto;">
+<tr bgcolor="#f2f2f2">
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">크기</th>
+    <th style="text-align: center;">직경 (mm)</th>
+</tr>
+<tr bgcolor="#ffffff" align="center"><td> S </td><td> 5 </td><td> 16 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> S </td><td> 6 </td><td> 17 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> M </td><td> 7 </td><td> 18 </td></tr>
+<tr bgcolor="#ffffff" align="center"><td> L </td><td> 8 </td><td> 19 </td></tr>
+</table>
