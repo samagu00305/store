@@ -1911,10 +1911,11 @@ def AddDataFromExcel_Common(GetData, exchangeRate, firstName):
         addOneProductSuccess = True
         while True:
             Util.TelegramSend(f"{count}/{rowCountAddBefore}")
-            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN.C.name]
+            url = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.C.name]
+            category = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.B.name]
             data = AddOneProduct_Common(
                 url,
-                GetData(url, exchangeRate),
+                GetData(url, exchangeRate, category),
                 dfAddBefore if data is None else data.dfAddBefore,
                 dfAdd if data is None else data.dfAdd,
                 xlFileAddBefore,
