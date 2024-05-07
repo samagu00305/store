@@ -1383,8 +1383,8 @@ def TranslateToKorean(enText: str) -> str:
             Util.Debug(f"번역문({result.dest}) : {result.text}")
             returnValue = result.text
     except:
-        return returnValue
-    return returnValue
+        return returnValue.replace("\u200b", "")
+    return returnValue.replace("\u200b", "")
 
 
 def CsvSave(df, xlFile):
