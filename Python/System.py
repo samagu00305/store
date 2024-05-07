@@ -947,6 +947,7 @@ def GetNewProducts_BananarePublic(name, url, filterTitles) -> NewProducts_Banana
     # 중첩된 리스트의 중복 제거
     for titleAndPid in productTitleAndPids:
         title = titleAndPid[0]
+        title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
         count = titles.count(title)
         if (
             count != 0
@@ -1014,6 +1015,7 @@ def GetNewProducts_Zara(name, url, filterTitles) -> NewProducts_Zara:
     unique_productTitleAndPids = [list(set(sublist)) for sublist in productTitleAndPids]
     for titleAndPid in unique_productTitleAndPids:
         title = titleAndPid[0]
+        title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
         count = titles.count(title)
         if (
             count != 0
@@ -1177,6 +1179,7 @@ def SetCsvNewProductURLs_BananarePublic():
         titleAndPids = []
         for titleAndPid in newProduct.titleAndPids:
             title = titleAndPid[0]
+            title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
             if titles.count(title) == 0:
                 titleAndPids.append(titleAndPid)
                 titles.append(title)
@@ -1273,6 +1276,7 @@ def SetCsvNewProductURLs_Common(logName, findFirstUrl, addStartUrl, addEndUrl, G
         titleAndPids = []
         for titleAndPid in newProduct.titleAndPids:
             title = titleAndPid[0]
+            title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
             if titles.count(title) == 0:
                 titleAndPids.append(titleAndPid)
                 titles.append(title)
@@ -1639,7 +1643,7 @@ def AddOneProduct_Ugg(
         return returnValue
 
 def AddOneProduct_Common(
-    url, data, dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, firstName
+    url, data, dfAddBefore, dfAdd, xlFileAddBefore, xlFileAdd, addOneProductSuccess, firstName, category
 ) -> AddOneProduct_Data_Common:
     # UGG에 사이즈 정보로 정보 취합
     useMoney = data.useMoney
@@ -1795,6 +1799,8 @@ def AddOneProduct_Common(
         dfAdd.at[2, COLUMN.T.name] = title
         # 가격
         dfAdd.at[2, COLUMN.U.name] = useMoney
+        # 카테고리
+        dfAdd.at[2, COLUMN.V.name] = category
         # 브랜드
         brand = dfAddBefore.at[dfAddBefore.index[0], COLUMN_Add.A.name]
         dfAdd.at[2, COLUMN.E.name] = brand
@@ -1922,6 +1928,7 @@ def AddDataFromExcel_Common(GetData, exchangeRate, firstName):
                 xlFileAdd,
                 addOneProductSuccess,
                 firstName,
+                category,
             )
             dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
@@ -1969,7 +1976,8 @@ def AddDataFromExcel_BananarePublic():
                 xlFileAddBefore,
                 xlFileAdd,
                 addOneProductSuccess,
-                firstName_BananarePublic
+                firstName_BananarePublic,
+                category
             )
             dfAddBefore = dfAddBefore if data is None else data.dfAddBefore
             addOneProductSuccess = data.addOneProductSuccess
@@ -2026,6 +2034,7 @@ def GetData_Ugg(url, exchangeRate, onlyUseMoney=False) -> Data_Ugg:
     )
     if match:
         title = match.group(1)
+        title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
 
     Util.Debug(f"title : {title}")
 
@@ -2190,6 +2199,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
     )
     if match:
         title = match.group(1)
+        title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
 
     Util.Debug(f"title : {title}")
 
@@ -2311,6 +2321,7 @@ def GetData_BananarePublic(url, exchangeRate, category, onlyUseMoney=False) -> D
     )
     if match:
         title = match.group(1)
+        title = title.replace("*", " ").replace("?", " ").replace("<", " ").replace(">", " ").replace("\\", " ")
 
     Util.Debug(f"title : {title}")
 
@@ -2386,55 +2397,48 @@ def GetData_BananarePublic(url, exchangeRate, category, onlyUseMoney=False) -> D
             r'\\"businessCatalogItemId\\":\\"(\d+)\\".*?\\"colorName\\":\\"(.*?)\\"',
         )
         # 중복 제거하면서 순서 유지
-        unique_sublists = list(OrderedDict.fromkeys(map(tuple, matcheGroup1And2)))
-        # 다시 리스트로 변환
-        unique_sublists = [list(sublist) for sublist in unique_sublists]
-        for i in range(len(unique_sublists)):
-            productNumber = unique_sublists[i][0]
-            colorName = unique_sublists[i][1]
+        colorNames = [item[1] for item in matcheGroup1And2]
+        for i in range(len(matcheGroup1And2)):
+            colorName = matcheGroup1And2[i][1]
+            count = colorNames.count(colorName)
+            if (
+                count != 0
+            ):
+                colorNames = [value for value in colorNames if value != colorName]
+                productNumber = matcheGroup1And2[i][0]
+                colorUrlHtmlElementsData: str = System.GetElementsData_v2(f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}")
 
-            # webbrowser.open(
-            #     f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}"
-            # )
-            # Util.SleepTime(10)
-            # colorUrlHtmlElementsData: str = System.GetElementsData()
-            # # Ctrl + W를 눌러 현재 Chrome 탭 닫기
-            # Util.KeyboardKeyHotkey("ctrl", "w")
-            # Util.SleepTime(1)
-            
-            colorUrlHtmlElementsData: str = System.GetElementsData_v2(f"https://bananarepublic.gap.com/browse/product.do?pid={productNumber}")
-
-            sizes: list = []
-            match = re.search("Size:One Size", colorUrlHtmlElementsData)
-            if match:
-                sizes.append("One Size")
-            else:
-                sizeDatas: list = Util.GetRegExMatcheGroup1List(
-                    colorUrlHtmlElementsData,
-                    r'aria-label="Size:(.*?)"',
-                )
-                for i in range(len(sizeDatas)):
-                    sizeData = sizeDatas[i]
-                    if "out of stock" not in sizeData:
-                        if " 여성신발 " in category:
-                            korSize = Util.GetKorSize_BananarePublic(sizeData)
-                            if korSize != 0:
-                                sizes.append(
-                                    f"US_{sizeData}({korSize})"
-                                )
+                sizes: list = []
+                match = re.search("Size:One Size", colorUrlHtmlElementsData)
+                if match:
+                    sizes.append("One Size")
+                else:
+                    sizeDatas: list = Util.GetRegExMatcheGroup1List(
+                        colorUrlHtmlElementsData,
+                        r'aria-label="Size:(.*?)"',
+                    )
+                    for i in range(len(sizeDatas)):
+                        sizeData = sizeDatas[i]
+                        if "out of stock" not in sizeData:
+                            if " 여성신발 " in category:
+                                korSize = Util.GetKorSize_BananarePublic(sizeData)
+                                if korSize != 0:
+                                    sizes.append(
+                                        f"US_{sizeData}({korSize})"
+                                    )
+                                else:
+                                    sizes.append(sizeData)
                             else:
                                 sizes.append(sizeData)
-                        else:
-                            sizes.append(sizeData)
 
-            imgBigUrls: list = []
-            matchs: list = Util.GetRegExMatcheGroup1List(
-                colorUrlHtmlElementsData,
-                r'" src="/(.*?).jpg" width=',
-            )
-            for i in range(len(matchs)):
-                imgBigUrls.append(f"https://bananarepublic.gap.com/{matchs[i]}.jpg")
-            arraySizesAndImgUrls.append([colorName[:25], sizes, imgBigUrls])
+                imgBigUrls: list = []
+                matchs: list = Util.GetRegExMatcheGroup1List(
+                    colorUrlHtmlElementsData,
+                    r'" src="/(.*?).jpg" width=',
+                )
+                for i in range(len(matchs)):
+                    imgBigUrls.append(f"https://bananarepublic.gap.com/{matchs[i]}.jpg")
+                arraySizesAndImgUrls.append([colorName[:25], sizes, imgBigUrls])
 
     returnValue = Data_BananarePublic()
     returnValue.useMoney = float(useMoney)
