@@ -2223,7 +2223,7 @@ def GetData_Zara(url, exchangeRate, onlyUseMoney=False) -> Data_Zara:
             oneColorName = match.group(1)
             matchComingSoon = re.search("<span>Coming soon</span>", htmlElementsData)
             matchOutOfStock = re.search("<span>OUT OF STOCK</span>", htmlElementsData)
-            if not matchComingSoon and not matchOutOfStock:
+            if matchComingSoon and matchOutOfStock:
                 sizes: list = []
                 sizeDatas: list = Util.GetRegExMatcheGroup1List(
                     htmlElementsData,
@@ -2406,24 +2406,26 @@ def GetData_BananarePublic(url, exchangeRate, category, onlyUseMoney=False) -> D
 
             sizes: list = []
             match = re.search("Size:One Size", colorUrlHtmlElementsData)
-            if not match:
+            if match:
                 sizes.append("One Size")
             else:
                 sizeDatas: list = Util.GetRegExMatcheGroup1List(
                     colorUrlHtmlElementsData,
                     r'aria-label="Size:(.*?)"',
                 )
-                if " 여성신발 " in category:
-                    for i in range(len(sizeDatas)):
-                        if Util.GetKorSize_BananarePublic(sizeDatas[i]) != 0:
-                            sizes.append(
-                                f"US_{sizeDatas[i]}({Util.GetKorSize_BananarePublic(sizeDatas[i])})"
-                            )
+                for i in range(len(sizeDatas)):
+                    sizeData = sizeDatas[i]
+                    if "out of stock" not in sizeData:
+                        if " 여성신발 " in category:
+                            korSize = Util.GetKorSize_BananarePublic(sizeData)
+                            if korSize != 0:
+                                sizes.append(
+                                    f"US_{sizeData}({korSize})"
+                                )
+                            else:
+                                sizes.append(sizeData)
                         else:
-                            sizes.append(sizeDatas[i])
-                else:
-                    for i in range(len(sizeDatas)):
-                        sizes.append(sizeDatas[i])
+                            sizes.append(sizeData)
 
             imgBigUrls: list = []
             matchs: list = Util.GetRegExMatcheGroup1List(
