@@ -19,6 +19,74 @@ def show_start_popup():
         df = pd.read_csv(xlFile, encoding="cp949")
         lastRow = df.shape[0]
 
+        if lastRow > 0:
+            for i in range(1, lastRow):
+                index = int(df.at[df.index[i - 1], System_Map.COLUMN_Add11.A.name])
+                url = f"https://new.land.naver.com/complexes/{index}"
+                htmlElementsData: str = System_Map.GetElementsData_v4(url, 1)
+                match = System.re.search(r"단지정보", htmlElementsData)
+                if match:
+                    # 도로명 주소
+                    roadName = ""
+                    match = System.re.search(
+                        r'"도로명"></i>(.*?)<',
+                        htmlElementsData,
+                    )
+                    if match:
+                        roadName = match.group(1)
+
+                    # 전세가
+                    jeonse = ""
+                    match = System.re.search(
+                        r'<dt class="title">전세가</dt><dd class="data">(.*?)<',
+                        htmlElementsData,
+                    )
+                    if match:
+                        jeonse = match.group(1)
+                        jeonse = jeonse.replace(",", "").replace("억", "0000")
+                        jeonseList = jeonse.split()
+                        jeonseCount = 0
+                        for jeonseData in jeonseList:
+                            if jeonseData != "-":
+                                jeonseCount += int(jeonseData)
+
+                    # 최저 매매가
+                    purchasePrice = ""
+                    match = System.re.search(
+                        r'<dt class="title">매매가</dt><dd class="data">(.*?)(<|~)',
+                        htmlElementsData,
+                    )
+                    if match:
+                        purchasePrice = match.group(1)
+                        purchasePrice = purchasePrice.replace(",", "").replace(
+                            "억", "0000"
+                        )
+                        purchasePriceList = purchasePrice.split()
+                        purchasePriceCount = 0
+                        for purchasePriceData in purchasePriceList:
+                            if purchasePriceData != "-":
+                                purchasePriceCount += int(purchasePriceData)
+
+                    if jeonseCount >= purchasePriceCount:
+                        Util.TelegramSend(
+                            f"전세가와 비슷한 것{jeonseCount} >= {purchasePriceCount}   url : {url}"
+                        )
+                        df.loc[i - 1, System_Map.COLUMN_Add11.C.name] = (
+                            "전세가와 비슷한 것"
+                        )
+
+                    df.loc[i - 1, System_Map.COLUMN_Add11.B.name] = roadName
+                    df.loc[0, System_Map.COLUMN_Add11.C.name] = i
+                    Util.CsvSave(df, xlFile)
+
+                    match = System.re.search(
+                        r"해당되는 매물이 없습니다.", htmlElementsData
+                    )
+                    if match:
+                        Util.Debug(f"해당되는 매물이 없습니다.(index : {index})")
+                    else:
+                        Util.Debug(f"해당되는 매물이 존재합니다.(index : {index})")
+
         if lastRow != 0:
             start = int(df.at[df.index[lastRow - 1], System_Map.COLUMN_Add11.A.name])
         allCount = lastRow
