@@ -285,6 +285,28 @@ def GetElementsData_v2(url: str) -> str:
 
     return html
 
+def GetElementsData_v3(url: str, sleepTime) -> str:
+    html = ""
+    
+    # 웹 드라이버 초기화
+    driver = webdriver.Chrome()
+
+    # 웹 페이지 열기
+    driver.get(url)
+    Util.SleepTime(sleepTime)
+
+    try:
+        html = driver.page_source
+
+    except Exception as e:
+        print("버튼을 찾을 수 없습니다:", e)
+
+    finally:
+        # 웹 브라우저 종료
+        driver.quit()
+
+    return html
+
 
 
 # 등록 된 상품 최신화
