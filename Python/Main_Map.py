@@ -24,6 +24,8 @@ def show_start_popup():
         allCount = lastRow
         for i in range(start, 300000):
             index = i + 1
+            if index % 2 == 0:
+                Util.TelegramSend(f"index : {index}")
             url = f"https://new.land.naver.com/complexes/{index}"
             htmlElementsData: str = System.GetElementsData_v3(url, 1)
             match = System.re.search(r"단지정보", htmlElementsData)
