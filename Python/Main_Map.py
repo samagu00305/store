@@ -9,6 +9,8 @@ import pandas as pd
 
 def show_start_popup():
     try:
+        Util.TelegramSend(f"시작")
+
         pd.set_option("future.no_silent_downcasting", True)
 
         System.CloseExcelProcesses()
@@ -28,17 +30,18 @@ def show_start_popup():
             if match:
                 allCount += 1
                 df.loc[allCount, System_Map.COLUMN_Add11.A.name] = index
-                Util.Debug("정보가 존재 합니다.")
+                Util.Debug(f"정보가 존재 합니다.(index : {index})")
             else:
-                Util.Debug("정보가 안 존재 합니다.")
+                Util.Debug(f"정보가 안 존재 합니다.(index : {index})")
             if index % 50 == 0:
                 Util.CsvSave(df, xlFile)
-                Util.DiscordSend(f"Save index : {index}")
+                Util.TelegramSend(f"Save index : {index}")
 
         Util.CsvSave(df, xlFile)
 
         System.CloseExcelProcesses()
 
+        Util.TelegramSend(f"End")
         Util.DiscordSend("End")
         Util.SleepTime(5)
 
