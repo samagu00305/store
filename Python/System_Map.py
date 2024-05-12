@@ -31,7 +31,7 @@ class COLUMN_Add11(Enum):
     A = "A"  # 네이버 단지 번호
     B = "B"  #
     C = "C"  #
-    C = "D"  #
+    D = "D"  #
 
 
 def GetElementsData_v4(url: str, sleepTime) -> str:
