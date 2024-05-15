@@ -84,12 +84,18 @@ def show_start_popup():
                         aa = (purchasePriceCount / 100) * 70
                         if aa <= 20000:
                             if sale_to_jeonse_ratio_sum >= 85:
-                                Util.DiscordSend(
-                                    f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName}"
-                                )
-                                Util.TelegramSend(
-                                    f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName}"
-                                )
+                                match = System.re.search(r"복도식", htmlElementsData)
+                                if match:
+                                    Util.TelegramSend(
+                                        f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName} 형식 - 복도식"
+                                    )
+                                else:
+                                    Util.DiscordSend(
+                                        f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName} 형식 - 복도식 아님"
+                                    )
+                                    Util.TelegramSend(
+                                        f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName} 형식 - 복도식 아님"
+                                    )
 
         # xlFile = System.EnvData.g_DefaultPath() + r"\엑셀\존재하는 네이버 단지 번호.CSV"
         # df = pd.read_csv(xlFile, encoding="cp949")
