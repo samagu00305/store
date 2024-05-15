@@ -47,7 +47,7 @@ def GetElementsData_v4(url: str, sleepTime) -> str:
     try:
         ClickButton(driver, "단지정보")
         ClickButton(driver, "시세/실거래가")
-        # ClickButton(driver, "동호수/공시가격")
+        ClickButton(driver, "동호수/공시가격")
 
         # 추가적인 대기 시간을 둘 수 있음 (예: 동적 콘텐츠 로딩을 위해)
         Util.SleepTime(2)

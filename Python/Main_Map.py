@@ -79,10 +79,26 @@ def show_start_popup():
                         if sale_to_jeonse_ratio_part != "-":
                             sale_to_jeonse_ratio_sum += int(sale_to_jeonse_ratio_part)
 
+                # 최저 공시가격
+                official = ""
+                match = System.re.search(
+                    r'<em class="legends_price_title">공시가격</em>.*?>최저</dt><dd class="legends_fluctuation_price">(.*?)</dd></dl>',
+                    htmlElementsData,
+                )
+                if match:
+                    official = match.group(1)
+                    official = official.replace(",", "").replace("억", "0000")
+                    officialList = official.split("~")[0].split()
+                    officialPrice = 0
+                    for officialData in officialList:
+                        if officialData != "-":
+                            officialPrice += int(officialData)
+
                 if jeonseCount != 0 and purchasePriceCount != 0:
                     if jeonseCount >= purchasePriceCount:
-                        aa = (purchasePriceCount / 100) * 65
-                        if aa <= 10000:
+                        if officialPrice == 0:
+                            officialPrice = (purchasePriceCount / 100) * 69
+                        if officialPrice <= 10000:
                             if sale_to_jeonse_ratio_sum >= 85:
                                 match = System.re.search(r"복도식", htmlElementsData)
                                 if match:
