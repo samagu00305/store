@@ -81,8 +81,8 @@ def show_start_popup():
 
                 if jeonseCount != 0 and purchasePriceCount != 0:
                     if jeonseCount >= purchasePriceCount:
-                        aa = (purchasePriceCount / 100) * 70
-                        if aa <= 20000:
+                        aa = (purchasePriceCount / 100) * 65
+                        if aa <= 10000:
                             if sale_to_jeonse_ratio_sum >= 85:
                                 match = System.re.search(r"복도식", htmlElementsData)
                                 if match:
