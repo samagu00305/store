@@ -15,99 +15,176 @@ def show_start_popup():
 
         System.CloseExcelProcesses()
 
-        xlFile = System.EnvData.g_DefaultPath() + r"\엑셀\존재하는 네이버 단지 번호.CSV"
-        df = pd.read_csv(xlFile, encoding="cp949")
-        lastRow = df.shape[0]
-
-        if lastRow > 0:
-            for i in range(1, lastRow):
-                index = int(df.at[df.index[i - 1], System_Map.COLUMN_Add11.A.name])
-                url = f"https://new.land.naver.com/complexes/{index}"
-                htmlElementsData: str = System_Map.GetElementsData_v4(url, 1)
-                match = System.re.search(r"단지정보", htmlElementsData)
-                if match:
-                    # 도로명 주소
-                    roadName = ""
-                    match = System.re.search(
-                        r'"도로명"></i>(.*?)<',
-                        htmlElementsData,
-                    )
-                    if match:
-                        roadName = match.group(1)
-
-                    # 전세가
-                    jeonse = ""
-                    match = System.re.search(
-                        r'<dt class="title">전세가</dt><dd class="data">(.*?)<',
-                        htmlElementsData,
-                    )
-                    if match:
-                        jeonse = match.group(1)
-                        jeonse = jeonse.replace(",", "").replace("억", "0000")
-                        jeonseList = jeonse.split()
-                        jeonseCount = 0
-                        for jeonseData in jeonseList:
-                            if jeonseData != "-":
-                                jeonseCount += int(jeonseData)
-
-                    # 최저 매매가
-                    purchasePrice = ""
-                    match = System.re.search(
-                        r'<dt class="title">매매가</dt><dd class="data">(.*?)(<|~)',
-                        htmlElementsData,
-                    )
-                    if match:
-                        purchasePrice = match.group(1)
-                        purchasePrice = purchasePrice.replace(",", "").replace(
-                            "억", "0000"
-                        )
-                        purchasePriceList = purchasePrice.split()
-                        purchasePriceCount = 0
-                        for purchasePriceData in purchasePriceList:
-                            if purchasePriceData != "-":
-                                purchasePriceCount += int(purchasePriceData)
-
-                    if jeonseCount >= purchasePriceCount:
-                        Util.TelegramSend(
-                            f"전세가와 비슷한 것{jeonseCount} >= {purchasePriceCount}   url : {url}"
-                        )
-                        df.loc[i - 1, System_Map.COLUMN_Add11.C.name] = (
-                            "전세가와 비슷한 것"
-                        )
-
-                    df.loc[i - 1, System_Map.COLUMN_Add11.B.name] = roadName
-                    df.loc[0, System_Map.COLUMN_Add11.C.name] = i
-                    Util.CsvSave(df, xlFile)
-
-                    match = System.re.search(
-                        r"해당되는 매물이 없습니다.", htmlElementsData
-                    )
-                    if match:
-                        Util.Debug(f"해당되는 매물이 없습니다.(index : {index})")
-                    else:
-                        Util.Debug(f"해당되는 매물이 존재합니다.(index : {index})")
-
-        if lastRow != 0:
-            start = int(df.at[df.index[lastRow - 1], System_Map.COLUMN_Add11.A.name])
-        allCount = lastRow
-        for i in range(start, 300000):
+        for i in range(1, 300000):
             index = i + 1
-            if index % 2 == 0:
-                Util.TelegramSend(f"index : {index}")
+            # if index % 2 == 0:
+            #     Util.TelegramSend(f"index : {index}")
             url = f"https://new.land.naver.com/complexes/{index}"
-            htmlElementsData: str = System.GetElementsData_v3(url, 1)
+            htmlElementsData: str = System_Map.GetElementsData_v4(url, 1)
             match = System.re.search(r"단지정보", htmlElementsData)
             if match:
-                allCount += 1
-                df.loc[allCount, System_Map.COLUMN_Add11.A.name] = index
-                Util.Debug(f"정보가 존재 합니다.(index : {index})")
-            else:
-                Util.Debug(f"정보가 안 존재 합니다.(index : {index})")
-            if index % 50 == 0:
-                Util.CsvSave(df, xlFile)
-                Util.TelegramSend(f"Save index : {index}")
+                # 도로명 주소
+                roadName = ""
+                match = System.re.search(
+                    r'"도로명"></i>(.*?)<',
+                    htmlElementsData,
+                )
+                if match:
+                    roadName = match.group(1)
 
-        Util.CsvSave(df, xlFile)
+                # 전세가
+                jeonse = ""
+                match = System.re.search(
+                    r'<dt class="title">전세가</dt><dd class="data">(.*?)<',
+                    htmlElementsData,
+                )
+                if match:
+                    jeonse = match.group(1)
+                    jeonse = jeonse.replace(",", "").replace("억", "0000")
+                    jeonseList = jeonse.split("~")[0].split()
+                    jeonseCount = 0
+                    for jeonseData in jeonseList:
+                        if jeonseData != "-":
+                            jeonseCount += int(jeonseData)
+
+                # 최저 매매가
+                purchasePrice = ""
+                match = System.re.search(
+                    r'<dt class="title">매매가</dt><dd class="data">(.*?)(<|~)',
+                    htmlElementsData,
+                )
+                if match:
+                    purchasePrice = match.group(1)
+                    purchasePrice = purchasePrice.replace(",", "").replace("억", "0000")
+                    purchasePriceList = purchasePrice.split("~")[0].split()
+                    purchasePriceCount = 0
+                    for purchasePriceData in purchasePriceList:
+                        if purchasePriceData != "-":
+                            purchasePriceCount += int(purchasePriceData)
+
+                # 매매가 대비 전세가 비율 추출
+                sale_to_jeonse_ratio = ""
+                match = re.search(
+                    r'>매매가 대비 전세가</th>.*?"type_result">(.*?)%</td></tr><tr class="">',
+                    htmlElementsData,
+                )
+                if match:
+                    sale_to_jeonse_ratio = match.group(1)
+                    sale_to_jeonse_ratio = sale_to_jeonse_ratio.replace("%", "")
+                    sale_to_jeonse_ratio_parts = sale_to_jeonse_ratio.split("~")[
+                        0
+                    ].split()
+                    sale_to_jeonse_ratio_sum = 0
+                    for sale_to_jeonse_ratio_part in sale_to_jeonse_ratio_parts:
+                        if sale_to_jeonse_ratio_part != "-":
+                            sale_to_jeonse_ratio_sum += int(sale_to_jeonse_ratio_part)
+
+                if jeonseCount != 0 and purchasePriceCount != 0:
+                    if jeonseCount >= purchasePriceCount:
+                        aa = (purchasePriceCount / 100) * 70
+                        if aa <= 20000:
+                            if sale_to_jeonse_ratio >= 85:
+                                Util.DiscordSend(
+                                    f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName}"
+                                )
+                                Util.TelegramSend(
+                                    f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName}"
+                                )
+
+        # xlFile = System.EnvData.g_DefaultPath() + r"\엑셀\존재하는 네이버 단지 번호.CSV"
+        # df = pd.read_csv(xlFile, encoding="cp949")
+        # lastRow = df.shape[0]
+
+        # if lastRow > 0:
+        #     for i in range(1, lastRow):
+        #         index = int(df.at[df.index[i - 1], System_Map.COLUMN_Add11.A.name])
+        #         url = f"https://new.land.naver.com/complexes/{index}"
+        #         htmlElementsData: str = System_Map.GetElementsData_v4(url, 1)
+        #         match = System.re.search(r"단지정보", htmlElementsData)
+        #         if match:
+        #             # 도로명 주소
+        #             roadName = ""
+        #             match = System.re.search(
+        #                 r'"도로명"></i>(.*?)<',
+        #                 htmlElementsData,
+        #             )
+        #             if match:
+        #                 roadName = match.group(1)
+
+        #             # 전세가
+        #             jeonse = ""
+        #             match = System.re.search(
+        #                 r'<dt class="title">전세가</dt><dd class="data">(.*?)<',
+        #                 htmlElementsData,
+        #             )
+        #             if match:
+        #                 jeonse = match.group(1)
+        #                 jeonse = jeonse.replace(",", "").replace("억", "0000")
+        #                 jeonseList = jeonse.split("~")[0].split()
+        #                 jeonseCount = 0
+        #                 for jeonseData in jeonseList:
+        #                     if jeonseData != "-":
+        #                         jeonseCount += int(jeonseData)
+
+        #             # 최저 매매가
+        #             purchasePrice = ""
+        #             match = System.re.search(
+        #                 r'<dt class="title">매매가</dt><dd class="data">(.*?)(<|~)',
+        #                 htmlElementsData,
+        #             )
+        #             if match:
+        #                 purchasePrice = match.group(1)
+        #                 purchasePrice = purchasePrice.replace(",", "").replace(
+        #                     "억", "0000"
+        #                 )
+        #                 purchasePriceList = purchasePrice.split("~")[0].split()
+        #                 purchasePriceCount = 0
+        #                 for purchasePriceData in purchasePriceList:
+        #                     if purchasePriceData != "-":
+        #                         purchasePriceCount += int(purchasePriceData)
+
+        #             if jeonseCount != 0 and purchasePriceCount != 0:
+        #                 if jeonseCount >= purchasePriceCount:
+        #                     Util.TelegramSend(
+        #                         f"전세가와 비슷한 것{jeonseCount} >= {purchasePriceCount}   url : {url}"
+        #                     )
+        #                     df.loc[i - 1, System_Map.COLUMN_Add11.C.name] = (
+        #                         "전세가와 비슷한 것"
+        #                     )
+
+        #             df.loc[i - 1, System_Map.COLUMN_Add11.B.name] = roadName
+        #             df.loc[0, System_Map.COLUMN_Add11.C.name] = i
+        #             Util.CsvSave(df, xlFile)
+
+        #             match = System.re.search(
+        #                 r"해당되는 매물이 없습니다.", htmlElementsData
+        #             )
+        #             if match:
+        #                 Util.Debug(f"해당되는 매물이 없습니다.(index : {index})")
+        #             else:
+        #                 Util.Debug(f"해당되는 매물이 존재합니다.(index : {index})")
+
+        # if lastRow != 0:
+        #     start = int(df.at[df.index[lastRow - 1], System_Map.COLUMN_Add11.A.name])
+        # allCount = lastRow
+        # for i in range(start, 300000):
+        #     index = i + 1
+        #     if index % 2 == 0:
+        #         Util.TelegramSend(f"index : {index}")
+        #     url = f"https://new.land.naver.com/complexes/{index}"
+        #     htmlElementsData: str = System.GetElementsData_v3(url, 1)
+        #     match = System.re.search(r"단지정보", htmlElementsData)
+        #     if match:
+        #         allCount += 1
+        #         df.loc[allCount, System_Map.COLUMN_Add11.A.name] = index
+        #         Util.Debug(f"정보가 존재 합니다.(index : {index})")
+        #     else:
+        #         Util.Debug(f"정보가 안 존재 합니다.(index : {index})")
+        #     if index % 50 == 0:
+        #         Util.CsvSave(df, xlFile)
+        #         Util.TelegramSend(f"Save index : {index}")
+
+        # Util.CsvSave(df, xlFile)
 
         System.CloseExcelProcesses()
 
