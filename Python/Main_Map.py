@@ -17,8 +17,8 @@ def show_start_popup():
 
         for i in range(1, 300000):
             index = i + 1
-            # if index % 2 == 0:
-            #     Util.TelegramSend(f"index : {index}")
+            if index % 2 == 0:
+                Util.TelegramSend(f"index : {index}")
             url = f"https://new.land.naver.com/complexes/{index}"
             htmlElementsData: str = System_Map.GetElementsData_v4(url, 1)
             match = System.re.search(r"단지정보", htmlElementsData)
@@ -64,7 +64,7 @@ def show_start_popup():
 
                 # 매매가 대비 전세가 비율 추출
                 sale_to_jeonse_ratio = ""
-                match = re.search(
+                match = System.re.search(
                     r'>매매가 대비 전세가</th>.*?"type_result">(.*?)%</td></tr><tr class="">',
                     htmlElementsData,
                 )
@@ -83,7 +83,7 @@ def show_start_popup():
                     if jeonseCount >= purchasePriceCount:
                         aa = (purchasePriceCount / 100) * 70
                         if aa <= 20000:
-                            if sale_to_jeonse_ratio >= 85:
+                            if sale_to_jeonse_ratio_sum >= 85:
                                 Util.DiscordSend(
                                     f"전세가와 비슷한 것 {jeonseCount} >= {purchasePriceCount}   url : {url} 도로명 : {roadName}"
                                 )
